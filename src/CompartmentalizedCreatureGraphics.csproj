@@ -1,0 +1,76 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>11</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
+    <RootNamespace>DynamicSlugGraphics</RootNamespace>
+    <AssemblyName>DynamicSlugGraphics</AssemblyName>
+  </PropertyGroup>
+
+	<PropertyGroup>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<Authors>marley-star7</Authors>
+		<Company>marley-star7</Company>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Reference Include="..\lib\Assembly-CSharp-firstpass.dll">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="..\lib\BepInEx.dll">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="..\lib\Fisobs.dll">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="..\lib\HOOKS-Assembly-CSharp.dll">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="..\lib\ImprovedInput.dll">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="..\lib\MonoMod.RuntimeDetour.dll">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="..\lib\MonoMod.Utils.dll">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="..\lib\MRCustom.dll">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="..\lib\PUBLIC-Assembly-CSharp.dll">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="..\lib\SlugBase.dll">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="..\lib\Unity.Mathematics.dll">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="..\lib\UnityEngine.CoreModule.dll">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="..\lib\UnityEngine.dll">
+		  <Private>false</Private>
+		</Reference>
+		<Reference Include="..\lib\UnityEngine.InputLegacyModule.dll">
+		  <Private>false</Private>
+		</Reference>
+	</ItemGroup>
+
+  <!-- PostBuild Target -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="Exists('$(RainWorldDir)')">
+    <Message Importance="high" Text="PostBuild target is running..." />
+    
+    <ItemGroup>
+      <Assets Include="$(ProjectDir)../assets/**/*.*" />
+    </ItemGroup>
+    
+    <Copy SourceFiles="@(Assets)" DestinationFiles="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/compartmentalizedcreaturegraphics/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/compartmentalizedcreaturegraphics/plugins" />
+  </Target>
+
+</Project>
