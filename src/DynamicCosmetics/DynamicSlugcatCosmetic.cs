@@ -1,6 +1,6 @@
-﻿namespace CompartmentalizedCreatureGraphics;
+﻿namespace CompartmentalizedCreatureGraphics.SlugcatCosmetics;
 
-public class SlugcatCosmetic : Cosmetic
+public class DynamicSlugcatCosmetic : DynamicCosmetic
 {
     public Player? player;
 

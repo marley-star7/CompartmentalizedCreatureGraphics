@@ -1,8 +1,11 @@
-﻿using RWCustom;
-using UnityEngine;
+﻿using UnityEngine;
+using RWCustom;
+using MoreSlugcats;
 
-using MRCustom.Animations;
 using MRCustom.Math;
+using SlugBase;
+
+using CompartmentalizedCreatureGraphics.SlugcatCosmetics;
 
 namespace CompartmentalizedCreatureGraphics;
 
@@ -28,6 +31,16 @@ public static partial class Hooks
         On.PlayerGraphics.ApplyPalette -= PlayerGraphics_ApplyPalette;
     }
 
+    private static void PlayerGraphics_Update(On.PlayerGraphics.orig_Update orig, PlayerGraphics self)
+    {
+        orig(self);
+    }
+
+    //
+    // IDRAWABLE
+    //
+
+    // The Golden Sheet of Sprite Bull-Sheet.
     /* 
     Sprite 0 = BodyA
     Sprite 1 = HipsA
@@ -43,122 +56,157 @@ public static partial class Hooks
     sprite 11 = pixel Mark of comunication
     */
 
-    private static void PlayerGraphics_Update(On.PlayerGraphics.orig_Update orig, PlayerGraphics self)
-    {
-        orig(self);
-    }
-
-    //
-    // IDRAWABLE
-    //
-
     private static void PlayerGraphics_InitiateSprites(On.PlayerGraphics.orig_InitiateSprites orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        var playerGraphicsData = playerGraphics.GetPlayerGraphicsCraftingData();
-        //-- MR7: TODO: might be able to remove this sLeaser storing, since cosmetics have direct refrence to it via the function calls...
-        playerGraphicsData.sLeaser = sLeaser;
+        var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
+        playerGraphicsCCGData.sLeaser = sLeaser;
         orig(playerGraphics, sLeaser, rCam);
 
-        if (!playerGraphicsData.dynamicSlugcatGraphicsEnabled)
-            return;
+        var player = playerGraphics.player;
 
-        //
-        // BUILD THE SCUG
-        //
-
-        //-- Hide the original face since we are using new one.
-        // We do this instead of just "removing" sprites[9] for compatability purposes.
-        var origFaceSprite = sLeaser.sprites[9];
-        origFaceSprite.color = Color.black;
-
-        var face = new SlugcatFace()
+        if (player.slugcatStats.name == SlugcatStats.Name.White)
         {
-            faceSpriteName = "crafter_Face"
-        };
-        playerGraphics.EquipCosmetic(face);
-
-        var leftEar = new SlugcatEar()
+            playerGraphicsCCGData.compartmentalizedGraphicsEnabled = true;
+            playerGraphicsCCGData.onInitiateSpritesDynamicCosmeticsToAdd = PlayerGraphicsCCGData.AddDefaultVanillaSurvivorDynamicCosmetics;
+        }
+        else if (player.slugcatStats.name == SlugcatStats.Name.Yellow)
         {
-            defaultPosOffsetFromHead = new Vector2(-4, 4),
-        };
-        playerGraphics.EquipCosmetic(leftEar);
-
-        var rightEar = new SlugcatEar()
+            playerGraphicsCCGData.compartmentalizedGraphicsEnabled = true;
+            playerGraphicsCCGData.onInitiateSpritesDynamicCosmeticsToAdd = PlayerGraphicsCCGData.AddDefaultVanillaSurvivorDynamicCosmetics;
+        }
+        else if (player.slugcatStats.name == SlugcatStats.Name.Red)
         {
-            defaultScaleX = -1,
-            defaultPosOffsetFromHead = new Vector2(4, 4)
-        };
-        playerGraphics.EquipCosmetic(rightEar);
+            playerGraphicsCCGData.compartmentalizedGraphicsEnabled = true;
+            playerGraphicsCCGData.onInitiateSpritesDynamicCosmeticsToAdd = PlayerGraphicsCCGData.AddDefaultVanillaSurvivorDynamicCosmetics;
+        }
+        else if (player.slugcatStats.name == SlugcatStats.Name.Night)
+        {
+            playerGraphicsCCGData.compartmentalizedGraphicsEnabled = true;
+            playerGraphicsCCGData.onInitiateSpritesDynamicCosmeticsToAdd = PlayerGraphicsCCGData.AddDefaultVanillaSurvivorDynamicCosmetics;
+        }
+        else if (ModManager.MSC)
+        {
+            if (player.SlugCatClass == MoreSlugcatsEnums.SlugcatStatsName.Saint)
+            {
 
+            }
+        }
+
+        if (playerGraphicsCCGData.compartmentalizedGraphicsEnabled)
+        {
+            playerGraphicsCCGData.onInitiateSpritesDynamicCosmeticsToAdd(playerGraphics);
+        }
     }
 
     private static void PlayerGraphics_DrawSprites(On.PlayerGraphics.orig_DrawSprites orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        var playerGraphicsData = playerGraphics.GetPlayerGraphicsCraftingData();
+        var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
+        playerGraphicsCCGData.sLeaser = sLeaser;
         orig(playerGraphics, sLeaser, rCam, timeStacker, camPos);
 
-        var playerData = playerGraphics.player.GetPlayerCraftingData();
-
-        if (!playerGraphics.player.IsCrafter())
+        //-- MR7: For compatability, only do slugcat compartmentalized graphics if it is enabled for this scug.
+        // By default, it is not.
+        if (!playerGraphicsCCGData.compartmentalizedGraphicsEnabled)
             return;
 
-        //-- TODO: when idle for a bit, he will close his eyes in peace.
+        //-- Replace / Hide the original sprites.
 
-        //
-        // WORKING ON PLAYER GRAPHICAL REWORK STUFF
-        //
+        // Replace original scug head with earless one.
+        playerGraphicsCCGData.OriginalHeadSprite.element = Futile.atlasManager.GetElementWithName("ccgSlugcatHeadA0");
 
-        playerGraphicsData.HeadSprite.element = Futile.atlasManager.GetElementWithName("slugcatHead_Head");
+        var player = playerGraphics.player;
 
-        //
-        // COSMETICS REQUIRED UPDATE THING
-        //
+        // Hide the original face since we are using new one.
+        // We do this instead of just "removing" sprites[9] for compatability purposes...
+        var origFaceSprite = sLeaser.sprites[9];
+        //origFaceSprite.element = Futile.atlasManager.GetElementWithName("marNothing");
+        origFaceSprite.color = Color.green;
 
-        for (int i = 0; i < playerGraphicsData.cosmetics.Count; i++)
+        playerGraphicsCCGData.facePos = new Vector2(origFaceSprite.x, origFaceSprite.y);
+        Vector2 dirLowerChunkToMainChunk = Custom.DirVec(playerGraphics.player.bodyChunks[1].pos, playerGraphics.player.mainBodyChunk.pos);
+
+        //-- MR7: If player is sideways and not in zero g, offset the face sprite rotation around the head relative to how horizontal.
+        // This is to fake the effect of how the current head turns sideways on horizontals such as when crouching or flipping.
+        // (It also makes flips look alot more weighty and rad)
+        if (player.room != null && player.EffectiveRoomGravity == 0f)
         {
-            playerGraphicsData.cosmetics[i].OnWearerDrawSprites(sLeaser, rCam, timeStacker, camPos);
+            playerGraphics.SetFaceAngle(0);
+        }
+        //-- MR7: Taken from source to calculate when using side angles.
+        else if ((player.bodyMode == Player.BodyModeIndex.Stand && player.input[0].x != 0) || player.bodyMode == Player.BodyModeIndex.Crawl)
+        {
+            var correctAngle = MarMath.NonzeroSign(dirLowerChunkToMainChunk.x) * 2;
+            playerGraphics.SetFaceAngle(correctAngle);
+        }
+        else
+        {
+            // The further the body is rotated sideways, swap the face angles to sideways.
+            switch (dirLowerChunkToMainChunk.x)
+            {
+                case > 0.9f:
+                    playerGraphics.SetFaceAngle(2);
+                    break;
+
+                case > 0.45f:
+                    playerGraphics.SetFaceAngle(2);
+                    break;
+
+                case < -0.9f:
+                    playerGraphics.SetFaceAngle(-2);
+                    break;
+
+                case < -0.45f:
+                    playerGraphics.SetFaceAngle(-2);
+                    break;
+
+                default:
+                    playerGraphics.SetFaceAngle(0);
+                    break;
+
+            }
+
+            playerGraphicsCCGData.faceRotation = Custom.VecToDeg(dirLowerChunkToMainChunk);
+            playerGraphicsCCGData.faceRotation -= dirLowerChunkToMainChunk.x * 90;
+
+            // Disabled cuz looks bad lol.
+            /*
+            float faceAngleAllowance = (dirLowerChunkToMainChunk.x + playerGraphics.lookDirection.x);
+            // Normal lookage, small change for cooool effect of slight head turn at high angles.
+            switch (faceAngleAllowance)
+            {
+                case > 0.9f:
+                    playerGraphics.SetFaceAngle(1);
+                    //playerGraphicsCCGData.facePos += new Vector2(2, -1);
+                    break;
+
+                case < -0.9f:
+                    playerGraphics.SetFaceAngle(-1);
+                    //playerGraphicsCCGData.facePos += new Vector2(-2, -1);
+                    break;
+
+                default:
+                    playerGraphics.SetFaceAngle(0);
+                    break;
+            }
+            */
+        }
+
+        // Finally draw all the cosmetics.
+        for (int i = 0; i < playerGraphicsCCGData.dynamicCosmetics.Count; i++)
+        {
+            playerGraphicsCCGData.dynamicCosmetics[i].OnWearerDrawSprites(sLeaser, rCam, timeStacker, camPos);
         }
     }
 
     private static void PlayerGraphics_ApplyPalette(On.PlayerGraphics.orig_ApplyPalette orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
+        var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
+        playerGraphicsCCGData.sLeaser = sLeaser;
         orig(playerGraphics, sLeaser, rCam, palette);
 
-        if (!playerGraphics.player.IsCrafter())
-            return;
-
-        //-- MR7: It's barely noticable, but basing the color off the room pallete makes it look a bit better.
-        // There is also potential issue that comes with a gray scug that depending on the room palette, especially fog color, they can become almost impossible to see.
-        // Tried making some code for this to find an optimal gray based both off the room palette, and fog color, for max readability.
-        // (and to help the colorblind folks out)
-
-        float idealLerpRatio = 0.6f;
-        float visibilityLerpRatioModifierFullStrength = 0.13f;
-
-        Color roomBlackColor = palette.GetColor(RoomPalette.ColorName.BlackColor);
-        Color roomFogColor = palette.GetColor(RoomPalette.ColorName.FogColor);
-
-        Color idealGray = Color.Lerp(roomBlackColor, Color.white, idealLerpRatio);
-
-        float adjustmentIfTooCloseRatio;
-        if (idealGray.grayscale < roomFogColor.grayscale)
+        for (int i = 0; i < playerGraphicsCCGData.dynamicCosmetics.Count; i++)
         {
-            //Plugin.Logger.LogDebug("Ideal gray is darker than room fog color gray, lightening the gray even further.");
-            float inverseLerp = Mathf.InverseLerp(0, roomFogColor.grayscale, idealGray.grayscale);
-            adjustmentIfTooCloseRatio = inverseLerp * visibilityLerpRatioModifierFullStrength * 1.5f; //- MR7: Multiply a bit more since we need to put in extra work to get out of the darker section.
-            idealGray = Color.Lerp(roomBlackColor, Color.white, idealLerpRatio + adjustmentIfTooCloseRatio);
-        }
-        else
-        {
-            //Plugin.Logger.LogDebug("Ideal gray is lighter than room fog color gray, lighter the gray further.");
-            float inverseLerp = Mathf.InverseLerp(roomFogColor.grayscale, Color.white.grayscale, idealGray.grayscale);
-            adjustmentIfTooCloseRatio = (1 - inverseLerp) * visibilityLerpRatioModifierFullStrength; // 1 - 0 because the inverse lerp here is closest to ideal gray at 0
-            idealGray = Color.Lerp(roomBlackColor, Color.white, idealLerpRatio + adjustmentIfTooCloseRatio);
-        }
-
-        for (int i = 0; i < sLeaser.sprites.Length; i++)
-        {
-            sLeaser.sprites[i].color = idealGray;
+            playerGraphicsCCGData.dynamicCosmetics[i].OnWearerApplyPalette(sLeaser, rCam, in palette);
         }
     }
 }

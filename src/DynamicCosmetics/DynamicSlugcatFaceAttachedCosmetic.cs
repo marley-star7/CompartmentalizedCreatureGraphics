@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace CompartmentalizedCreatureGraphics;
+namespace CompartmentalizedCreatureGraphics.SlugcatCosmetics;
 
-public class SlugcatFaceCosmetic : SlugcatCosmetic
+public class DynamicSlugcatFaceAttachedCosmetic : DynamicSlugcatCosmetic
 {
     public struct FaceSpriteCosmetic
     {
@@ -27,7 +27,7 @@ public class SlugcatFaceCosmetic : SlugcatCosmetic
     public FaceSpriteCosmetic[] behindHeadSprites;
     public FaceSpriteCosmetic[] inFrontOfFaceSprites;
 
-    public SlugcatFaceCosmetic()
+    public DynamicSlugcatFaceAttachedCosmetic()
     {
         this.behindHeadSprites = new FaceSpriteCosmetic[0];
         this.inFrontOfFaceSprites = new FaceSpriteCosmetic[0];
@@ -61,25 +61,24 @@ public class SlugcatFaceCosmetic : SlugcatCosmetic
             return;
 
         var playerGraphics = (PlayerGraphics)player.graphicsModule;
-        var playerGraphicsData = playerGraphics.GetPlayerGraphicsCraftingData();
+        var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
 
-        if (playerGraphicsData.sLeaser == null)
+        if (playerGraphicsCCGData.sLeaser == null)
             return;
 
         //-- MR7: To achieve the effect of being behind we make get an offset from face angle different to position the head.
-        var offsetFaceAngleForBehindHeadPosX = playerGraphicsData.OriginalFaceSprite.x - playerGraphicsData.HeadSprite.x;
-        var offsetFaceAngleForBehindHeadPosY = playerGraphicsData.OriginalFaceSprite.y - playerGraphicsData.HeadSprite.y;
+        var offsetFaceAngleForBehindHeadPosX = playerGraphicsCCGData.OriginalFaceSprite.x - playerGraphicsCCGData.OriginalHeadSprite.x;
+        var offsetFaceAngleForBehindHeadPosY = playerGraphicsCCGData.OriginalFaceSprite.y - playerGraphicsCCGData.OriginalHeadSprite.y;
 
-        var noEmotionBaseFaceSpriteAngle = playerGraphicsData.FaceAngle;
         //-- Loop through and update all sprites behind the head + in front of face match the face sprites sprite.
         for (int i = 0; i < behindHeadSprites.Length; i++)
         {
-            sLeaser.sprites[i].x = playerGraphicsData.HeadSprite.x - offsetFaceAngleForBehindHeadPosX * behindHeadSprites[i].distanceFromHeadModifier;
-            sLeaser.sprites[i].y = playerGraphicsData.HeadSprite.y - offsetFaceAngleForBehindHeadPosY * behindHeadSprites[i].distanceFromHeadModifier;
-            sLeaser.sprites[i].scaleX = playerGraphicsData.HeadSprite.scaleX;
-            sLeaser.sprites[i].scaleY = playerGraphicsData.HeadSprite.scaleY;
-            sLeaser.sprites[i].rotation = playerGraphicsData.OriginalFaceSprite.rotation;
-            sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(behindHeadSprites[i].name + noEmotionBaseFaceSpriteAngle);
+            sLeaser.sprites[i].x = playerGraphicsCCGData.OriginalHeadSprite.x - offsetFaceAngleForBehindHeadPosX * behindHeadSprites[i].distanceFromHeadModifier;
+            sLeaser.sprites[i].y = playerGraphicsCCGData.OriginalHeadSprite.y - offsetFaceAngleForBehindHeadPosY * behindHeadSprites[i].distanceFromHeadModifier;
+            sLeaser.sprites[i].scaleX = playerGraphicsCCGData.OriginalHeadSprite.scaleX;
+            sLeaser.sprites[i].scaleY = playerGraphicsCCGData.OriginalHeadSprite.scaleY;
+            sLeaser.sprites[i].rotation = playerGraphicsCCGData.faceRotation;
+            sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(behindHeadSprites[i].name + playerGraphicsCCGData.faceAngle);
             sLeaser.sprites[i].color = behindHeadSprites[i].Color();
         }
 
@@ -87,12 +86,12 @@ public class SlugcatFaceCosmetic : SlugcatCosmetic
         {
             var currentSprite = sLeaser.sprites[behindHeadSprites.Length + i];
 
-            currentSprite.x = playerGraphicsData.HeadSprite.x + offsetFaceAngleForBehindHeadPosX * inFrontOfFaceSprites[i].distanceFromHeadModifier;
-            currentSprite.y = playerGraphicsData.HeadSprite.y + offsetFaceAngleForBehindHeadPosY * inFrontOfFaceSprites[i].distanceFromHeadModifier;
-            currentSprite.scaleX = playerGraphicsData.HeadSprite.scaleX;
-            currentSprite.scaleY = playerGraphicsData.HeadSprite.scaleY;
-            currentSprite.rotation = playerGraphicsData.OriginalFaceSprite.rotation;
-            currentSprite.element = Futile.atlasManager.GetElementWithName(inFrontOfFaceSprites[i].name + noEmotionBaseFaceSpriteAngle);
+            currentSprite.x = playerGraphicsCCGData.OriginalHeadSprite.x + offsetFaceAngleForBehindHeadPosX * inFrontOfFaceSprites[i].distanceFromHeadModifier;
+            currentSprite.y = playerGraphicsCCGData.OriginalHeadSprite.y + offsetFaceAngleForBehindHeadPosY * inFrontOfFaceSprites[i].distanceFromHeadModifier;
+            currentSprite.scaleX = playerGraphicsCCGData.OriginalHeadSprite.scaleX;
+            currentSprite.scaleY = playerGraphicsCCGData.OriginalHeadSprite.scaleY;
+            currentSprite.rotation = playerGraphicsCCGData.faceRotation;
+            currentSprite.element = Futile.atlasManager.GetElementWithName(inFrontOfFaceSprites[i].name + playerGraphicsCCGData.faceAngle);
             currentSprite.color = inFrontOfFaceSprites[i].Color();
         }
     }
@@ -115,18 +114,18 @@ public class SlugcatFaceCosmetic : SlugcatCosmetic
         if (player == null)
             return;
 
-        var playerGraphicsData = ((PlayerGraphics)player.graphicsModule).GetPlayerGraphicsCraftingData();
-        if (playerGraphicsData.sLeaser != null)
+        var playerGraphicsCCGData = ((PlayerGraphics)player.graphicsModule).GetPlayerGraphicsCCGData();
+        if (playerGraphicsCCGData.sLeaser != null)
         {
             // Order of sprites positioning in front of each other is through the array back to front.
 
-            sLeaser.sprites[0].MoveBehindOtherNode(playerGraphicsData.HeadSprite);
+            sLeaser.sprites[0].MoveBehindOtherNode(playerGraphicsCCGData.OriginalHeadSprite);
             for (int i = 1; i < behindHeadSprites.Length; i++)
             {
                 sLeaser.sprites[i].MoveBehindOtherNode(sLeaser.sprites[i - 1]);
             }
 
-            sLeaser.sprites[0].MoveInFrontOfOtherNode(playerGraphicsData.OriginalFaceSprite);
+            sLeaser.sprites[0].MoveInFrontOfOtherNode(playerGraphicsCCGData.dynamicCosmetics[playerGraphicsCCGData.dynamicCosmetics.Count - 2].LastSprite);
             for (int i = 1; i < behindHeadSprites.Length + inFrontOfFaceSprites.Length; i++)
             {
                 sLeaser.sprites[i].MoveInFrontOfOtherNode(sLeaser.sprites[i - 1]);

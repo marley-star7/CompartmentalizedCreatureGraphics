@@ -2,11 +2,63 @@
 using RWCustom;
 
 using System.Runtime.CompilerServices;
+using CompartmentalizedCreatureGraphics.SlugcatCosmetics;
 
 namespace CompartmentalizedCreatureGraphics;
 
-public class PlayerGraphicsCraftingData : GraphicsModuleCCGData
+public class PlayerGraphicsCCGData : GraphicsModuleCCGData
 {
+    //
+    // DEFAULT CCG PLACEMENT VALUES FOR BUILDING SCUG.
+    //
+
+    //-- MR7: 1 Value = 1 pixel, it is all pixel perfect.
+
+    public static readonly float DefaultVanillaFaceSnapValue = 20f; //-- MR7: Found this is a good number to prevent weird angles, this or 10.
+
+    public static readonly Vector2[] DefaultVanillaLeftEarAnglePositions = new Vector2[]
+    {
+        new Vector2(-4, 4),
+    };
+
+    public static readonly Vector2[] DefaultVanillaRightEarAnglePositions = new Vector2[]
+    {
+        new Vector2(4, 4),
+    };
+
+    //--MR7: 17 by 17, fix the it.
+    public static readonly Vector2 DefaultVanillaLeftEyePosition = new Vector2(-4f, 3f);
+    public static readonly Vector2[] DefaultVanillaLeftEyeAnglePositions = new Vector2[]
+    {
+        // Right commented values are what is added to the center ( default )
+        DefaultVanillaLeftEyePosition + new Vector2(-3f, -2),
+        DefaultVanillaLeftEyePosition + new Vector2(-2, -1),
+        DefaultVanillaLeftEyePosition,
+        DefaultVanillaLeftEyePosition + new Vector2(2, -1),
+        DefaultVanillaLeftEyePosition + new Vector2(5f, -2)
+    };
+
+    public static readonly Vector2 DefaultVanillaRightEyePosition = new Vector2(4f, 3f);
+    public static readonly Vector2[] DefaultVanillaRightEyeAnglePositions = new Vector2[]
+    {
+        // Right commented values are what is added to the center ( default )
+        DefaultVanillaRightEyePosition + new Vector2(-5f, -2),
+        DefaultVanillaRightEyePosition + new Vector2(-2, -1),
+        DefaultVanillaRightEyePosition,
+        DefaultVanillaRightEyePosition + new Vector2(2, -1),
+        DefaultVanillaRightEyePosition + new Vector2(3f, -2)
+    };
+
+    public static readonly Vector2[] DefaultVanillaNoseAnglePositions = new Vector2[]
+    {
+        new Vector2(-6f, -2),
+        new Vector2(-3, -1),
+        new Vector2(0, 0),
+        new Vector2(3, -1),
+        new Vector2(6f, -2),
+    };
+
+
     // The Magic List of All Sprites
     /* 
     Sprite 0 = BodyA
@@ -23,9 +75,7 @@ public class PlayerGraphicsCraftingData : GraphicsModuleCCGData
     sprite 11 = pixel Mark of comunication
     */
 
-    public string FaceAngle = "A0";
-
-    public FSprite HeadSprite
+    public FSprite OriginalHeadSprite
     {
         get { return sLeaser.sprites[3]; }
     }
@@ -34,28 +84,157 @@ public class PlayerGraphicsCraftingData : GraphicsModuleCCGData
         get { return sLeaser.sprites[9]; }
     }
 
-    public SlugcatFace SlugcatFace;
+    public int faceAngleNum = 0;
+    public int faceSide
+    {
+        get { return Math.Sign(faceAngleNum); }
+    }
+    public string faceAngle = "A0";
+    public string faceAngleAsymmetrical = "A0";
 
     public WeakReference<PlayerGraphics> playerGraphicsRef;
 
-    public PlayerGraphicsCraftingData(PlayerGraphics playerGraphicsRef) : base (playerGraphicsRef)
+    public PlayerGraphicsCCGData(PlayerGraphics playerGraphicsRef) : base (playerGraphicsRef)
     {
         this.playerGraphicsRef = new WeakReference<PlayerGraphics>(playerGraphicsRef);
     }
 
+    public Vector2 facePos = Vector2.zero;
+    public float faceRotation = 0;
+    public float snappedFaceRotationSnapDegrees = 0;
+
+    /// <summary>
+    /// Triggered when the angle of the face is changed.
+    /// </summary>
+    public event Action<string> OnFaceAngleChanged;
+
     //
-    // DATA FOR THE THINGY GRAPHICS SLUG THINGY
+    // SLUGCAT BUILDING
     //
 
-    public bool dynamicSlugcatGraphicsEnabled = false;
-    public float headFaceRotationDegrees = 0;
+    public delegate void SlugcatDynamicCosmeticsAdder(PlayerGraphics playerGraphics);
+
+    public SlugcatDynamicCosmeticsAdder onInitiateSpritesDynamicCosmeticsToAdd = AddDefaultVanillaSurvivorDynamicCosmetics;
+
+    public static void AddDefaultVanillaSlugcatDynamicLeftEarCosmetic(PlayerGraphics playerGraphics)
+    {
+        // LEFT EAR
+        playerGraphics.AddDynamicCosmetic(
+            new DynamicSlugcatEar()
+            {
+                spriteName = "ccgSlugcatEar",
+                defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaLeftEarAnglePositions,
+                side = -1,
+                defaultScaleX = 1,
+            }
+        );
+    }
+
+    public static void AddDefaultVanillaSlugcatDynamicRightEarCosmetic(PlayerGraphics playerGraphics)
+    {
+        // RIGHT EAR
+        playerGraphics.AddDynamicCosmetic(new DynamicSlugcatEar()
+            {
+                spriteName = "ccgSlugcatEar",
+                defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaRightEarAnglePositions,
+                side = 1,
+                defaultScaleX = -1,
+            }
+        );
+    }
+
+    public static void AddDefaultVanillaSlugcatDynamicLeftEyeCosmetic(PlayerGraphics playerGraphics)
+    {
+        // LEFT EYE
+        playerGraphics.AddDynamicCosmetic(new DynamicSlugcatEye()
+            {
+                spriteName = "ccgSlugcatEye",
+                defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaLeftEyeAnglePositions,
+                side = -1,
+                defaultScaleX = -1,
+                snapValue = DefaultVanillaFaceSnapValue,
+            }
+        );
+    }
+
+    public static void AddDefaultVanillaSlugcatDynamicRightEyeCosmetic(PlayerGraphics playerGraphics)
+    {
+        // RIGHT EYE
+        playerGraphics.AddDynamicCosmetic(new DynamicSlugcatEye()
+            {
+                spriteName = "ccgSlugcatEye",
+                defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaRightEyeAnglePositions,
+                side = 1,
+                defaultScaleX = 1,
+                snapValue = DefaultVanillaFaceSnapValue,
+            }
+        );
+    }
+
+    public static void AddDefaultVanillaSlugcatDynamicNoseCosmetic(PlayerGraphics playerGraphics)
+    {
+        // NOSE
+        playerGraphics.AddDynamicCosmetic(new DynamicSlugcatFaceCosmetic()
+            {
+                spriteName = "ccgSlugcatNose",
+                defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaNoseAnglePositions,
+                defaultScaleX = 1,
+                snapValue = DefaultVanillaFaceSnapValue,
+            }
+        );
+    }
+
+    public static void AddDefaultVanillaSurvivorDynamicCosmetics(PlayerGraphics playerGraphics)
+    {
+        var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
+        //
+        // BUILD THE COMPARTMENTALIZED SCUG
+        //
+
+        AddDefaultVanillaSlugcatDynamicLeftEarCosmetic(playerGraphics);
+        AddDefaultVanillaSlugcatDynamicRightEarCosmetic(playerGraphics);
+        AddDefaultVanillaSlugcatDynamicLeftEyeCosmetic(playerGraphics);
+        AddDefaultVanillaSlugcatDynamicRightEyeCosmetic(playerGraphics);
+        AddDefaultVanillaSlugcatDynamicNoseCosmetic(playerGraphics);
+    }
 }
 
-public static class PlayerGraphicsCraftingExtension
+public static class PlayerGraphicsCCGExtension
 {
+    /// <summary>
+    /// Dir char set to R for right, or L for left, leave empty for nothing.
+    /// </summary>
+    /// <param name="playerGraphics"></param>
+    /// <param name="angleNum"></param>
+    /// <param name="dirChar"></param>
     public static void SetFaceAngle(this PlayerGraphics playerGraphics, int angleNum)
     {
-        playerGraphics.GetPlayerGraphicsCraftingData().FaceAngle = ("A" + angleNum);
+        var ccgData = playerGraphics.GetPlayerGraphicsCCGData();
+        ccgData.faceAngleNum = angleNum;
+
+        switch (angleNum)
+        {
+            case -2:
+                ccgData.faceAngle = "A2";
+                ccgData.faceAngleAsymmetrical = "-A2";
+                break;
+            case -1:
+                ccgData.faceAngle = "A1";
+                ccgData.faceAngleAsymmetrical = "-A1";
+                break;
+            case 0:
+                ccgData.faceAngle = "A0";
+                ccgData.faceAngleAsymmetrical = "A0";
+                break;
+            case 1:
+                ccgData.faceAngle = "A1";
+                ccgData.faceAngleAsymmetrical = "+A1";
+                break;
+            case 2:
+                ccgData.faceAngle = "A2";
+                ccgData.faceAngleAsymmetrical = "+A2";
+                break;
+        }
     }
 
     /// <summary>
@@ -83,7 +262,6 @@ public static class PlayerGraphicsCraftingExtension
         return faceSpriteName;
     }
 
-
     /// <summary>
     /// Returns the name of the face sprite with correct data for angle without blinking and dead faces name.
     /// Useful for if only need the angle for a cosmetic.
@@ -103,7 +281,7 @@ public static class PlayerGraphicsCraftingExtension
         return faceSpriteName;
     }
 
-    private static readonly ConditionalWeakTable<PlayerGraphics, PlayerGraphicsCraftingData> craftingDataConditionalWeakTable = new();
+    private static readonly ConditionalWeakTable<PlayerGraphics, PlayerGraphicsCCGData> craftingDataConditionalWeakTable = new();
 
-    public static PlayerGraphicsCraftingData GetPlayerGraphicsCraftingData(this PlayerGraphics playerGraphics) => (PlayerGraphicsCraftingData) GraphicsModuleCraftingExtension.craftingDataConditionalWeakTable.GetValue(playerGraphics, _ => new PlayerGraphicsCraftingData(playerGraphics));
+    public static PlayerGraphicsCCGData GetPlayerGraphicsCCGData(this PlayerGraphics playerGraphics) => (PlayerGraphicsCCGData) GraphicsModuleCraftingExtension.craftingDataConditionalWeakTable.GetValue(playerGraphics, _ => new PlayerGraphicsCCGData(playerGraphics));
 }

@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace CompartmentalizedCreatureGraphics;
+namespace CompartmentalizedCreatureGraphics.SlugcatCosmetics;
 
-public class SlugcatHeadCosmetic : SlugcatCosmetic
+public class DynamicSlugcatHeadAttachedCosmetic : DynamicSlugcatCosmetic
 {
     public int totalSpritesLength
     {
@@ -12,7 +12,7 @@ public class SlugcatHeadCosmetic : SlugcatCosmetic
     public string[] behindHeadSpritesNames;
     public string[] inFrontOfHeadSpritesNames;
 
-    public SlugcatHeadCosmetic()
+    public DynamicSlugcatHeadAttachedCosmetic()
     {
         this.behindHeadSpritesNames = new string[0];
         this.inFrontOfHeadSpritesNames = new string[0];
@@ -39,7 +39,7 @@ public class SlugcatHeadCosmetic : SlugcatCosmetic
         if (player == null)
             return;
 
-        var graphicsModuleData = ((PlayerGraphics)player.graphicsModule).GetGraphicsModuleCraftingData();
+        var graphicsModuleData = ((PlayerGraphics)player.graphicsModule).GetGraphicsModuleCCGData();
 
         //-- No sLeaser made yet, return.
         if (graphicsModuleData.sLeaser == null)
@@ -85,10 +85,10 @@ public class SlugcatHeadCosmetic : SlugcatCosmetic
         if (player == null)
             return;
 
-        var playerGraphicsData = ((PlayerGraphics)player.graphicsModule).GetGraphicsModuleCraftingData();
-        if (playerGraphicsData.sLeaser != null)
+        var playerGraphicsCCGData = ((PlayerGraphics)player.graphicsModule).GetGraphicsModuleCCGData();
+        if (playerGraphicsCCGData.sLeaser != null)
         {
-            FSprite playerHeadSprite = playerGraphicsData.sLeaser.sprites[3];
+            FSprite playerHeadSprite = playerGraphicsCCGData.sLeaser.sprites[3];
 
             // First (behind/front) sprite is positioned directly (behind/in front) of the player head sprite.
             // Meanwhile continued sprites in the array are positioned (behind/in front of) their previous.
@@ -99,7 +99,7 @@ public class SlugcatHeadCosmetic : SlugcatCosmetic
                 sLeaser.sprites[i].MoveBehindOtherNode(sLeaser.sprites[i - 1]);
             }
 
-            sLeaser.sprites[0].MoveInFrontOfOtherNode(playerHeadSprite);
+            sLeaser.sprites[0].MoveInFrontOfOtherNode(playerGraphicsCCGData.dynamicCosmetics[playerGraphicsCCGData.dynamicCosmetics.Count - 1].LastSprite);
             for (int i = 1; i < behindHeadSpritesNames.Length + inFrontOfHeadSpritesNames.Length; i++)
             {
                 sLeaser.sprites[i].MoveInFrontOfOtherNode(sLeaser.sprites[i - 1]);

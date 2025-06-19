@@ -3,36 +3,17 @@ using RWCustom;
 
 using MRCustom.Math;
 
-namespace CompartmentalizedCreatureGraphics;
+namespace CompartmentalizedCreatureGraphics.SlugcatCosmetics;
 
-public class SlugcatEar : SlugcatCosmetic
+public class DynamicSlugcatEar : DynamicSlugcatFaceCosmetic
 {
     public Color earColor;
-
-    public int defaultScaleX = 1;
 
     public Vector2 pos;
     public Vector2 lastPos;
     public float rad = 5f;
 
-    public Vector2 defaultPosOffsetFromHead = new Vector2(-5, 5);
-
-    public FSprite EarSprite
-    {
-        get { return sLeaser.sprites[0]; }
-    }
-
     private SharedPhysics.TerrainCollisionData scratchTerrainCollisionData;
-
-    public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
-    {
-        this.sLeaser = sLeaser;
-
-        sLeaser.sprites = new FSprite[1];
-        sLeaser.sprites[0] = new FSprite("slugcatEar0", true);
-
-        AddToContainer(sLeaser, rCam, null);
-    }
 
     private float GetPlayerThreat()
     {
@@ -50,43 +31,24 @@ public class SlugcatEar : SlugcatCosmetic
     
     public override void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        if (player == null)
-            return;
+        base.OnWearerDrawSprites(wearerSLeaser, rCam, timeStacker, camPos);
 
         var playerGraphics = (PlayerGraphics)player.graphicsModule;
-        var playerGraphicsData = playerGraphics.GetPlayerGraphicsCraftingData();
-
-        if (playerGraphicsData.sLeaser == null)
-            return;
+        var playerGraphicsData = playerGraphics.GetPlayerGraphicsCCGData();
 
         //-- MR7: To achieve the effect of being behind we make get an offset from face angle different to position the head.
-        var offsetFaceAngleForBehindHeadPosX = playerGraphicsData.OriginalFaceSprite.x - playerGraphicsData.HeadSprite.x;
-        var offsetFaceAngleForBehindHeadPosY = playerGraphicsData.OriginalFaceSprite.y - playerGraphicsData.HeadSprite.y;
+        var offsetFaceAngleForBehindHeadPosX = playerGraphicsData.OriginalFaceSprite.x - playerGraphicsData.OriginalHeadSprite.x;
+        var offsetFaceAngleForBehindHeadPosY = playerGraphicsData.OriginalFaceSprite.y - playerGraphicsData.OriginalHeadSprite.y;
         //-- Loop through and update all sprites behind the head + in front of face match the face sprites sprite.
         for (int i = 0; i < sLeaser.sprites.Length; i++)
         {
-            sLeaser.sprites[i].rotation = playerGraphicsData.OriginalFaceSprite.rotation;
             sLeaser.sprites[i].color = earColor;
         }
 
         Vector2 dirLowerChunkToMainChunk = Custom.DirVec(player.bodyChunks[1].pos, player.mainBodyChunk.pos);
 
-        EarSprite.scaleX = defaultScaleX;
-
-        // If we are moving and facing far a direction, make both ears rotate that way
-        //-- MR7: Disabled for now, implement later, was being a pain.
-        /*
-        if (Math.Abs(playerGraphics.lookDirection.x) > 0.7f)
-        {
-            var signLookDir = MarMath.NonzeroSign(playerGraphics.lookDirection.x);
-            signHeadFaceDir = signLookDir;
-
-            EarSprite.scaleX = signLookDir;
-        }
-        */
-
         //-- MR7: 1 distance = 1 pixel in RW, and base ears are positioned 5 pixels out.
-        var earPosOffset = defaultPosOffsetFromHead;
+        var earPosOffset = posOffset;
         float earPosAroundHeadRotationDegreesOffset = 0f;
 
         float earRotationOffset = 0f;
@@ -108,14 +70,14 @@ public class SlugcatEar : SlugcatCosmetic
         }
 
         pos = new Vector2(
-            playerGraphicsData.HeadSprite.x + earPosOffset.x,
-            playerGraphicsData.HeadSprite.y + earPosOffset.y
+            playerGraphicsData.OriginalHeadSprite.x + earPosOffset.x,
+            playerGraphicsData.OriginalHeadSprite.y + earPosOffset.y
             );
 
-        var earFinalRotation = playerGraphicsData.HeadSprite.rotation + earRotationOffset;
+        var earFinalRotation = Custom.VecToDeg(dirLowerChunkToMainChunk) + earRotationOffset;
 
         // Rotate the ears based on their offset around the heads center point.
-        earPosOffset = Custom.RotateAroundVector(earPosOffset, Vector2.zero, playerGraphicsData.HeadSprite.rotation + earPosAroundHeadRotationDegreesOffset);
+        //earPosOffset = Custom.RotateAroundVector(earPosOffset, Vector2.zero, playerGraphicsData.OriginalHeadSprite.rotation + earPosAroundHeadRotationDegreesOffset);
 
         // TODO: get this working.
         /*
@@ -130,17 +92,12 @@ public class SlugcatEar : SlugcatCosmetic
         }
         */
 
-        EarSprite.x = pos.x;
-        EarSprite.y = pos.y;
-        EarSprite.rotation = earFinalRotation;
-        EarSprite.color = playerGraphicsData.HeadSprite.color;
+        Sprite.x = pos.x;
+        Sprite.y = pos.y;
+        Sprite.rotation = earFinalRotation;
+        Sprite.color = playerGraphicsData.OriginalHeadSprite.color;
 
         lastPos = pos;
-    }
-
-    public override void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
-    {
-
     }
 
     public override void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
@@ -156,10 +113,10 @@ public class SlugcatEar : SlugcatCosmetic
         if (player == null)
             return;
 
-        var playerGraphicsData = ((PlayerGraphics)player.graphicsModule).GetPlayerGraphicsCraftingData();
+        var playerGraphicsData = ((PlayerGraphics)player.graphicsModule).GetPlayerGraphicsCCGData();
         if (playerGraphicsData.sLeaser != null)
         {
-            sLeaser.sprites[0].MoveBehindOtherNode(playerGraphicsData.HeadSprite);
+            sLeaser.sprites[0].MoveBehindOtherNode(playerGraphicsData.OriginalHeadSprite);
         }
     }
 }

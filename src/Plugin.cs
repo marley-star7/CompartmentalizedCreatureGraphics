@@ -11,12 +11,13 @@ namespace CompartmentalizedCreatureGraphics;
 // 2. BepInDependency.DependencyFlags.SoftDependency - The other mod doesn't need to be installed, but if it is, it should load before yours.
 //[BepInDependency("author.some_other_mods_guid", BepInDependency.DependencyFlags.HardDependency)]
 
-[BepInDependency("marleystar7.marcustom", BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency("marley-star7.marcustom", BepInDependency.DependencyFlags.HardDependency)]
+[BepInDependency("slime-cubed.slugbase", BepInDependency.DependencyFlags.SoftDependency)]
 
 [BepInPlugin(ID, NAME, VERSION)]
 sealed class Plugin : BaseUnityPlugin
 {
-    public const string ID = "marleystar7.ccg"; //-- This should be the same as the id in modinfo.json!
+    public const string ID = "marley-star7.ccg"; //-- This should be the same as the id in modinfo.json!
     public const string NAME = "Compartmentalized Creature Graphics"; //-- This should be a human-readable version of your mod's name. This is used for log files and also displaying which mods get loaded. In general, it's a good idea to match this with your modinfo.json as well.
     public const string VERSION = "0.0.1"; //-- This follows semantic versioning. For more information, see https://semver.org/ - again, match what you have in modinfo.json
 

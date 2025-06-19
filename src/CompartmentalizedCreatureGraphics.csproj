@@ -6,8 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
-    <RootNamespace>DynamicSlugGraphics</RootNamespace>
-    <AssemblyName>DynamicSlugGraphics</AssemblyName>
+    <RootNamespace>CompartmentalizedCreatureGraphics</RootNamespace>
+    <AssemblyName>CompartmentalizedCreatureGraphics</AssemblyName>
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -18,46 +18,46 @@
 
 	<ItemGroup>
 		<Reference Include="..\lib\Assembly-CSharp-firstpass.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 		<Reference Include="..\lib\BepInEx.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 		<Reference Include="..\lib\Fisobs.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 		<Reference Include="..\lib\HOOKS-Assembly-CSharp.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 		<Reference Include="..\lib\ImprovedInput.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 		<Reference Include="..\lib\MonoMod.RuntimeDetour.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 		<Reference Include="..\lib\MonoMod.Utils.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 		<Reference Include="..\lib\MRCustom.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 		<Reference Include="..\lib\PUBLIC-Assembly-CSharp.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 		<Reference Include="..\lib\SlugBase.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 		<Reference Include="..\lib\Unity.Mathematics.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 		<Reference Include="..\lib\UnityEngine.CoreModule.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 		<Reference Include="..\lib\UnityEngine.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 		<Reference Include="..\lib\UnityEngine.InputLegacyModule.dll">
-		  <Private>false</Private>
+    <Private>false</Private>
 		</Reference>
 	</ItemGroup>
 
@@ -69,8 +69,14 @@
       <Assets Include="$(ProjectDir)../assets/**/*.*" />
     </ItemGroup>
     
-    <Copy SourceFiles="@(Assets)" DestinationFiles="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/compartmentalizedcreaturegraphics/%(RecursiveDir)%(Filename)%(Extension)" />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/compartmentalizedcreaturegraphics/plugins" />
+    <Copy SourceFiles="@(Assets)" DestinationFiles="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/ccg/%(RecursiveDir)%(Filename)%(Extension)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(RainWorldDir)/RainWorld_Data/StreamingAssets/mods/ccg/plugins" />
+  </Target>
+
+  <!-- Custom Copy to slugcrafting\lib on Debug build -->
+  <Target Name="CopyToSlugcraftingLib" AfterTargets="PostBuildEvent">
+    <Message Importance="high" Text="Copying DLL to slugcrafting\lib..." />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="C:\Users\marle\source\repos\slugcrafting\lib" />
   </Target>
 
 </Project>

@@ -1,12 +1,12 @@
 {
-	"id": "marleystar7.ccg",
-	"name": "Compartmentalized Creature Graphics",
+	"id": "marley-star7.ccg",
+	"name": "CCG (Compartmentalized Creature Graphics)",
     "version": "0.0.1",
-	"authors": "marleystar7",
-	"description": "A mod to compartmentalize slugcat's graphics, allowing for more dynamic animation and cosmetics!",
-	"requirements": [ "marleystar7.marcustom" ],
+	"authors": "marley-star7",
+	"description": "A mod to compartmentalize slugcat's graphics, allowing for easier cosmetics and animations",
+	"requirements": [ "marley-star7.marcustom" ],
 	"requirements_names": [ "MRCustom" ],
-	"priorities": [ "moreslugcats" ],
+	"priorities": [ "slime-cubed.slugbase", "moreslugcats" ],
 	"tags": [ "Game Mechanics", "Items" ],
 	"checksum_override_version": false
 }
