@@ -3,6 +3,7 @@ using RWCustom;
 
 using MRCustom.Math;
 using System.Xml.Linq;
+using CompartmentalizedCreatureGraphics.Extensions;
 
 namespace CompartmentalizedCreatureGraphics.SlugcatCosmetics;
 

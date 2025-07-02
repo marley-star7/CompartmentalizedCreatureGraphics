@@ -1,24 +1,18 @@
-﻿using UnityEngine;
-using RWCustom;
+﻿namespace CompartmentalizedCreatureGraphics.Hooks;
 
-namespace CompartmentalizedCreatureGraphics;
-
-public static partial class Hooks
+public static class PlayerHooks
 {
-    // Add hooks
-    private static void ApplyPlayerHooks()
+    internal static void ApplyHooks()
     {
         On.Player.Collide += Player_Collide;
         On.Player.TerrainImpact += Player_TerrainImpact;
     }
 
-    // Add hooks
-    private static void RemovePlayerHooks()
+    internal static void RemoveHooks()
     {
         On.Player.Collide -= Player_Collide;
         On.Player.TerrainImpact -= Player_TerrainImpact;
     }
-
 
     private static void Player_TerrainImpact(On.Player.orig_TerrainImpact orig, Player player, int chunk, IntVector2 direction, float speed, bool firstContact)
     {

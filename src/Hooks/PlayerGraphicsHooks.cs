@@ -1,18 +1,11 @@
-﻿using UnityEngine;
-using RWCustom;
-using MoreSlugcats;
+﻿using CompartmentalizedCreatureGraphics.Extensions;
 
-using MRCustom.Math;
-using SlugBase;
+namespace CompartmentalizedCreatureGraphics.Hooks;
 
-using CompartmentalizedCreatureGraphics.SlugcatCosmetics;
-
-namespace CompartmentalizedCreatureGraphics;
-
-public static partial class Hooks
+public static class PlayerGraphicsHooks
 {
     //-- Add hooks
-    internal static void ApplyPlayerGraphicsHooks()
+    internal static void ApplyHooks()
     {
         On.PlayerGraphics.Update += PlayerGraphics_Update;
 
@@ -22,7 +15,7 @@ public static partial class Hooks
     }
 
     //-- Remove hooks
-    internal static void RemovePlayerGraphicsHooks()
+    internal static void RemoveHooks()
     {
         On.PlayerGraphics.Update -= PlayerGraphics_Update;
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using CompartmentalizedCreatureGraphics.Extensions;
+using UnityEngine;
 
 namespace CompartmentalizedCreatureGraphics.SlugcatCosmetics;
 

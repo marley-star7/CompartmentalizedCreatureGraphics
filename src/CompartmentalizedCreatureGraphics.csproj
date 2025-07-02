@@ -44,9 +44,6 @@
 		<Reference Include="..\lib\PUBLIC-Assembly-CSharp.dll">
     <Private>false</Private>
 		</Reference>
-		<Reference Include="..\lib\SlugBase.dll">
-    <Private>false</Private>
-		</Reference>
 		<Reference Include="..\lib\Unity.Mathematics.dll">
     <Private>false</Private>
 		</Reference>
@@ -59,6 +56,14 @@
 		<Reference Include="..\lib\UnityEngine.InputLegacyModule.dll">
     <Private>false</Private>
 		</Reference>
+		<Reference Include="Mono.Cecil">
+		  <HintPath>..\lib\Mono.Cecil.dll</HintPath>
+		  <Private>False</Private>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Player\" />
 	</ItemGroup>
 
   <!-- PostBuild Target -->
@@ -78,5 +83,11 @@
     <Message Importance="high" Text="Copying DLL to slugcrafting\lib..." />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="C:\Users\marle\source\repos\slugcrafting\lib" />
   </Target>
+
+<!-- Custom Copy to designmyslugcat\lib on Debug build -->
+<Target Name="CopyToDesignMySlugcatLib" AfterTargets="PostBuildEvent">
+	<Message Importance="high" Text="Copying DLL to designmyslugcat\lib..." />
+	<Copy SourceFiles="$(TargetPath)" DestinationFolder="C:\Users\marle\source\repos\designmyslugcat\lib" />
+</Target>
 
 </Project>

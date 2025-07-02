@@ -1,10 +1,6 @@
-﻿using UnityEngine;
-using RWCustom;
+﻿using CompartmentalizedCreatureGraphics.SlugcatCosmetics;
 
-using System.Runtime.CompilerServices;
-using CompartmentalizedCreatureGraphics.SlugcatCosmetics;
-
-namespace CompartmentalizedCreatureGraphics;
+namespace CompartmentalizedCreatureGraphics.Extensions;
 
 public class PlayerGraphicsCCGData : GraphicsModuleCCGData
 {
@@ -13,8 +9,6 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
     //
 
     //-- MR7: 1 Value = 1 pixel, it is all pixel perfect.
-
-    public static readonly float DefaultVanillaFaceSnapValue = 20f; //-- MR7: Found this is a good number to prevent weird angles, this or 10.
 
     public static readonly Vector2[] DefaultVanillaLeftEarAnglePositions = new Vector2[]
     {
@@ -115,88 +109,6 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
     public delegate void SlugcatDynamicCosmeticsAdder(PlayerGraphics playerGraphics);
 
     public SlugcatDynamicCosmeticsAdder onInitiateSpritesDynamicCosmeticsToAdd = AddDefaultVanillaSurvivorDynamicCosmetics;
-
-    public static void AddDefaultVanillaSlugcatDynamicLeftEarCosmetic(PlayerGraphics playerGraphics)
-    {
-        // LEFT EAR
-        playerGraphics.AddDynamicCosmetic(
-            new DynamicSlugcatEar()
-            {
-                spriteName = "ccgSlugcatEar",
-                defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaLeftEarAnglePositions,
-                side = -1,
-                defaultScaleX = 1,
-            }
-        );
-    }
-
-    public static void AddDefaultVanillaSlugcatDynamicRightEarCosmetic(PlayerGraphics playerGraphics)
-    {
-        // RIGHT EAR
-        playerGraphics.AddDynamicCosmetic(new DynamicSlugcatEar()
-            {
-                spriteName = "ccgSlugcatEar",
-                defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaRightEarAnglePositions,
-                side = 1,
-                defaultScaleX = -1,
-            }
-        );
-    }
-
-    public static void AddDefaultVanillaSlugcatDynamicLeftEyeCosmetic(PlayerGraphics playerGraphics)
-    {
-        // LEFT EYE
-        playerGraphics.AddDynamicCosmetic(new DynamicSlugcatEye()
-            {
-                spriteName = "ccgSlugcatEye",
-                defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaLeftEyeAnglePositions,
-                side = -1,
-                defaultScaleX = -1,
-                snapValue = DefaultVanillaFaceSnapValue,
-            }
-        );
-    }
-
-    public static void AddDefaultVanillaSlugcatDynamicRightEyeCosmetic(PlayerGraphics playerGraphics)
-    {
-        // RIGHT EYE
-        playerGraphics.AddDynamicCosmetic(new DynamicSlugcatEye()
-            {
-                spriteName = "ccgSlugcatEye",
-                defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaRightEyeAnglePositions,
-                side = 1,
-                defaultScaleX = 1,
-                snapValue = DefaultVanillaFaceSnapValue,
-            }
-        );
-    }
-
-    public static void AddDefaultVanillaSlugcatDynamicNoseCosmetic(PlayerGraphics playerGraphics)
-    {
-        // NOSE
-        playerGraphics.AddDynamicCosmetic(new DynamicSlugcatFaceCosmetic()
-            {
-                spriteName = "ccgSlugcatNose",
-                defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaNoseAnglePositions,
-                defaultScaleX = 1,
-                snapValue = DefaultVanillaFaceSnapValue,
-            }
-        );
-    }
-
-    public static void AddDefaultVanillaSurvivorDynamicCosmetics(PlayerGraphics playerGraphics)
-    {
-        var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
-        //
-        // BUILD THE COMPARTMENTALIZED SCUG
-        //
-
-        AddDefaultVanillaSlugcatDynamicLeftEarCosmetic(playerGraphics);
-        AddDefaultVanillaSlugcatDynamicRightEarCosmetic(playerGraphics);
-        AddDefaultVanillaSlugcatDynamicLeftEyeCosmetic(playerGraphics);
-        AddDefaultVanillaSlugcatDynamicRightEyeCosmetic(playerGraphics);
-        AddDefaultVanillaSlugcatDynamicNoseCosmetic(playerGraphics);
-    }
 }
 
 public static class PlayerGraphicsCCGExtension

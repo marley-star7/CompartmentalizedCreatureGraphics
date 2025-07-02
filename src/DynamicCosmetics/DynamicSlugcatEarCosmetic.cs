@@ -2,6 +2,7 @@
 using RWCustom;
 
 using MRCustom.Math;
+using CompartmentalizedCreatureGraphics.Extensions;
 
 namespace CompartmentalizedCreatureGraphics.SlugcatCosmetics;
 
