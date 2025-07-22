@@ -2,6 +2,8 @@
 global using System.Collections.Generic;
 global using System.IO;
 global using System.Linq;
+global using static System.Linq.Queryable;
+
 global using System.Runtime.CompilerServices;
 global using System.Runtime.Serialization.Formatters.Binary;
 global using UnityEngine;
@@ -19,3 +21,6 @@ global using MRCustom.Math;
 
 global using Color = UnityEngine.Color;
 global using Vector2 = UnityEngine.Vector2;
+
+global using CompartmentalizedCreatureGraphics;
+global using CompartmentalizedCreatureGraphics.Cosmetics;

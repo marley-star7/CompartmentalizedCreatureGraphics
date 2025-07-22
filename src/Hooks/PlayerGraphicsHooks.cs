@@ -1,30 +1,27 @@
-﻿using CompartmentalizedCreatureGraphics.Extensions;
+﻿using CompartmentalizedCreatureGraphics.Core;
+using CompartmentalizedCreatureGraphics.Cosmetics;
+using CompartmentalizedCreatureGraphics.Extensions;
 
-namespace CompartmentalizedCreatureGraphics.Hooks;
+namespace CompartmentalizedCreatureGraphics;
 
-public static class PlayerGraphicsHooks
+internal static class PlayerGraphicsHooks
 {
-    //-- Add hooks
-    internal static void ApplyHooks()
+    internal static void PlayerGraphics_ctor(On.PlayerGraphics.orig_ctor orig, PlayerGraphics self, PhysicalObject ow)
     {
-        On.PlayerGraphics.Update += PlayerGraphics_Update;
+        orig(self, ow);
 
-        On.PlayerGraphics.InitiateSprites += PlayerGraphics_InitiateSprites;
-        On.PlayerGraphics.DrawSprites += PlayerGraphics_DrawSprites;
-        On.PlayerGraphics.ApplyPalette += PlayerGraphics_ApplyPalette;
+        var selfCCGData = self.GetPlayerGraphicsCCGData();
+
+        // Construct the cosmeticLayers dictionary depending on the size of the amount of layers in the enum.
+        selfCCGData.layersCosmetics = new Dictionary<int, List<ICosmetic>>();
+        var enumSize = Enum.GetValues(typeof(CCGEnums.SlugcatCosmeticLayer)).Length;
+        for (int i = 0; i < enumSize; i++)
+        {
+            selfCCGData.layersCosmetics.Add(i, new List<ICosmetic>());
+        }
     }
 
-    //-- Remove hooks
-    internal static void RemoveHooks()
-    {
-        On.PlayerGraphics.Update -= PlayerGraphics_Update;
-
-        On.PlayerGraphics.InitiateSprites -= PlayerGraphics_InitiateSprites;
-        On.PlayerGraphics.DrawSprites += PlayerGraphics_DrawSprites;
-        On.PlayerGraphics.ApplyPalette -= PlayerGraphics_ApplyPalette;
-    }
-
-    private static void PlayerGraphics_Update(On.PlayerGraphics.orig_Update orig, PlayerGraphics self)
+    internal static void PlayerGraphics_Update(On.PlayerGraphics.orig_Update orig, PlayerGraphics self)
     {
         orig(self);
     }
@@ -33,65 +30,21 @@ public static class PlayerGraphicsHooks
     // IDRAWABLE
     //
 
-    // The Golden Sheet of Sprite Bull-Sheet.
-    /* 
-    Sprite 0 = BodyA
-    Sprite 1 = HipsA
-    Sprite 2 = Tail
-    Sprite 3 = HeadA || B
-    Sprite 4 = LegsA
-    Sprite 5 = Arm
-    Sprite 6 = Arm
-    Sprite 7 = TerrainHand
-    sprite 8 = TerrainHand
-    sprite 9 = FaceA
-    sprite 10 = Futile_White with shader Flatlight
-    sprite 11 = pixel Mark of comunication
-    */
-
-    private static void PlayerGraphics_InitiateSprites(On.PlayerGraphics.orig_InitiateSprites orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
+    internal static void PlayerGraphics_InitiateSprites(On.PlayerGraphics.orig_InitiateSprites orig, PlayerGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
+        var playerGraphicsCCGData = self.GetPlayerGraphicsCCGData();
         playerGraphicsCCGData.sLeaser = sLeaser;
-        orig(playerGraphics, sLeaser, rCam);
+        orig(self, sLeaser, rCam);
 
-        var player = playerGraphics.player;
+        var player = self.player;
 
-        if (player.slugcatStats.name == SlugcatStats.Name.White)
-        {
-            playerGraphicsCCGData.compartmentalizedGraphicsEnabled = true;
-            playerGraphicsCCGData.onInitiateSpritesDynamicCosmeticsToAdd = PlayerGraphicsCCGData.AddDefaultVanillaSurvivorDynamicCosmetics;
-        }
-        else if (player.slugcatStats.name == SlugcatStats.Name.Yellow)
-        {
-            playerGraphicsCCGData.compartmentalizedGraphicsEnabled = true;
-            playerGraphicsCCGData.onInitiateSpritesDynamicCosmeticsToAdd = PlayerGraphicsCCGData.AddDefaultVanillaSurvivorDynamicCosmetics;
-        }
-        else if (player.slugcatStats.name == SlugcatStats.Name.Red)
-        {
-            playerGraphicsCCGData.compartmentalizedGraphicsEnabled = true;
-            playerGraphicsCCGData.onInitiateSpritesDynamicCosmeticsToAdd = PlayerGraphicsCCGData.AddDefaultVanillaSurvivorDynamicCosmetics;
-        }
-        else if (player.slugcatStats.name == SlugcatStats.Name.Night)
-        {
-            playerGraphicsCCGData.compartmentalizedGraphicsEnabled = true;
-            playerGraphicsCCGData.onInitiateSpritesDynamicCosmeticsToAdd = PlayerGraphicsCCGData.AddDefaultVanillaSurvivorDynamicCosmetics;
-        }
-        else if (ModManager.MSC)
-        {
-            if (player.SlugCatClass == MoreSlugcatsEnums.SlugcatStatsName.Saint)
-            {
+        self.EquipCosmetic(self.CreateBasePlayerGraphicsReferenceCosmetic());
 
-            }
-        }
-
-        if (playerGraphicsCCGData.compartmentalizedGraphicsEnabled)
-        {
-            playerGraphicsCCGData.onInitiateSpritesDynamicCosmeticsToAdd(playerGraphics);
-        }
+        if (Content.characterCosmeticPresets.ContainsKey(self.player.slugcatStats.name))
+            self.EquipSlugcatCosmeticsPreset(Content.characterCosmeticPresets[self.player.slugcatStats.name]);
     }
 
-    private static void PlayerGraphics_DrawSprites(On.PlayerGraphics.orig_DrawSprites orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    internal static void PlayerGraphics_DrawSprites(On.PlayerGraphics.orig_DrawSprites orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
         playerGraphicsCCGData.sLeaser = sLeaser;
@@ -102,20 +55,19 @@ public static class PlayerGraphicsHooks
         if (!playerGraphicsCCGData.compartmentalizedGraphicsEnabled)
             return;
 
-        //-- Replace / Hide the original sprites.
+        //-- Replace the original sprites.
+        // We do this instead of just "removing" sprites[9] for compatability purposes...
 
-        // Replace original scug head with earless one.
-        playerGraphicsCCGData.OriginalHeadSprite.element = Futile.atlasManager.GetElementWithName("ccgSlugcatHeadA0");
+        playerGraphicsCCGData.BaseHeadSprite.element = Futile.atlasManager.GetElementWithName(playerGraphicsCCGData.cosmeticsPreset.baseHeadSpriteName);
+        //playerGraphicsCCGData.BaseFaceSprite.element = Futile.atlasManager.GetElementWithName(playerGraphicsCCGData.cosmeticsPreset.baseFaceSpriteName);
 
         var player = playerGraphics.player;
 
-        // Hide the original face since we are using new one.
-        // We do this instead of just "removing" sprites[9] for compatability purposes...
-        var origFaceSprite = sLeaser.sprites[9];
-        //origFaceSprite.element = Futile.atlasManager.GetElementWithName("marNothing");
-        origFaceSprite.color = Color.green;
+        // Temp testing
+        playerGraphicsCCGData.BaseFaceSprite.element = Futile.atlasManager.GetElementWithName("marNothing");
+        playerGraphicsCCGData.BaseFaceSprite.color = Color.green;
 
-        playerGraphicsCCGData.facePos = new Vector2(origFaceSprite.x, origFaceSprite.y);
+        playerGraphicsCCGData.facePos = new Vector2(playerGraphicsCCGData.BaseFaceSprite.x, playerGraphicsCCGData.BaseFaceSprite.y);
         Vector2 dirLowerChunkToMainChunk = Custom.DirVec(playerGraphics.player.bodyChunks[1].pos, playerGraphics.player.mainBodyChunk.pos);
 
         //-- MR7: If player is sideways and not in zero g, offset the face sprite rotation around the head relative to how horizontal.
@@ -185,21 +137,30 @@ public static class PlayerGraphicsHooks
         }
 
         // Finally draw all the cosmetics.
-        for (int i = 0; i < playerGraphicsCCGData.dynamicCosmetics.Count; i++)
+        for (int i = 0; i < playerGraphicsCCGData.cosmetics.Count; i++)
         {
-            playerGraphicsCCGData.dynamicCosmetics[i].OnWearerDrawSprites(sLeaser, rCam, timeStacker, camPos);
+            playerGraphicsCCGData.cosmetics[i].OnWearerDrawSprites(sLeaser, rCam, timeStacker, camPos);
         }
     }
 
-    private static void PlayerGraphics_ApplyPalette(On.PlayerGraphics.orig_ApplyPalette orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
+    internal static void PlayerGraphics_ApplyPalette(On.PlayerGraphics.orig_ApplyPalette orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
         var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
         playerGraphicsCCGData.sLeaser = sLeaser;
         orig(playerGraphics, sLeaser, rCam, palette);
 
-        for (int i = 0; i < playerGraphicsCCGData.dynamicCosmetics.Count; i++)
+        for (int i = 0; i < playerGraphicsCCGData.cosmetics.Count; i++)
         {
-            playerGraphicsCCGData.dynamicCosmetics[i].OnWearerApplyPalette(sLeaser, rCam, in palette);
+            playerGraphicsCCGData.cosmetics[i].OnWearerApplyPalette(sLeaser, rCam, in palette);
         }
+    }
+
+    internal static void PlayerGraphics_AddToContainer(On.PlayerGraphics.orig_AddToContainer orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)
+    {
+        var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
+        playerGraphicsCCGData.sLeaser = sLeaser;
+        orig(playerGraphics, sLeaser, rCam, newContatiner);
+
+        playerGraphics.AddDynamicCosmeticsToContainer(sLeaser, rCam, newContatiner);
     }
 }

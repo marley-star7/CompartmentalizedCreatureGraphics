@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CompartmentalizedCreatureGraphics;
 
 namespace CompartmentalizedCreatureGraphics.Core;
 
@@ -15,9 +16,9 @@ public static class Content
 
     public readonly static List<DynamicCosmeticPreset> dynamicCosmeticPresets = new();
 
-    public readonly static List<SlugcatCosmeticsPreset> characterCosmeticPresets = new();
+    public readonly static Dictionary<SlugcatStats.Name, SlugcatCosmeticsPreset> characterCosmeticPresets = new();
 
-    public readonly static List<SlugcatCosmeticsPreset> customCharacterCosmeticPresets = new();
+    public readonly static Dictionary<string, SlugcatCosmeticsPreset> customCharacterCosmeticPresets = new();
 
     public static void AddDynamicCosmeticPreset(DynamicCosmeticPreset preset)
     {
@@ -28,9 +29,9 @@ public static class Content
     /// Adds a locked character cosmetic preset. These are presets unable to be removed as they are based off characters.
     /// </summary>
     /// <param name="preset"></param>
-    public static void AddCharacterCosmeticPreset(CharacterCosmeticPreset preset)
+    public static void AddCharacterCosmeticPreset(SlugcatStats.Name slugcatName, SlugcatCosmeticsPreset preset)
     {
-        characterCosmeticPresets.Add(preset);
+        characterCosmeticPresets.Add(slugcatName, preset);
     }
 
     /// <summary>
@@ -38,8 +39,8 @@ public static class Content
     /// Internal to make sure modders don't accidentally use this one, as it is meant for custom cosmetics that are not based on characters, but rather player-made cosmetics.
     /// </summary>
     /// <param name="preset"></param>
-    internal static void AddCustomCharacterCosmeticPreset(CharacterCosmeticPreset preset)
+    internal static void AddCustomCharacterCosmeticPreset(string presetName, SlugcatCosmeticsPreset preset)
     {
-        customCharacterCosmeticPresets.Add(preset);
+        customCharacterCosmeticPresets.Add(presetName, preset);
     }
 }

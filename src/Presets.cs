@@ -15,9 +15,10 @@ public static class Presets
 
     internal static void AddPresets()
     {
+        /*
         Content.AddDynamicCosmeticPreset(new DynamicCosmeticPreset(
             "Dynamic Classic Slugcat Left Ear",
-            new DynamicSlugcatEar()
+            new DynamicSlugcatEarCosmetic()
             {
                 spriteName = "ccgSlugcatEar",
                 defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaLeftEarAnglePositions,
@@ -28,7 +29,7 @@ public static class Presets
 
         Content.AddDynamicCosmeticPreset(new DynamicCosmeticPreset(
             "Dynamic Classic Slugcat Right Ear",
-            new DynamicSlugcatEar()
+            new DynamicSlugcatEarCosmetic()
             {
                 spriteName = "ccgSlugcatEar",
                 defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaRightEarAnglePositions,
@@ -39,7 +40,7 @@ public static class Presets
 
         Content.AddDynamicCosmeticPreset(new DynamicCosmeticPreset(
             "Classic Slugcat Left Eye",
-            new DynamicSlugcatEye()
+            new DynamicSlugcatEyeCosmetic()
             {
                 spriteName = "ccgSlugcatEye",
                 defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaLeftEyeAnglePositions,
@@ -51,7 +52,7 @@ public static class Presets
 
         Content.AddDynamicCosmeticPreset(new DynamicCosmeticPreset(
             "Classic Slugcat Right Eye",
-            new DynamicSlugcatEye()
+            new DynamicSlugcatEyeCosmetic()
             {
                 spriteName = "ccgSlugcatEye",
                 defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaRightEyeAnglePositions,
@@ -71,5 +72,6 @@ public static class Presets
                 snapValue = DefaultVanillaFaceSnapValue,
             }
         ));
+        */
     }
 }

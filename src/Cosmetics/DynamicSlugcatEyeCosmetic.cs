@@ -6,8 +6,12 @@ using CompartmentalizedCreatureGraphics.Extensions;
 
 namespace CompartmentalizedCreatureGraphics.SlugcatCosmetics;
 
-public class DynamicSlugcatEye : DynamicSlugcatFaceCosmetic
+public class DynamicSlugcatEyeCosmetic : DynamicSlugcatFaceCosmetic
 {
+    public DynamicSlugcatEyeCosmetic(Dictionary<int, SpriteLayer> spriteLayers) : base(spriteLayers)
+    {
+    }
+
     public override void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         base.OnWearerDrawSprites(wearerSLeaser, rCam, timeStacker, camPos);
@@ -31,6 +35,6 @@ public class DynamicSlugcatEye : DynamicSlugcatFaceCosmetic
             Sprite.element = Futile.atlasManager.GetElementWithName(spriteName + extraText + "A0");
 
         //-- MR7: Snap the rotation and placement so it doesn't break at weird spots.
-        Sprite.rotation = MarMathf.Snap(playerGraphicsCCGData.faceRotation, 5);
+        Sprite.rotation = MarMathf.Snap(playerGraphicsCCGData.faceRotation, snapValue);
     }
 }

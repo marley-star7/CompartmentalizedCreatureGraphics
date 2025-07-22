@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace CompartmentalizedCreatureGraphics.Core;
 
-namespace CompartmentalizedCreatureGraphics.Core;
-
+/// <summary>
+/// Saved presets for the settings for a dynamic cosmetic.
+/// </summary>
 public class DynamicCosmeticPreset
 {
     public DynamicCosmetic dynamicCosmetic;
@@ -18,3 +15,4 @@ public class DynamicCosmeticPreset
         this.dynamicCosmetic = dynamicCosmetic;
     }
 }
+

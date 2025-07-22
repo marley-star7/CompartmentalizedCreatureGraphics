@@ -1,6 +1,4 @@
-﻿using CompartmentalizedCreatureGraphics.Hooks;
-
-namespace CompartmentalizedCreatureGraphics;
+﻿namespace CompartmentalizedCreatureGraphics;
 
 // There are two types of dependencies:
 // 1. BepInDependency.DependencyFlags.HardDependency - The other mod *MUST* be installed, and your mod cannot run without it. This ensures their mod loads before yours, preventing errors.
@@ -26,7 +24,7 @@ sealed class Plugin : BaseUnityPlugin
     public static bool improvedInputEnabled;
     public static int improvedInputVersion = 0;
 
-    internal static ManualLogSource Logger;
+    internal static new ManualLogSource Logger;
 
     public static void DebugLog(object ex) => Logger.LogInfo(ex);
 
@@ -49,7 +47,7 @@ sealed class Plugin : BaseUnityPlugin
         //-- Do not re-apply hooks on restart mode!
         if (!restartMode)
         {
-            ApplyHooks();
+            Hooks.ApplyHooks();
         }
 
         Resources.LoadResources();
@@ -59,22 +57,8 @@ sealed class Plugin : BaseUnityPlugin
     {
         if (restartMode)
         {
-            RemoveHooks();
+            Hooks.RemoveHooks();
         }
-    }
-
-    internal static void ApplyHooks()
-    {
-        PlayerHooks.ApplyHooks();
-        PlayerGraphicsHooks.ApplyHooks();
-    }
-
-    internal static void RemoveHooks()
-    {
-        On.RainWorld.PostModsInit -= Plugin.RainWorld_PostModsInit;
-
-        PlayerHooks.RemoveHooks();
-        PlayerGraphicsHooks.RemoveHooks();
     }
 
     internal static void RainWorld_PostModsInit(On.RainWorld.orig_PostModsInit orig, RainWorld rainWorld)

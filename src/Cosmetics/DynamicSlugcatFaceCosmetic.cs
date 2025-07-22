@@ -37,6 +37,10 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
 
     public float snapValue = 0f;
 
+    public DynamicSlugcatFaceCosmetic(Dictionary<int, SpriteLayer> spriteLayers) : base(spriteLayers)
+    {
+    }
+
     public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
         base.InitiateSprites(sLeaser, rCam);
@@ -61,35 +65,16 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
             sidedScale = -1f;
 
         var finalRotation = MarMathf.Snap(playerGraphicsCCGData.faceRotation, snapValue);
-
+        
+        var rotatedPosOffset = Custom.RotateAroundVector(posOffset, Vector2.zero, playerGraphicsCCGData.faceRotation);
         for (int i = 0; i < sLeaser.sprites.Length; i++)
         {
-            sLeaser.sprites[i].x = playerGraphicsCCGData.facePos.x + posOffset.x;
-            sLeaser.sprites[i].y = playerGraphicsCCGData.facePos.y + posOffset.y;
+            sLeaser.sprites[i].x = playerGraphicsCCGData.facePos.x + rotatedPosOffset.x;
+            sLeaser.sprites[i].y = playerGraphicsCCGData.facePos.y + rotatedPosOffset.y;
             // MR7: TODO: change this to be the rotation AROUND the facePos instead.
             // Something something relative value child rotation magic mathy garbage, it's REQUIRED for the slugcat to not look god awful when flipped upside down lol.
             sLeaser.sprites[i].rotation = finalRotation;
             sLeaser.sprites[i].scaleX = defaultScaleX * sidedScale;
-        }
-    }
-
-    public override void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
-    {
-        newContainer ??= rCam.ReturnFContainer("Midground");
-
-        foreach (FSprite fsprite in sLeaser.sprites)
-        {
-            fsprite.RemoveFromContainer();
-            newContainer.AddChild(fsprite);
-        }
-
-        if (player == null)
-            return;
-
-        var playerGraphicsCCGData = ((PlayerGraphics)player.graphicsModule).GetPlayerGraphicsCCGData();
-        if (playerGraphicsCCGData.sLeaser != null)
-        {
-            Sprite.MoveInFrontOfOtherNode(playerGraphicsCCGData.OriginalFaceSprite);
         }
     }
 

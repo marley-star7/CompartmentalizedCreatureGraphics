@@ -1,9 +1,19 @@
-﻿using CompartmentalizedCreatureGraphics.SlugcatCosmetics;
+﻿// TODO: need some sort of "layers" system, where can tell which sprite is in front of the face and which is behind it.
+// Something such that you define the layer from preset ones, and their priority within that layer.
+// Maybe adding new layers is easy, and can be placed inbetween other layers?
+// TODO: I would like to just raw base it off the "distance from head" parameter used by cosmetics, since that makes most sense.
+// But that wouldn't work with making lizard helmets overlay over the eyes and such properly
+// So maybe a mix of both, a distance parameter and a layer one.
+
+using CompartmentalizedCreatureGraphics.Cosmetics;
+using CompartmentalizedCreatureGraphics.SlugcatCosmetics;
 
 namespace CompartmentalizedCreatureGraphics.Extensions;
 
 public class PlayerGraphicsCCGData : GraphicsModuleCCGData
 {
+    public SlugcatCosmeticsPreset cosmeticsPreset;
+
     //
     // DEFAULT CCG PLACEMENT VALUES FOR BUILDING SCUG.
     //
@@ -52,30 +62,49 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
         new Vector2(6f, -2),
     };
 
-
-    // The Magic List of All Sprites
-    /* 
-    Sprite 0 = BodyA
-    Sprite 1 = HipsA
-    Sprite 2 = Tail
-    Sprite 3 = HeadA || B
-    Sprite 4 = LegsA
-    Sprite 5 = Arm
-    Sprite 6 = Arm
-    Sprite 7 = TerrainHand
-    sprite 8 = TerrainHand
-    sprite 9 = FaceA
-    sprite 10 = Futile_White with shader Flatlight
-    sprite 11 = pixel Mark of comunication
-    */
-
-    public FSprite OriginalHeadSprite
+    public FSprite BaseBodySprite
+    {
+        get { return sLeaser.sprites[0]; }
+    }
+    public FSprite BaseHipsSprite
+    {
+        get { return sLeaser.sprites[1]; }
+    }
+    public FSprite BaseTailSprite
+    {
+        get { return sLeaser.sprites[2]; }
+    }
+    public FSprite BaseHeadSprite
     {
         get { return sLeaser.sprites[3]; }
     }
-    public FSprite OriginalFaceSprite
+    public FSprite BaseLegsSprite
+    {
+        get { return sLeaser.sprites[4]; }
+    }
+    public FSprite BaseLeftArmSprite
+    {
+        get { return sLeaser.sprites[5]; }
+    }
+    public FSprite BaseRightArmSprite
+    {
+        get { return sLeaser.sprites[6]; }
+    }
+    public FSprite BaseLeftTerrainHandSprite
+    {
+        get { return sLeaser.sprites[7]; }
+    }
+    public FSprite BaseRightTerrainHandSprite
+    {
+        get { return sLeaser.sprites[8]; }
+    }
+    public FSprite BaseFaceSprite
     {
         get { return sLeaser.sprites[9]; }
+    }
+    public FSprite BasePixelSprite
+    {
+        get { return sLeaser.sprites[11]; }
     }
 
     public int faceAngleNum = 0;
@@ -96,19 +125,6 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
     public Vector2 facePos = Vector2.zero;
     public float faceRotation = 0;
     public float snappedFaceRotationSnapDegrees = 0;
-
-    /// <summary>
-    /// Triggered when the angle of the face is changed.
-    /// </summary>
-    public event Action<string> OnFaceAngleChanged;
-
-    //
-    // SLUGCAT BUILDING
-    //
-
-    public delegate void SlugcatDynamicCosmeticsAdder(PlayerGraphics playerGraphics);
-
-    public SlugcatDynamicCosmeticsAdder onInitiateSpritesDynamicCosmeticsToAdd = AddDefaultVanillaSurvivorDynamicCosmetics;
 }
 
 public static class PlayerGraphicsCCGExtension
@@ -193,7 +209,64 @@ public static class PlayerGraphicsCCGExtension
         return faceSpriteName;
     }
 
-    private static readonly ConditionalWeakTable<PlayerGraphics, PlayerGraphicsCCGData> craftingDataConditionalWeakTable = new();
+    public static void EquipSlugcatCosmeticsPreset(this PlayerGraphics playerGraphics, SlugcatCosmeticsPreset preset)
+    {
+        var ccgData = playerGraphics.GetPlayerGraphicsCCGData();
+
+        ccgData.cosmeticsPreset = preset;
+        foreach (var cosmetic in ccgData.cosmeticsPreset.dynamicCosmetics)
+        {
+            cosmetic.Equip(playerGraphics.player);
+        }
+
+        ccgData.compartmentalizedGraphicsEnabled = true;
+    }
+
+    public static void EquipCosmetic(this GraphicsModule graphicsModule, ICosmetic cosmetic)
+    {
+        cosmetic.Equip((Creature)graphicsModule.owner);
+    }
+
+    /// <summary>
+    /// Creates a cosmetic that simply holds the information of the base player graphics sprites in the cosmetics system.
+    /// This is so that we can place cosmetics in front and behind the base player graphics sprites, and also so that we can easily access the base player graphics sprites in the cosmetics system.
+    /// </summary>
+    /// <param name="playerGraphics"></param>
+    /// <returns></returns>
+    internal static Cosmetic CreateBasePlayerGraphicsReferenceCosmetic(this PlayerGraphics playerGraphics)
+    {
+        // The Magic List of All Sprites
+        /* 
+        Sprite 0 = BodyA
+        Sprite 1 = HipsA
+        Sprite 2 = Tail
+        Sprite 3 = HeadA || B
+        Sprite 4 = LegsA
+        Sprite 5 = Arm
+        Sprite 6 = Arm
+        Sprite 7 = TerrainHand
+        sprite 8 = TerrainHand
+        sprite 9 = FaceA
+        sprite 10 = Futile_White with shader Flatlight
+        sprite 11 = pixel Mark of comunication
+        */
+
+        return new Cosmetic((Player)playerGraphics.owner,
+            new Dictionary<int, SpriteLayer>
+            {
+                { (int)CCGEnums.SlugcatCosmeticLayer.BaseBody, new SpriteLayer(0) },
+                { (int)CCGEnums.SlugcatCosmeticLayer.BaseHips, new SpriteLayer(1) },
+                { (int)CCGEnums.SlugcatCosmeticLayer.BaseTail, new SpriteLayer(2) },
+                { (int)CCGEnums.SlugcatCosmeticLayer.BaseHead, new SpriteLayer(3) },
+                { (int)CCGEnums.SlugcatCosmeticLayer.BaseLegs, new SpriteLayer(4) },
+                { (int)CCGEnums.SlugcatCosmeticLayer.BaseLeftArm, new SpriteLayer(5) },
+                { (int)CCGEnums.SlugcatCosmeticLayer.BaseRightArm, new SpriteLayer(6) },
+                { (int)CCGEnums.SlugcatCosmeticLayer.BaseLeftTerrainHand, new SpriteLayer(7) },
+                { (int)CCGEnums.SlugcatCosmeticLayer.BaseRightTerrainHand, new SpriteLayer(8) },
+                { (int)CCGEnums.SlugcatCosmeticLayer.BaseFace, new SpriteLayer(9) },
+            }
+        );
+    }
 
     public static PlayerGraphicsCCGData GetPlayerGraphicsCCGData(this PlayerGraphics playerGraphics) => (PlayerGraphicsCCGData) GraphicsModuleCraftingExtension.craftingDataConditionalWeakTable.GetValue(playerGraphics, _ => new PlayerGraphicsCCGData(playerGraphics));
 }
