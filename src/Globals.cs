@@ -23,4 +23,7 @@ global using Color = UnityEngine.Color;
 global using Vector2 = UnityEngine.Vector2;
 
 global using CompartmentalizedCreatureGraphics;
+global using CompartmentalizedCreatureGraphics.Core;
+global using CompartmentalizedCreatureGraphics.Extensions;
 global using CompartmentalizedCreatureGraphics.Cosmetics;
+global using CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;

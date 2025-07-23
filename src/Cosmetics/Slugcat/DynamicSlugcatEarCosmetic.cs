@@ -1,10 +1,4 @@
-﻿using UnityEngine;
-using RWCustom;
-
-using MRCustom.Math;
-using CompartmentalizedCreatureGraphics.Extensions;
-
-namespace CompartmentalizedCreatureGraphics.SlugcatCosmetics;
+﻿namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 
 public class DynamicSlugcatEarCosmetic : DynamicSlugcatFaceCosmetic
 {
@@ -16,7 +10,7 @@ public class DynamicSlugcatEarCosmetic : DynamicSlugcatFaceCosmetic
 
     private SharedPhysics.TerrainCollisionData scratchTerrainCollisionData;
 
-    public DynamicSlugcatEarCosmetic(Dictionary<int, SpriteLayer> spriteLayers) : base(spriteLayers)
+    public DynamicSlugcatEarCosmetic(SpriteLayerGroup[] spriteLayerGroups) : base(spriteLayerGroups)
     {
     }
 

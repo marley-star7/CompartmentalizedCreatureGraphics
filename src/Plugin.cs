@@ -24,18 +24,17 @@ sealed class Plugin : BaseUnityPlugin
     public static bool improvedInputEnabled;
     public static int improvedInputVersion = 0;
 
+    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     internal static new ManualLogSource Logger;
+    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-    public static void DebugLog(object ex) => Logger.LogInfo(ex);
-
-    public static void DebugWarning(object ex) => Logger.LogWarning(ex);
-
-    public static void DebugError(object ex) => Logger.LogError(ex);
+    public Plugin()
+    {
+        Logger = base.Logger;
+    }
 
     public void OnEnable()
     {
-        Logger = base.Logger;
-
         On.RainWorld.OnModsInit += Extras.WrapInit(LoadPlugin);
         On.RainWorld.PostModsInit += RainWorld_PostModsInit;
 
@@ -76,4 +75,10 @@ sealed class Plugin : BaseUnityPlugin
             Plugin.Logger.LogError(e.Message);
         }
     }
+
+    public static void DebugLog(object ex) => Logger.LogDebug(ex);
+
+    public static void DebugWarning(object ex) => Logger.LogWarning(ex);
+
+    public static void DebugError(object ex) => Logger.LogError(ex);
 }

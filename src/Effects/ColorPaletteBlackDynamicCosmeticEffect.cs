@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace CompartmentalizedCreatureGraphics;
+﻿namespace CompartmentalizedCreatureGraphics.Effects;
 
 // TODO: set this up as a resource, in that it is a static class with a swapback array, that runs the code for every function of it's kind real quickly.
 // TODO: basically like a shader.

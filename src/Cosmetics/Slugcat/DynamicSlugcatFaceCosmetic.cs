@@ -1,11 +1,4 @@
-﻿using UnityEngine;
-using RWCustom;
-
-using MRCustom.Math;
-using System.Xml.Linq;
-using CompartmentalizedCreatureGraphics.Extensions;
-
-namespace CompartmentalizedCreatureGraphics.SlugcatCosmetics;
+﻿namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 
 public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
 {
@@ -37,7 +30,7 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
 
     public float snapValue = 0f;
 
-    public DynamicSlugcatFaceCosmetic(Dictionary<int, SpriteLayer> spriteLayers) : base(spriteLayers)
+    public DynamicSlugcatFaceCosmetic(SpriteLayerGroup[] spriteLayerGroups) : base(spriteLayerGroups)
     {
     }
 
@@ -57,7 +50,7 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
         var playerGraphics = (PlayerGraphics)player.graphicsModule;
         var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
 
-        var currentAnglePosIndex = Mathf.Clamp((defaultAnglePositions.Length / 2) + playerGraphicsCCGData.faceAngleNum, 0, defaultAnglePositions.Length - 1);
+        var currentAnglePosIndex = Mathf.Clamp(defaultAnglePositions.Length / 2 + playerGraphicsCCGData.faceAngleNum, 0, defaultAnglePositions.Length - 1);
         posOffset = defaultAnglePositions[currentAnglePosIndex];
 
         float sidedScale = 1f;
@@ -81,6 +74,9 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
     // TODO: temp thing for proof of concept, later use cosmetic effects.
     public override void OnWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)
     {
+        if (sLeaser == null)
+            return;
+
         for (int i = 0; i < sLeaser.sprites.Length; i++)
         {
             sLeaser.sprites[i].color = palette.blackColor;

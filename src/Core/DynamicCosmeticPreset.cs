@@ -15,4 +15,3 @@ public class DynamicCosmeticPreset
         this.dynamicCosmetic = dynamicCosmetic;
     }
 }
-

@@ -7,22 +7,25 @@ using System.Threading.Tasks;
 namespace CompartmentalizedCreatureGraphics.Cosmetics;
 
 //-- MR7: TODO: Come up with a better name for this struct, more indiciative of what it is.
-// Rename it to something like SpriteCollection, or SpriteList, it's not meant for layers anymore just to hold the start and end of a sprite list.
-public struct SpriteLayer
+public struct SpriteLayerGroup
 {
-    public bool needsReorder = false;
+    public int layer;
 
     public int firstSpriteIndex;
     public int lastSpriteIndex;
 
-    public SpriteLayer(int firstSpriteIndex)
+    public bool needsReorder = false;
+
+    public SpriteLayerGroup(int layer, int firstSpriteIndex)
     {
+        this.layer = layer;
         this.firstSpriteIndex = firstSpriteIndex;
-        this.lastSpriteIndex = firstSpriteIndex;
+        lastSpriteIndex = firstSpriteIndex;
     }
 
-    public SpriteLayer(int firstSpriteIndex, int lastSpriteIndex)
+    public SpriteLayerGroup(int layer, int firstSpriteIndex, int lastSpriteIndex)
     {
+        this.layer = layer;
         this.firstSpriteIndex = firstSpriteIndex;
         this.lastSpriteIndex = lastSpriteIndex;
     }

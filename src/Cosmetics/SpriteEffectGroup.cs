@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace CompartmentalizedCreatureGraphics.Cosmetics;
 
-public struct SpriteEffectLayer
+public struct SpriteEffectGroup
 {
     public int[] sprites;
 
-    public SpriteEffectLayer(params int[] sprites)
+    public SpriteEffectGroup(params int[] sprites)
     {
         this.sprites = sprites;
     }

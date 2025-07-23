@@ -1,11 +1,10 @@
-﻿
-namespace CompartmentalizedCreatureGraphics.SlugcatCosmetics;
+﻿namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 
 public class DynamicSlugcatCosmetic : DynamicCosmetic
 {
     public Player? player;
 
-    public DynamicSlugcatCosmetic(Dictionary<int, SpriteLayer> spritesLayers) : base(spritesLayers)
+    public DynamicSlugcatCosmetic(SpriteLayerGroup[] spriteLayerGroups) : base(spriteLayerGroups)
     {
     }
 

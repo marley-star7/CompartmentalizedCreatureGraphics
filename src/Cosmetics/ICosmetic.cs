@@ -1,9 +1,4 @@
 ﻿using CompartmentalizedCreatureGraphics.Cosmetics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CompartmentalizedCreatureGraphics;
 
@@ -11,7 +6,7 @@ public interface ICosmetic
 {
     public RoomCamera.SpriteLeaser SpriteLeaser{ get; }
 
-    public Dictionary<int, SpriteLayer> SpriteLayers { get; set; }
+    public SpriteLayerGroup[] SpriteLayerGroups { get; set; }
 
     public void Equip(Creature wearer);
 
@@ -23,4 +18,32 @@ public interface ICosmetic
     public void OnWearerCollide(Player player, PhysicalObject otherObject, int myChunk, int otherChunk);
 
     public void OnWearerTerrainImpact(Player player, int chunk, IntVector2 direction, float speed, bool firstContact);
+}
+
+public static class ICosmeticExtension
+{
+    public static int GetLayerGroupIndexForLayer(this ICosmetic cosmetic, int layer)
+    {
+        for (int i = 0; i < cosmetic.SpriteLayerGroups.Length; i++)
+        {
+            if (cosmetic.SpriteLayerGroups[i].layer == layer)
+            {
+                return i;
+            }
+        }
+        return -1; // Not Found
+    }
+
+    public static void SetLayerGroupNeedsReorder(this ICosmetic cosmetic, int layer, bool value)
+    {
+        cosmetic.SpriteLayerGroups[cosmetic.GetLayerGroupIndexForLayer(layer)].needsReorder = value;
+    }
+
+    public static void SetLayerGroupsNeedsReorder(this ICosmetic cosmetic, bool value)
+    {
+        for (int i = 0; i < cosmetic.SpriteLayerGroups.Length; i++)
+        {
+            cosmetic.SpriteLayerGroups[i].needsReorder = value;
+        }
+    }
 }

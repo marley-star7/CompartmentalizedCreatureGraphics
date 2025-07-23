@@ -1,6 +1,6 @@
 ﻿// TODO: this will run after all dynamic cosmetic effects, and modify the effects in the list they are attached to.
 
-namespace CompartmentalizedCreatureGraphics;
+namespace CompartmentalizedCreatureGraphics.Effects;
 
 public class DynamicCosmeticEffect
 {

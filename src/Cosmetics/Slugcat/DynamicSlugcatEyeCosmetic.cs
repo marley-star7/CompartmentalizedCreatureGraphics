@@ -1,14 +1,8 @@
-﻿using UnityEngine;
-using RWCustom;
-
-using MRCustom.Math;
-using CompartmentalizedCreatureGraphics.Extensions;
-
-namespace CompartmentalizedCreatureGraphics.SlugcatCosmetics;
+﻿namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 
 public class DynamicSlugcatEyeCosmetic : DynamicSlugcatFaceCosmetic
 {
-    public DynamicSlugcatEyeCosmetic(Dictionary<int, SpriteLayer> spriteLayers) : base(spriteLayers)
+    public DynamicSlugcatEyeCosmetic(SpriteLayerGroup[] spriteLayerGroups) : base(spriteLayerGroups)
     {
     }
 

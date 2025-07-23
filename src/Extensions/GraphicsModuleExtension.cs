@@ -1,11 +1,4 @@
-﻿using UnityEngine;
-using RWCustom;
-
-using System.Runtime.CompilerServices;
-using UnityEngine.PlayerLoop;
-using CompartmentalizedCreatureGraphics.Extensions;
-
-namespace CompartmentalizedCreatureGraphics;
+﻿namespace CompartmentalizedCreatureGraphics.Extensions;
 
 public class GraphicsModuleCCGData
 {
@@ -47,50 +40,31 @@ public static class GraphicsModuleCraftingExtension
     {
         var graphicsModuleCCGData = graphicsModule.GetGraphicsModuleCCGData();
 
-        Plugin.Logger.LogDebug($"Adding {graphicsModuleCCGData.cosmetics.Count} dynamic cosmetics to container.");
-
         for (int i = 0; i < graphicsModuleCCGData.cosmetics.Count; i++)
         {
-            if (graphicsModuleCCGData.cosmetics[i] is DynamicCosmetic dynamicCosmetic)
-                dynamicCosmetic.SetSpriteLayersNeedReorder(true);
+            if (graphicsModuleCCGData.cosmetics[i] is not DynamicCosmetic dynamicCosmetic)
+                continue;
+
+            dynamicCosmetic.AddToContainer(sLeaser, rCam, newContainer);
+            dynamicCosmetic.SetLayerGroupsNeedsReorder(true);
         }
+
+        Plugin.Logger.LogDebug($"Adding {graphicsModuleCCGData.cosmetics.Count} dynamic cosmetics to container.");
 
         // We go by the layersCosmetics list, which contains all cosmetics in the order they should be rendered.
-        for (int layer = 0; layer < graphicsModuleCCGData.layersCosmetics.Count; layer++)
+        // Traveling bottom up.
+
+        for (int layerIndex = 0; layerIndex < graphicsModuleCCGData.layersCosmetics.Count; layerIndex++)
         {
-            for (int j = 0; j < graphicsModuleCCGData.layersCosmetics[layer].Count; j++)
+            var currentLayerCosmetics = graphicsModuleCCGData.layersCosmetics[layerIndex];
+            for (int j = 0; j < currentLayerCosmetics.Count; j++)
             {
-                if (graphicsModuleCCGData.layersCosmetics[layer][j] is DynamicCosmetic dynamicCosmetic)
-                {
-                    dynamicCosmetic.AddToContainer(sLeaser, rCam, newContainer);
-                    dynamicCosmetic.SetSpriteLayerNeedsReorder(layer, false);
-                }
-            }
-        }
-    }
+                if (currentLayerCosmetics[j] is not DynamicCosmetic dynamicCosmetic)
+                    continue;
 
-    /// <summary>
-    /// Runs through all dynamic cosmetics in the graphics module and updates their sprite render order.
-    /// </summary>
-    /// <param name="graphicsModule"></param>
-    public static void UpdateDynamicCosmeticsSpriteRenderOrder(this GraphicsModule graphicsModule)
-    {
-        var graphicsModuleCCGData = graphicsModule.GetGraphicsModuleCCGData();
-
-        // Loop through back to front of cosmetics in layer order.
-        for (int i = 0; i < graphicsModuleCCGData.layersCosmetics.Count; i++)
-        {
-            for (int j = 0; j < graphicsModuleCCGData.layersCosmetics[i].Count; j++)
-            {
-                //-- MR7 TODO: this current logic often causes multiple render order re-updating, which could likely be optimized better.
-                // Likely through a function that allows you to update the render order of a specific layer.
-
-                // Only add to container if is dynamic cosmetic, since they are the ones that need it.
-                if (graphicsModuleCCGData.layersCosmetics[i][j] is DynamicCosmetic)
-                {
-                    var dynamicCosmetic = (DynamicCosmetic)graphicsModuleCCGData.layersCosmetics[i][j];
-                    dynamicCosmetic.ReorderSpriteLayers();
-                }
+                //-- MR7: TODO: RENAME THESE FUNCTIONS OH MY GAWDD
+                dynamicCosmetic.ReorderSpritesInLayerGroup(layerIndex);
+                dynamicCosmetic.SetLayerGroupNeedsReorder(layerIndex, false);
             }
         }
     }

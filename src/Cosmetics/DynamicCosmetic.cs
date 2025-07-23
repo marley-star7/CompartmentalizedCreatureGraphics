@@ -1,7 +1,4 @@
-﻿using CompartmentalizedCreatureGraphics.Cosmetics;
-using System.Xml.Linq;
-
-namespace CompartmentalizedCreatureGraphics;
+﻿namespace CompartmentalizedCreatureGraphics.Cosmetics;
 
 /// <summary>
 /// DynamicCosmetics are cosmetics able to be equipped and unequipped on demand.
@@ -12,30 +9,33 @@ public class DynamicCosmetic : UpdatableAndDeletable, ICosmetic, IDrawable
 
     public bool isEquipped => wearer != null && wearer.graphicsModule.GetGraphicsModuleCCGData().cosmetics.Contains(this);
 
-    protected RoomCamera.SpriteLeaser sLeaser;
+    protected RoomCamera.SpriteLeaser? sLeaser;
 
-    public RoomCamera.SpriteLeaser SpriteLeaser
+    public RoomCamera.SpriteLeaser? SpriteLeaser
     {
         get => sLeaser;
     }
 
-    protected Dictionary<int, SpriteLayer> _spriteLayers;
-    public Dictionary<int, SpriteLayer> SpriteLayers
+    public SpriteLayerGroup[] _spriteLayerGroups;
+    public SpriteLayerGroup[] SpriteLayerGroups
     {
-        get => _spriteLayers;
-        set { _spriteLayers = value; }
+        get => _spriteLayerGroups;
+        set
+        {
+            _spriteLayerGroups = value;
+        }
     }
-
-    public SpriteEffectLayer[] spriteEffectLayers;
+    public SpriteEffectGroup[] spriteEffectGroups;
 
     public FSprite LastSprite
     {
         get => sLeaser.sprites[sLeaser.sprites.Length - 1];
     }
 
-    public DynamicCosmetic(Dictionary<int, SpriteLayer> spriteLayers)
+    public DynamicCosmetic(SpriteLayerGroup[] spriteLayers)
     {
-        this._spriteLayers = spriteLayers;
+        this._spriteLayerGroups = spriteLayers;
+        this.spriteEffectGroups = new SpriteEffectGroup[0];
     }
 
     public virtual void Equip(Creature wearer)
@@ -45,8 +45,8 @@ public class DynamicCosmetic : UpdatableAndDeletable, ICosmetic, IDrawable
 
         wearerCCGData.cosmetics.Add(this);
         // Add this cosmetics sprite layers information to the wearer graphics module data.
-        foreach(KeyValuePair<int, SpriteLayer> kvp in SpriteLayers)
-            wearerCCGData.layersCosmetics[kvp.Key].Add(this);
+        for (int i = 0; i < SpriteLayerGroups.Length; i++)
+            wearerCCGData.layersCosmetics[SpriteLayerGroups[i].layer].Add(this);
 
         if (this.wearer.room != null)
             wearer.room.AddObject(this);
@@ -59,8 +59,8 @@ public class DynamicCosmetic : UpdatableAndDeletable, ICosmetic, IDrawable
 
         wearerCCGData.cosmetics.Remove(this);
         // Properly remove this cosmetics sprite layers information to the wearer graphics module data.
-        foreach (KeyValuePair<int, SpriteLayer> kvp in SpriteLayers)
-            wearerCCGData.layersCosmetics[kvp.Key].Remove(this);
+        for (int i = 0; i < SpriteLayerGroups.Length; i++)
+            wearerCCGData.layersCosmetics[SpriteLayerGroups[i].layer].Remove(this);
 
 
         this.Destroy();
@@ -114,18 +114,7 @@ public class DynamicCosmetic : UpdatableAndDeletable, ICosmetic, IDrawable
 
     }
 
-    public void SetSpriteLayersNeedReorder(bool value)
-    {
-        // Create a copy of the SpriteLayer struct, modify it, and then update the dictionary
-        foreach (var item in _spriteLayers.ToList())
-        {
-            var updatedLayer = item.Value;
-            updatedLayer.needsReorder = value;
-            _spriteLayers[item.Key] = updatedLayer;
-        }
-    }
-
-    public void ReorderSpriteLayers()
+    public void ReorderSpritesInLayerGroup(int layer)
     {
         if (wearer?.graphicsModule == null)
         {
@@ -134,107 +123,61 @@ public class DynamicCosmetic : UpdatableAndDeletable, ICosmetic, IDrawable
         }
 
         var wearerCCGData = wearer.graphicsModule.GetGraphicsModuleCCGData();
-        if (wearerCCGData.sLeaser == null)
-        {
-            Plugin.Logger.LogError("Cannot update render order - wearer's sprite Leaser is null");
-            return;
-        }
 
-        if (SpriteLayers == null || SpriteLayers.Count == 0)
-        {
-            Plugin.Logger.LogWarning("No sprite layers defined for this cosmetic");
-            return;
-        }
+        var layerGroup = SpriteLayerGroups[this.GetLayerGroupIndexForLayer(layer)];
 
-        // TODO: i gotta go back the array....
-        foreach (KeyValuePair<int, SpriteLayer> layer in SpriteLayers)
-        {
-            // Find the closest cosmetic in this or lower layers to position in front of
-            ICosmetic? referenceCosmetic = FindReferenceCosmetic(wearerCCGData, layer.Key);
-
-            if (referenceCosmetic == null)
-            {
-                Plugin.Logger.LogError($"No reference cosmetic found for layer {layer}");
-                continue;
-            }
-
-            PositionSpritesRelativeToReference(layer.Value, referenceCosmetic);
-        }
-    }
-
-    private ICosmetic? FindReferenceCosmetic(GraphicsModuleCCGData wearerCCGData, int cosmeticsLayer)
-    {
+        // Find the closest cosmetic in this or lower layers to position in front of
         // Search from starting layer down to 0
-        for (int refLayer = cosmeticsLayer; refLayer >= 0; refLayer--)
+        for (int refLayer = layerGroup.layer; refLayer >= 0; refLayer--)
         {
-            var layerCosmetics = wearerCCGData.layersCosmetics[refLayer];
-            if (layerCosmetics == null) continue;
+            var refLayerCosmetics = wearerCCGData.layersCosmetics[refLayer];
 
             // Search backwards through cosmetics in this layer
-            for (int i = layerCosmetics.Count - 1; i >= 0; i--)
+            for (int candidateIndex = refLayerCosmetics.Count - 1; candidateIndex >= 0; candidateIndex--)
             {
-                var candidate = layerCosmetics[i];
+                var candidate = refLayerCosmetics[candidateIndex];
 
-                // Skip if candidate not in it's correct order either.
-                if (candidate is DynamicCosmetic dynamicCandidate && dynamicCandidate.SpriteLayers[refLayer].needsReorder)
+                // Do not reference any cosmetics that are also not properly ordered yet.
+                if (candidate is DynamicCosmetic dynamicCandidate && dynamicCandidate.SpriteLayerGroups[dynamicCandidate.GetLayerGroupIndexForLayer(refLayer)].needsReorder)
+                {
+                    Plugin.DebugLog($"Checking candidate: {dynamicCandidate.SpriteLeaser.sprites[dynamicCandidate.SpriteLayerGroups[dynamicCandidate.GetLayerGroupIndexForLayer(refLayer)].firstSpriteIndex].element.name} in layer {refLayer}, not ordered yet, skipping...");
                     continue;
+                }
 
-                return candidate;
+                // Skip if not in the same container
+                //if (!IsCosmeticInSameContainerForLayer(candidate, layer))
+                //    continue;
+
+                Plugin.DebugLog($"Found candidate: {candidate} in layer {refLayer}");
+
+                if (candidate == null)
+                    Plugin.Logger.LogError($"No reference cosmetic found for layer {layerGroup.layer}");
+                else
+                {
+                    SpriteLayerGroup candidateCosmeticLayerGroup = candidate.SpriteLayerGroups[candidate.GetLayerGroupIndexForLayer(refLayer)];
+                    OrderSpritesInFrontOtherCosmeticInLayerGroup(layerGroup, candidate, candidateCosmeticLayerGroup);
+                    return;
+                }
             }
         }
-
-        return null;
     }
-
-    /*
-    private FContainer? GetSpriteContainer(int spriteIndex)
+    private void OrderSpritesInFrontOtherCosmeticInLayerGroup(SpriteLayerGroup layerGroup, ICosmetic referenceCosmetic, SpriteLayerGroup referenceCosmeticLayerGroup)
     {
-        return sLeaser.sprites[spriteIndex]._container;
-    }
-
-    private bool IsCosmeticLayerInSameContainer(ICosmetic otherCosmetic, int ourLayer, int theirLayer)
-    {
-        var ourLayerInfo = SpriteLayers[ourLayer];
-        var ourContainer = GetSpriteContainer(ourLayerInfo.firstSpriteIndex);
-
-        if (otherCosmetic is DynamicCosmetic dynamicCosmetic)
-        {
-            var theirLayerInfo = dynamicCosmetic.SpriteLayers[theirLayer];
-            var theirContainer = dynamicCosmetic.GetSpriteContainer(theirLayerInfo.firstSpriteIndex);
-
-            return theirContainer == ourContainer;
-        }
-
-        //TODO: If the other cosmetic is not a DynamicCosmetic, we assume it has only one sprite, which is probably a problem but works for now.
-        return otherCosmetic.SpriteLeaser.sprites[0]._container == ourContainer;
-    }
-    */
-
-    private void PositionSpritesRelativeToReference(SpriteLayer layerInfo, ICosmetic referenceCosmetic)
-    {
-        var referenceSprites = referenceCosmetic.SpriteLeaser.sprites;
-        if (referenceSprites == null || referenceSprites.Length == 0)
-        {
-            Plugin.Logger.LogError("Reference cosmetic has no sprites");
-            return;
-        }
-
-        // Get the last sprite of the reference cosmetic
-        var referenceSprite = referenceSprites[referenceSprites.Length - 1];
+        var referenceSprite = referenceCosmetic.SpriteLeaser.sprites[referenceCosmeticLayerGroup.lastSpriteIndex];
 
         // Position first sprite in front of reference
-        sLeaser.sprites[layerInfo.firstSpriteIndex].MoveInFrontOfOtherNode(referenceSprite);
+        sLeaser.sprites[layerGroup.firstSpriteIndex].MoveInFrontOfOtherNode(referenceSprite);
+        Plugin.DebugLog("sprite of: " + sLeaser.sprites[layerGroup.firstSpriteIndex].element.name + " positioned in front of sprite " + referenceSprite.element.name);
 
         // Position remaining sprites in sequence
-        for (int i = layerInfo.firstSpriteIndex + 1; i < layerInfo.lastSpriteIndex; i++)
+        for (int i = layerGroup.firstSpriteIndex + 1; i < layerGroup.lastSpriteIndex; i++)
         {
             sLeaser.sprites[i].MoveInFrontOfOtherNode(sLeaser.sprites[i - 1]);
+            Plugin.DebugLog("sprite of: " + sLeaser.sprites[i].element.name + " positioned in front of sprite " + sLeaser.sprites[i - 1].element.name);
         }
-
-        Plugin.Logger.LogDebug("sprite of: " + sLeaser.sprites[layerInfo.firstSpriteIndex].element.name + " positioned in front of sprite " + referenceSprite.element.name);
     }
 
-    public virtual void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer? newContainer)
+    public virtual void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
     {
         newContainer ??= rCam.ReturnFContainer("Midground");
 
@@ -249,36 +192,9 @@ public class DynamicCosmetic : UpdatableAndDeletable, ICosmetic, IDrawable
             Plugin.Logger.LogError("Cannot add cosmetic to container - wearer is null");
             return;
         }
-
-        ReorderSpriteLayers();
     }
 
     //
     // UTILITY FUNCTIONS
     //
-
-    public void SetSpriteLayerNeedsReorder(int layer, bool value)
-    {
-        if (SpriteLayers.TryGetValue(layer, out SpriteLayer spriteLayer))
-        {
-            spriteLayer.needsReorder = value;
-            SpriteLayers[layer] = spriteLayer; // Update the dictionary entry
-        }
-        else
-        {
-            Plugin.Logger.LogWarning($"Sprite layer {layer} does not exist in this cosmetic.");
-        }
-    }
-
-    public FSprite FirstSpriteInSpritesLayer(int layer)
-    {
-        var firstCosmeticInLayersSpriteIndex = SpriteLayers[layer].firstSpriteIndex;
-        return sLeaser.sprites[firstCosmeticInLayersSpriteIndex];
-    }
-
-    public FSprite LastSpriteInSpritesLayer(int layer)
-    {
-        var firstCosmeticInLayersSpriteIndex = SpriteLayers[layer].lastSpriteIndex;
-        return sLeaser.sprites[firstCosmeticInLayersSpriteIndex];
-    }
 }

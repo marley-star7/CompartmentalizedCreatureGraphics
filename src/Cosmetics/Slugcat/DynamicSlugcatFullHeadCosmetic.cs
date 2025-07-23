@@ -1,7 +1,4 @@
-﻿using CompartmentalizedCreatureGraphics.Extensions;
-using UnityEngine;
-
-namespace CompartmentalizedCreatureGraphics.SlugcatCosmetics;
+﻿namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 
 public class DynamicSlugcatFullHeadAttachedCosmetic : DynamicSlugcatCosmetic
 {
@@ -18,7 +15,7 @@ public class DynamicSlugcatFullHeadAttachedCosmetic : DynamicSlugcatCosmetic
 
     public SpriteInfo[] spritesInfo;
 
-    public DynamicSlugcatFullHeadAttachedCosmetic(SpriteInfo[] spritesInfo, Dictionary<int, SpriteLayer> spritesLayers) : base(spritesLayers)
+    public DynamicSlugcatFullHeadAttachedCosmetic(SpriteInfo[] spritesInfo, SpriteLayerGroup[] spriteLayerGroups) : base(spriteLayerGroups)
     {
         this.spritesInfo = spritesInfo;
     }
@@ -56,8 +53,8 @@ public class DynamicSlugcatFullHeadAttachedCosmetic : DynamicSlugcatCosmetic
         //-- Loop through and update all sprites behind the head + in front of face match the face sprites sprite.
         for (int i = 0; i < sLeaser.sprites.Length; i++)
         {
-            sLeaser.sprites[i].x = playerGraphicsCCGData.BaseHeadSprite.x + (offsetFaceAngleForBehindHeadPosX * spritesInfo[i].distanceFromHeadModifier);
-            sLeaser.sprites[i].y = playerGraphicsCCGData.BaseHeadSprite.y + (offsetFaceAngleForBehindHeadPosY * spritesInfo[i].distanceFromHeadModifier);
+            sLeaser.sprites[i].x = playerGraphicsCCGData.BaseHeadSprite.x + offsetFaceAngleForBehindHeadPosX * spritesInfo[i].distanceFromHeadModifier;
+            sLeaser.sprites[i].y = playerGraphicsCCGData.BaseHeadSprite.y + offsetFaceAngleForBehindHeadPosY * spritesInfo[i].distanceFromHeadModifier;
             sLeaser.sprites[i].scaleX = playerGraphicsCCGData.BaseHeadSprite.scaleX;
             sLeaser.sprites[i].scaleY = playerGraphicsCCGData.BaseHeadSprite.scaleY;
             sLeaser.sprites[i].rotation = playerGraphicsCCGData.faceRotation;

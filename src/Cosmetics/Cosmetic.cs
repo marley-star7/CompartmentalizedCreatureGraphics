@@ -1,12 +1,4 @@
-﻿using CompartmentalizedCreatureGraphics.Cosmetics;
-using IL;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CompartmentalizedCreatureGraphics;
+﻿namespace CompartmentalizedCreatureGraphics.Cosmetics;
 
 /// <summary>
 /// Cosmetics unlike DynamicCosmetics cannot be unequipped.
@@ -21,19 +13,19 @@ public class Cosmetic : ICosmetic
         get => wearer.graphicsModule.GetGraphicsModuleCCGData().sLeaser;
     }
 
-    protected Dictionary<int, SpriteLayer> _spriteLayers;
-    public Dictionary<int, SpriteLayer> SpriteLayers {
-        get => _spriteLayers; 
-        set { _spriteLayers = value;  }
+    protected SpriteLayerGroup[] _spriteLayerGroups;
+    public SpriteLayerGroup[] SpriteLayerGroups {
+        get => _spriteLayerGroups; 
+        set { _spriteLayerGroups = value;  }
     }
 
     protected int startSpriteIndex;
     // TODO: fill this out so that it has the first sprite index refrence, and size. and would work with normal player sprites.
 
-    public Cosmetic(Creature wearer, Dictionary<int, SpriteLayer>    spritesLayers)
+    public Cosmetic(Creature wearer, SpriteLayerGroup[] spriteLayerGroups)
     {
         this.wearer = wearer;
-        this._spriteLayers = spritesLayers;
+        this._spriteLayerGroups = spriteLayerGroups;
     }
 
     public void Equip(Creature wearer)
@@ -42,8 +34,11 @@ public class Cosmetic : ICosmetic
 
         wearerCCGData.cosmetics.Add(this);
         // Add this cosmetics sprite layers information to the wearer graphics module data.
-        foreach (var layer in SpriteLayers.Keys)
-            wearerCCGData.layersCosmetics[layer].Add(this);
+        for (int i = 0; i < SpriteLayerGroups.Length; i++)
+        {
+            Plugin.DebugLog($"Adding cosmetic with sprite {this.SpriteLeaser.sprites[SpriteLayerGroups[i].firstSpriteIndex].element.name} to layer {SpriteLayerGroups[i].layer}");
+            wearerCCGData.layersCosmetics[SpriteLayerGroups[i].layer].Add(this);
+        }
     }
 
     public FSprite FirstSprite

@@ -1,8 +1,4 @@
-﻿using CompartmentalizedCreatureGraphics.Core;
-using CompartmentalizedCreatureGraphics.Cosmetics;
-using CompartmentalizedCreatureGraphics.Extensions;
-
-namespace CompartmentalizedCreatureGraphics;
+﻿namespace CompartmentalizedCreatureGraphics;
 
 internal static class PlayerGraphicsHooks
 {
@@ -11,14 +7,6 @@ internal static class PlayerGraphicsHooks
         orig(self, ow);
 
         var selfCCGData = self.GetPlayerGraphicsCCGData();
-
-        // Construct the cosmeticLayers dictionary depending on the size of the amount of layers in the enum.
-        selfCCGData.layersCosmetics = new Dictionary<int, List<ICosmetic>>();
-        var enumSize = Enum.GetValues(typeof(CCGEnums.SlugcatCosmeticLayer)).Length;
-        for (int i = 0; i < enumSize; i++)
-        {
-            selfCCGData.layersCosmetics.Add(i, new List<ICosmetic>());
-        }
     }
 
     internal static void PlayerGraphics_Update(On.PlayerGraphics.orig_Update orig, PlayerGraphics self)
@@ -58,16 +46,24 @@ internal static class PlayerGraphicsHooks
         //-- Replace the original sprites.
         // We do this instead of just "removing" sprites[9] for compatability purposes...
 
-        playerGraphicsCCGData.BaseHeadSprite.element = Futile.atlasManager.GetElementWithName(playerGraphicsCCGData.cosmeticsPreset.baseHeadSpriteName);
-        //playerGraphicsCCGData.BaseFaceSprite.element = Futile.atlasManager.GetElementWithName(playerGraphicsCCGData.cosmeticsPreset.baseFaceSpriteName);
+        if (playerGraphicsCCGData.BaseHeadSprite == null)
+            Plugin.DebugError("BaseHeadSprite is null, this should not happen!");
+        else
+            playerGraphicsCCGData.BaseHeadSprite.element = Futile.atlasManager.GetElementWithName(playerGraphicsCCGData.cosmeticsPreset.baseHeadSpriteName);
 
         var player = playerGraphics.player;
 
-        // Temp testing
-        playerGraphicsCCGData.BaseFaceSprite.element = Futile.atlasManager.GetElementWithName("marNothing");
-        playerGraphicsCCGData.BaseFaceSprite.color = Color.green;
+        if (playerGraphicsCCGData.BaseFaceSprite == null)
+            Plugin.DebugError("BaseFaceSprite is null, this should not happen!");
+        else
+        {
+            // Temp testing
+            playerGraphicsCCGData.BaseFaceSprite.element = Futile.atlasManager.GetElementWithName("marNothing");
+            playerGraphicsCCGData.BaseFaceSprite.color = Color.green;
 
-        playerGraphicsCCGData.facePos = new Vector2(playerGraphicsCCGData.BaseFaceSprite.x, playerGraphicsCCGData.BaseFaceSprite.y);
+            playerGraphicsCCGData.facePos = new Vector2(playerGraphicsCCGData.BaseFaceSprite.x, playerGraphicsCCGData.BaseFaceSprite.y);
+        }
+
         Vector2 dirLowerChunkToMainChunk = Custom.DirVec(playerGraphics.player.bodyChunks[1].pos, playerGraphics.player.mainBodyChunk.pos);
 
         //-- MR7: If player is sideways and not in zero g, offset the face sprite rotation around the head relative to how horizontal.

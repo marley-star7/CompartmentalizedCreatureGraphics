@@ -1,14 +1,4 @@
-﻿// TODO: need some sort of "layers" system, where can tell which sprite is in front of the face and which is behind it.
-// Something such that you define the layer from preset ones, and their priority within that layer.
-// Maybe adding new layers is easy, and can be placed inbetween other layers?
-// TODO: I would like to just raw base it off the "distance from head" parameter used by cosmetics, since that makes most sense.
-// But that wouldn't work with making lizard helmets overlay over the eyes and such properly
-// So maybe a mix of both, a distance parameter and a layer one.
-
-using CompartmentalizedCreatureGraphics.Cosmetics;
-using CompartmentalizedCreatureGraphics.SlugcatCosmetics;
-
-namespace CompartmentalizedCreatureGraphics.Extensions;
+﻿namespace CompartmentalizedCreatureGraphics.Extensions;
 
 public class PlayerGraphicsCCGData : GraphicsModuleCCGData
 {
@@ -62,47 +52,63 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
         new Vector2(6f, -2),
     };
 
-    public FSprite BaseBodySprite
+    // The Magic Sheet of Sprite Bull-Sheet
+    /* 
+    Sprite 0 = BodyA
+    Sprite 1 = HipsA
+    Sprite 2 = Tail
+    Sprite 3 = HeadA || B
+    Sprite 4 = LegsA
+    Sprite 5 = Arm
+    Sprite 6 = Arm
+    Sprite 7 = TerrainHand
+    sprite 8 = TerrainHand
+    sprite 9 = FaceA
+    sprite 10 = Futile_White with shader Flatlight
+    sprite 11 = pixel Mark of comunication
+    */
+
+    public FSprite? BaseBodySprite
     {
         get { return sLeaser.sprites[0]; }
     }
-    public FSprite BaseHipsSprite
+    public FSprite? BaseHipsSprite
     {
         get { return sLeaser.sprites[1]; }
     }
-    public FSprite BaseTailSprite
+    public FSprite? BaseTailSprite
     {
         get { return sLeaser.sprites[2]; }
     }
-    public FSprite BaseHeadSprite
+    public FSprite? BaseHeadSprite
     {
         get { return sLeaser.sprites[3]; }
     }
-    public FSprite BaseLegsSprite
+    public FSprite? BaseLegsSprite
     {
         get { return sLeaser.sprites[4]; }
     }
-    public FSprite BaseLeftArmSprite
+    public FSprite? BaseLeftArmSprite
     {
         get { return sLeaser.sprites[5]; }
     }
-    public FSprite BaseRightArmSprite
+    public FSprite? BaseRightArmSprite
     {
         get { return sLeaser.sprites[6]; }
     }
-    public FSprite BaseLeftTerrainHandSprite
+    public FSprite? BaseLeftTerrainHandSprite
     {
         get { return sLeaser.sprites[7]; }
     }
-    public FSprite BaseRightTerrainHandSprite
+    public FSprite? BaseRightTerrainHandSprite
     {
         get { return sLeaser.sprites[8]; }
     }
-    public FSprite BaseFaceSprite
+    public FSprite? BaseFaceSprite
     {
         get { return sLeaser.sprites[9]; }
     }
-    public FSprite BasePixelSprite
+    public FSprite? BasePixelSprite
     {
         get { return sLeaser.sprites[11]; }
     }
@@ -120,6 +126,15 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
     public PlayerGraphicsCCGData(PlayerGraphics playerGraphicsRef) : base (playerGraphicsRef)
     {
         this.playerGraphicsRef = new WeakReference<PlayerGraphics>(playerGraphicsRef);
+
+        // Construct the cosmeticLayers dictionary depending on the size of the amount of layers in the enum.
+        layersCosmetics = new Dictionary<int, List<ICosmetic>>();
+
+        var enumSize = Enum.GetValues(typeof(CCGEnums.SlugcatCosmeticLayer)).Length;
+        for (int i = 0; i < enumSize; i++)
+        {
+            layersCosmetics.Add(i, new List<ICosmetic>());
+        }
     }
 
     public Vector2 facePos = Vector2.zero;
@@ -235,7 +250,7 @@ public static class PlayerGraphicsCCGExtension
     /// <returns></returns>
     internal static Cosmetic CreateBasePlayerGraphicsReferenceCosmetic(this PlayerGraphics playerGraphics)
     {
-        // The Magic List of All Sprites
+        // The Magic Sheet of Sprite Bull-Sheet
         /* 
         Sprite 0 = BodyA
         Sprite 1 = HipsA
@@ -252,18 +267,18 @@ public static class PlayerGraphicsCCGExtension
         */
 
         return new Cosmetic((Player)playerGraphics.owner,
-            new Dictionary<int, SpriteLayer>
+            new SpriteLayerGroup[]
             {
-                { (int)CCGEnums.SlugcatCosmeticLayer.BaseBody, new SpriteLayer(0) },
-                { (int)CCGEnums.SlugcatCosmeticLayer.BaseHips, new SpriteLayer(1) },
-                { (int)CCGEnums.SlugcatCosmeticLayer.BaseTail, new SpriteLayer(2) },
-                { (int)CCGEnums.SlugcatCosmeticLayer.BaseHead, new SpriteLayer(3) },
-                { (int)CCGEnums.SlugcatCosmeticLayer.BaseLegs, new SpriteLayer(4) },
-                { (int)CCGEnums.SlugcatCosmeticLayer.BaseLeftArm, new SpriteLayer(5) },
-                { (int)CCGEnums.SlugcatCosmeticLayer.BaseRightArm, new SpriteLayer(6) },
-                { (int)CCGEnums.SlugcatCosmeticLayer.BaseLeftTerrainHand, new SpriteLayer(7) },
-                { (int)CCGEnums.SlugcatCosmeticLayer.BaseRightTerrainHand, new SpriteLayer(8) },
-                { (int)CCGEnums.SlugcatCosmeticLayer.BaseFace, new SpriteLayer(9) },
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseBody, 0),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseHips, 1),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseTail, 2),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseHead, 3),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseLegs, 4),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseLeftArm, 5),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseRightArm, 6),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseLeftTerrainHand, 7),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseRightTerrainHand, 8),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseFace, 9),
             }
         );
     }

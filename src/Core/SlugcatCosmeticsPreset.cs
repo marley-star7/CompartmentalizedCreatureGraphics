@@ -1,5 +1,4 @@
-﻿using CompartmentalizedCreatureGraphics.Extensions;
-using CompartmentalizedCreatureGraphics.SlugcatCosmetics;
+﻿using CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +11,7 @@ public class SlugcatCosmeticsPreset
 {
     public static DynamicSlugcatEarCosmetic CreateDefaultVanillaSlugcatDynamicLeftEarCosmetic()
     {
-        return new DynamicSlugcatEarCosmetic(new Dictionary<int, SpriteLayer>{
-            { (int)CCGEnums.SlugcatCosmeticLayer.Ears, new SpriteLayer(0) }
-        })
+        return new DynamicSlugcatEarCosmetic(new SpriteLayerGroup[]{ new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.Ears, 0) })
         {
             spriteName = "ccgSlugcatEar",
             defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaLeftEarAnglePositions,
@@ -27,9 +24,7 @@ public class SlugcatCosmeticsPreset
 
     public static DynamicSlugcatEarCosmetic CreateDefaultVanillaSlugcatDynamicRightEarCosmetic()
     {
-        return new DynamicSlugcatEarCosmetic(new Dictionary<int, SpriteLayer>{
-            { (int)CCGEnums.SlugcatCosmeticLayer.Ears, new SpriteLayer(0) }
-        })
+        return new DynamicSlugcatEarCosmetic(new SpriteLayerGroup[] { new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.Ears, 0) })
         {
             spriteName = "ccgSlugcatEar",
             defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaRightEarAnglePositions,
@@ -42,9 +37,10 @@ public class SlugcatCosmeticsPreset
 
     public static DynamicSlugcatFaceCosmetic CreateDefaultVanillaSlugcatDynamicNoseCosmetic()
     {
-        return new DynamicSlugcatFaceCosmetic(new Dictionary<int, SpriteLayer>{
-            { (int)CCGEnums.SlugcatCosmeticLayer.Nose, new SpriteLayer(0) }
-        })
+        return new DynamicSlugcatFaceCosmetic(
+            new SpriteLayerGroup[]{
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.Nose, 0)
+            })
         {
             spriteName = "ccgSlugcatNose",
             defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaNoseAnglePositions,
@@ -53,31 +49,31 @@ public class SlugcatCosmeticsPreset
         };
     }
 
-    public static DynamicSlugcatFaceCosmetic CreateDefaultVanillaSlugcatDynamicLeftEyeCosmetic()
+    public static DynamicSlugcatFaceCosmetic CreateDefaultVanillaSlugcatLeftEyeCosmetic()
     {
-        return new DynamicSlugcatEyeCosmetic(new Dictionary<int, SpriteLayer>{
-            { (int)CCGEnums.SlugcatCosmeticLayer.Eyes, new SpriteLayer(0) }
-        })
+        return new DynamicSlugcatFaceCosmetic(
+            new SpriteLayerGroup[]{
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.Nose, 0)
+            })
         {
-            spriteName = "ccgSlugcatEye",
-            defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaLeftEyeAnglePositions,
-            side = 1,
-            defaultScaleX = -1,
-            snapValue = 15,
+            spriteName = "ccgSlugcatNose",
+            defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaNoseAnglePositions,
+            defaultScaleX = 1,
+            snapValue = 15, // MR7: Default snap value for nose is 15.
         };
     }
 
-    public static DynamicSlugcatFaceCosmetic CreateDefaultVanillaSlugcatDynamicRightEyeCosmetic()
+    public static DynamicSlugcatFaceCosmetic CreateDefaultVanillaSlugcatRightEyeCosmetic()
     {
-        return new DynamicSlugcatEyeCosmetic(new Dictionary<int, SpriteLayer>{
-            { (int)CompartmentalizedCreatureGraphics.CCGEnums.SlugcatCosmeticLayer.Eyes, new SpriteLayer(0) }
-        })
+        return new DynamicSlugcatFaceCosmetic(
+            new SpriteLayerGroup[]{
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.Nose, 0)
+            })
         {
-            spriteName = "ccgSlugcatEye",
-            defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaRightEyeAnglePositions,
-            side = -1,
-            defaultScaleX = -1,
-            snapValue = 15,
+            spriteName = "ccgSlugcatNose",
+            defaultAnglePositions = PlayerGraphicsCCGData.DefaultVanillaNoseAnglePositions,
+            defaultScaleX = 1,
+            snapValue = 15, // MR7: Default snap value for nose is 15.
         };
     }
 
