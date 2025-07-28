@@ -1,4 +1,7 @@
-﻿namespace CompartmentalizedCreatureGraphics;
+﻿// TODO: figure out how to do json file magic for the properties and loading, this would solve our current problem with the activator.
+// As well as prepare the functionality for the future.
+
+namespace CompartmentalizedCreatureGraphics;
 
 // There are two types of dependencies:
 // 1. BepInDependency.DependencyFlags.HardDependency - The other mod *MUST* be installed, and your mod cannot run without it. This ensures their mod loads before yours, preventing errors.
@@ -15,6 +18,24 @@ sealed class Plugin : BaseUnityPlugin
     public const string NAME = "Compartmentalized Creature Graphics"; //-- This should be a human-readable version of your mod's name. This is used for log files and also displaying which mods get loaded. In general, it's a good idea to match this with your modinfo.json as well.
     public const string VERSION = "0.0.1"; //-- This follows semantic versioning. For more information, see https://semver.org/ - again, match what you have in modinfo.json
 
+    /// <summary>
+    /// This is the directory where the default cosmetics are stored. It is used to load the default cosmetics from json files.
+    /// </summary>
+    public const string CosmeticPropertiesDirectory = "ccg/cosmetics";
+    /// <summary>
+    /// This is the directory where the default character presets are stored. It is used to load the default character presets from json files.
+    /// </summary>
+    public const string SlugcatCosmeticsPresetsDirectory = "ccg/slugcats";
+
+    /// <summary>
+    /// This is the directory where the custom cosmetics are stored. It is used to load the custom cosmetics from json files.
+    /// </summary>
+    public const string CustomCosmeticPropertiesDirectory = "designmyslugcat/cosmetics";
+    /// <summary>
+    /// This is the directory where the custom cosmetics are stored. It is used to load the custom cosmetics from json files.
+    /// </summary>
+    public const string CustomSlugcatCosmeticsPresetsDirectory = "designmyslugcat/slugcats";
+
     public static ProcessManager.ProcessID DesignMenu => new("DesignMenu", register: true);
     public static SlugcatStats.Name designSlugcat = new SlugcatStats.Name("DesignSlugcat", register: true);
 
@@ -25,7 +46,7 @@ sealed class Plugin : BaseUnityPlugin
     public static int improvedInputVersion = 0;
 
     #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-    internal static new ManualLogSource Logger;
+    private static new ManualLogSource Logger;
     #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     public Plugin()
@@ -37,6 +58,10 @@ sealed class Plugin : BaseUnityPlugin
     {
         On.RainWorld.OnModsInit += Extras.WrapInit(LoadPlugin);
         On.RainWorld.PostModsInit += RainWorld_PostModsInit;
+
+        CosmeticManager.RegisterCritcos(new DynamicSlugcatCosmeticFaceCritcos());
+        CosmeticManager.RegisterCritcos(new DynamicSlugcatCosmeticEyeCritcos());
+        CosmeticManager.RegisterCritcos(new DynamicSlugcatCosmeticEarCritcos());
 
         Logger.LogInfo("Compartmentalized Creature Graphics is loaded!");
     }
@@ -63,6 +88,7 @@ sealed class Plugin : BaseUnityPlugin
     internal static void RainWorld_PostModsInit(On.RainWorld.orig_PostModsInit orig, RainWorld rainWorld)
     {
         orig(rainWorld);
+
         try
         {
             if (Plugin.isPostInit)
@@ -74,11 +100,20 @@ sealed class Plugin : BaseUnityPlugin
         {
             Plugin.Logger.LogError(e.Message);
         }
+
+        CosmeticManager.LoadCosmeticProperties();
+        PresetManager.LoadSlugcatCosmeticsPresets();
     }
 
-    public static void DebugLog(object ex) => Logger.LogDebug(ex);
+    internal static void LogInfo(object ex) => Logger.LogInfo(ex);
 
-    public static void DebugWarning(object ex) => Logger.LogWarning(ex);
+    internal static void LogMessage(object ex) => Logger.LogMessage(ex);
 
-    public static void DebugError(object ex) => Logger.LogError(ex);
+    internal static void LogDebug(object ex) => Logger.LogDebug(ex);
+
+    internal static void LogWarning(object ex) => Logger.LogWarning(ex);
+
+    internal static void LogError(object ex) => Logger.LogError(ex);
+
+    internal static void LogFatal(object ex) => Logger.LogFatal(ex);
 }

@@ -118,7 +118,12 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
     {
         get { return Math.Sign(faceAngleNum); }
     }
+    /// <summary>
+    /// Face angle goes between (A0, A1, A2)
+    /// </summary>
     public string faceAngle = "A0";
+    /// Asymmetrical face angle goes between (-A2, -A1, A0, A1, A2)
+    /// </summary>
     public string faceAngleAsymmetrical = "A0";
 
     public WeakReference<PlayerGraphics> playerGraphicsRef;
@@ -128,12 +133,12 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
         this.playerGraphicsRef = new WeakReference<PlayerGraphics>(playerGraphicsRef);
 
         // Construct the cosmeticLayers dictionary depending on the size of the amount of layers in the enum.
-        layersCosmetics = new Dictionary<int, List<ICosmetic>>();
+        layersCosmetics = new Dictionary<int, List<ICreatureCosmetic>>();
 
         var enumSize = Enum.GetValues(typeof(CCGEnums.SlugcatCosmeticLayer)).Length;
         for (int i = 0; i < enumSize; i++)
         {
-            layersCosmetics.Add(i, new List<ICosmetic>());
+            layersCosmetics.Add(i, new List<ICreatureCosmetic>());
         }
     }
 
@@ -171,11 +176,11 @@ public static class PlayerGraphicsCCGExtension
                 break;
             case 1:
                 ccgData.faceAngle = "A1";
-                ccgData.faceAngleAsymmetrical = "+A1";
+                ccgData.faceAngleAsymmetrical = "A1";
                 break;
             case 2:
                 ccgData.faceAngle = "A2";
-                ccgData.faceAngleAsymmetrical = "+A2";
+                ccgData.faceAngleAsymmetrical = "A2";
                 break;
         }
     }
@@ -222,65 +227,6 @@ public static class PlayerGraphicsCCGExtension
             faceSpriteName = "FaceA0";
 
         return faceSpriteName;
-    }
-
-    public static void EquipSlugcatCosmeticsPreset(this PlayerGraphics playerGraphics, SlugcatCosmeticsPreset preset)
-    {
-        var ccgData = playerGraphics.GetPlayerGraphicsCCGData();
-
-        ccgData.cosmeticsPreset = preset;
-        foreach (var cosmetic in ccgData.cosmeticsPreset.dynamicCosmetics)
-        {
-            cosmetic.Equip(playerGraphics.player);
-        }
-
-        ccgData.compartmentalizedGraphicsEnabled = true;
-    }
-
-    public static void EquipCosmetic(this GraphicsModule graphicsModule, ICosmetic cosmetic)
-    {
-        cosmetic.Equip((Creature)graphicsModule.owner);
-    }
-
-    /// <summary>
-    /// Creates a cosmetic that simply holds the information of the base player graphics sprites in the cosmetics system.
-    /// This is so that we can place cosmetics in front and behind the base player graphics sprites, and also so that we can easily access the base player graphics sprites in the cosmetics system.
-    /// </summary>
-    /// <param name="playerGraphics"></param>
-    /// <returns></returns>
-    internal static Cosmetic CreateBasePlayerGraphicsReferenceCosmetic(this PlayerGraphics playerGraphics)
-    {
-        // The Magic Sheet of Sprite Bull-Sheet
-        /* 
-        Sprite 0 = BodyA
-        Sprite 1 = HipsA
-        Sprite 2 = Tail
-        Sprite 3 = HeadA || B
-        Sprite 4 = LegsA
-        Sprite 5 = Arm
-        Sprite 6 = Arm
-        Sprite 7 = TerrainHand
-        sprite 8 = TerrainHand
-        sprite 9 = FaceA
-        sprite 10 = Futile_White with shader Flatlight
-        sprite 11 = pixel Mark of comunication
-        */
-
-        return new Cosmetic((Player)playerGraphics.owner,
-            new SpriteLayerGroup[]
-            {
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseBody, 0),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseHips, 1),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseTail, 2),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseHead, 3),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseLegs, 4),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseLeftArm, 5),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseRightArm, 6),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseLeftTerrainHand, 7),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseRightTerrainHand, 8),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseFace, 9),
-            }
-        );
     }
 
     public static PlayerGraphicsCCGData GetPlayerGraphicsCCGData(this PlayerGraphics playerGraphics) => (PlayerGraphicsCCGData) GraphicsModuleCraftingExtension.craftingDataConditionalWeakTable.GetValue(playerGraphics, _ => new PlayerGraphicsCCGData(playerGraphics));

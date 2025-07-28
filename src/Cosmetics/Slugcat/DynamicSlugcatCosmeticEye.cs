@@ -1,8 +1,8 @@
 ﻿namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 
-public class DynamicSlugcatEyeCosmetic : DynamicSlugcatFaceCosmetic
+public class DynamicSlugcatCosmeticEye : DynamicSlugcatFaceCosmetic
 {
-    public DynamicSlugcatEyeCosmetic(SpriteLayerGroup[] spriteLayerGroups) : base(spriteLayerGroups)
+    public DynamicSlugcatCosmeticEye(Player wearer, Properties properties) : base(wearer, properties)
     {
     }
 
@@ -11,7 +11,7 @@ public class DynamicSlugcatEyeCosmetic : DynamicSlugcatFaceCosmetic
         base.OnWearerDrawSprites(wearerSLeaser, rCam, timeStacker, camPos);
         //-- MR7: TODO: Maybe make the sideways head turn sprite move two pixels down only when sideways.
 
-        var playerGraphics = (PlayerGraphics)player.graphicsModule;
+        var playerGraphics = (PlayerGraphics)Player.graphicsModule;
         var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
 
         var extraText = "";
@@ -23,12 +23,12 @@ public class DynamicSlugcatEyeCosmetic : DynamicSlugcatFaceCosmetic
         else if (playerGraphics.player.dead)
             extraText = "Dead";
 
-        if (playerGraphicsCCGData.faceSide == side)
-            Sprite.element = Futile.atlasManager.GetElementWithName(spriteName + extraText + playerGraphicsCCGData.faceAngle);
+        if (playerGraphicsCCGData.faceSide == properties.side)
+            Sprite.element = Futile.atlasManager.GetElementWithName(properties.spriteName + extraText + playerGraphicsCCGData.faceAngle);
         else
-            Sprite.element = Futile.atlasManager.GetElementWithName(spriteName + extraText + "A0");
+            Sprite.element = Futile.atlasManager.GetElementWithName(properties.spriteName + extraText + "A0");
 
         //-- MR7: Snap the rotation and placement so it doesn't break at weird spots.
-        Sprite.rotation = MarMathf.Snap(playerGraphicsCCGData.faceRotation, snapValue);
+        Sprite.rotation = MarMathf.Snap(playerGraphicsCCGData.faceRotation, properties.snapValue);
     }
 }

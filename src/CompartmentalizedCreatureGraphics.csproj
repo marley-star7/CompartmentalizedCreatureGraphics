@@ -62,6 +62,10 @@
 		</Reference>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Presets\" />
+	</ItemGroup>
+
   <!-- PostBuild Target -->
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="Exists('$(RainWorldDir)')">
     <Message Importance="high" Text="PostBuild target is running..." />

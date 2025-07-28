@@ -1,0 +1,14 @@
+{
+  "spriteName": "ccgSlugcatEye",
+  "anglePositions": [
+    [ -1, 1 ],
+    [ 2, 2 ],
+    [ 4, 3 ],
+    [ 6, 2 ],
+    [ 7, 1 ]
+  ],
+  "scaleX": 1,
+  "scaleY": 1,
+  "side": 1,
+  "snapValue": 15
+}

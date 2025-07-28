@@ -7,17 +7,17 @@ public class GraphicsModuleCCGData
     /// <summary>
     /// Enable this to use the updated graphics.
     /// </summary>
-    public bool compartmentalizedGraphicsEnabled = true;
+    public bool compartmentalizedGraphicsEnabled = false;
 
     //-- MR7: TODO: could swap these lists with swapback arrays for better performance if necessary down the line.
 
-    public List<ICosmetic> cosmetics = new();
+    public List<ICreatureCosmetic> cosmetics = new();
     /// <summary>
     /// Dictionary containing refrences to dynamic cosmetics rendering in a certain layer.
     /// The int key should be the cosmeticLayer Enum of which cosmetic layer we are on.
     /// The value inside refrences a dynamic cosmetic which is using this layer.
     /// </summary>
-    public Dictionary<int, List<ICosmetic>> layersCosmetics = new();
+    public Dictionary<int, List<ICreatureCosmetic>> layersCosmetics = new();
 
     public WeakReference<GraphicsModule> graphicsModuleRef;
 
@@ -42,14 +42,14 @@ public static class GraphicsModuleCraftingExtension
 
         for (int i = 0; i < graphicsModuleCCGData.cosmetics.Count; i++)
         {
-            if (graphicsModuleCCGData.cosmetics[i] is not DynamicCosmetic dynamicCosmetic)
+            if (graphicsModuleCCGData.cosmetics[i] is not IDynamicCreatureCosmetic dynamicCosmetic)
                 continue;
 
             dynamicCosmetic.AddToContainer(sLeaser, rCam, newContainer);
             dynamicCosmetic.SetLayerGroupsNeedsReorder(true);
         }
 
-        Plugin.Logger.LogDebug($"Adding {graphicsModuleCCGData.cosmetics.Count} dynamic cosmetics to container.");
+        Plugin.LogDebug($"Adding {graphicsModuleCCGData.cosmetics.Count} dynamic cosmetics to container.");
 
         // We go by the layersCosmetics list, which contains all cosmetics in the order they should be rendered.
         // Traveling bottom up.
@@ -59,7 +59,7 @@ public static class GraphicsModuleCraftingExtension
             var currentLayerCosmetics = graphicsModuleCCGData.layersCosmetics[layerIndex];
             for (int j = 0; j < currentLayerCosmetics.Count; j++)
             {
-                if (currentLayerCosmetics[j] is not DynamicCosmetic dynamicCosmetic)
+                if (currentLayerCosmetics[j] is not IDynamicCreatureCosmetic dynamicCosmetic)
                     continue;
 
                 //-- MR7: TODO: RENAME THESE FUNCTIONS OH MY GAWDD

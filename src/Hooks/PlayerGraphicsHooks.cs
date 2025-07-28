@@ -1,4 +1,6 @@
-﻿namespace CompartmentalizedCreatureGraphics;
+﻿using System.Xml.Linq;
+
+namespace CompartmentalizedCreatureGraphics;
 
 internal static class PlayerGraphicsHooks
 {
@@ -26,10 +28,13 @@ internal static class PlayerGraphicsHooks
 
         var player = self.player;
 
-        self.EquipCosmetic(self.CreateBasePlayerGraphicsReferenceCosmetic());
+        player.AddOriginalPlayerGraphicsCosmeticReference();
 
-        if (Content.characterCosmeticPresets.ContainsKey(self.player.slugcatStats.name))
-            self.EquipSlugcatCosmeticsPreset(Content.characterCosmeticPresets[self.player.slugcatStats.name]);
+        if (PresetManager.defaultSlugcatCosmeticsPresets.ContainsKey(self.player.slugcatStats.name))
+            player.EquipSlugcatCosmeticsPreset(PresetManager.LoadDefaultSlugcatCosmeticsPreset(self.player.slugcatStats.name));
+
+        // TEMP LINE BELOW FOR TESTING
+        playerGraphicsCCGData.compartmentalizedGraphicsEnabled = true;
     }
 
     internal static void PlayerGraphics_DrawSprites(On.PlayerGraphics.orig_DrawSprites orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
@@ -47,14 +52,14 @@ internal static class PlayerGraphicsHooks
         // We do this instead of just "removing" sprites[9] for compatability purposes...
 
         if (playerGraphicsCCGData.BaseHeadSprite == null)
-            Plugin.DebugError("BaseHeadSprite is null, this should not happen!");
+            Plugin.LogError("BaseHeadSprite is null, this should not happen!");
         else
-            playerGraphicsCCGData.BaseHeadSprite.element = Futile.atlasManager.GetElementWithName(playerGraphicsCCGData.cosmeticsPreset.baseHeadSpriteName);
+            playerGraphicsCCGData.BaseHeadSprite.element = Futile.atlasManager.GetElementWithName(playerGraphicsCCGData.cosmeticsPreset.baseHeadSpriteName + "A0");
 
         var player = playerGraphics.player;
 
         if (playerGraphicsCCGData.BaseFaceSprite == null)
-            Plugin.DebugError("BaseFaceSprite is null, this should not happen!");
+            Plugin.LogError("BaseFaceSprite is null, this should not happen!");
         else
         {
             // Temp testing

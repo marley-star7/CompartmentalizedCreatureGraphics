@@ -1,14 +1,14 @@
 ﻿namespace CompartmentalizedCreatureGraphics.Cosmetics;
 
 /// <summary>
-/// Cosmetics unlike DynamicCosmetics cannot be unequipped.
-/// They are usually used to store information about original sprites of a creature's graphics module.
+/// Cosmetic used to store information about original sprites of a creature's graphics module.
+/// So that it may be refrenced to by other cosmetics for sprite layering.
 /// </summary>
-public class Cosmetic : ICosmetic
+public class OriginalCreatureGraphicsCosmeticReference : ICreatureCosmetic
 {
     public Creature wearer;
 
-    public RoomCamera.SpriteLeaser SpriteLeaser
+    public RoomCamera.SpriteLeaser SLeaser
     {
         get => wearer.graphicsModule.GetGraphicsModuleCCGData().sLeaser;
     }
@@ -22,7 +22,7 @@ public class Cosmetic : ICosmetic
     protected int startSpriteIndex;
     // TODO: fill this out so that it has the first sprite index refrence, and size. and would work with normal player sprites.
 
-    public Cosmetic(Creature wearer, SpriteLayerGroup[] spriteLayerGroups)
+    public OriginalCreatureGraphicsCosmeticReference(Creature wearer, SpriteLayerGroup[] spriteLayerGroups)
     {
         this.wearer = wearer;
         this._spriteLayerGroups = spriteLayerGroups;
@@ -36,19 +36,9 @@ public class Cosmetic : ICosmetic
         // Add this cosmetics sprite layers information to the wearer graphics module data.
         for (int i = 0; i < SpriteLayerGroups.Length; i++)
         {
-            Plugin.DebugLog($"Adding cosmetic with sprite {this.SpriteLeaser.sprites[SpriteLayerGroups[i].firstSpriteIndex].element.name} to layer {SpriteLayerGroups[i].layer}");
+            Plugin.LogDebug($"Adding cosmetic with sprite {this.SLeaser.sprites[SpriteLayerGroups[i].firstSpriteIndex].element.name} to layer {SpriteLayerGroups[i].layer}");
             wearerCCGData.layersCosmetics[SpriteLayerGroups[i].layer].Add(this);
         }
-    }
-
-    public FSprite FirstSprite
-    {
-        get => SpriteLeaser.sprites[startSpriteIndex];
-    }
-
-    public FSprite LastSprite
-    {
-        get => SpriteLeaser.sprites[startSpriteIndex];
     }
 
     public void OnWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)

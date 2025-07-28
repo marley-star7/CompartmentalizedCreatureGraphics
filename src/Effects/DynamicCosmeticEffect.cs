@@ -4,7 +4,7 @@ namespace CompartmentalizedCreatureGraphics.Effects;
 
 public class DynamicCosmeticEffect
 {
-    public DynamicCosmetic dynamicCosmetic;
+    public IDynamicCreatureCosmetic dynamicCosmetic;
 
     public virtual void OnCosmeticDrawSprites(RoomCamera.SpriteLeaser cosmeticWearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {

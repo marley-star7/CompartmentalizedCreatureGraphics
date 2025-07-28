@@ -1,16 +1,10 @@
 ﻿namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 
-public class DynamicSlugcatCosmetic : DynamicCosmetic
+public class DynamicSlugcatCosmetic : DynamicCreatureCosmetic
 {
-    public Player? player;
+    public Player Player => (Player)Wearer;
 
-    public DynamicSlugcatCosmetic(SpriteLayerGroup[] spriteLayerGroups) : base(spriteLayerGroups)
+    public DynamicSlugcatCosmetic(Player wearer, SpriteLayerGroup[] spriteLayerGroups) : base(wearer, spriteLayerGroups)
     {
-    }
-
-    public override void Equip(Creature wearer)
-    {
-        player = (Player)wearer;
-        base.Equip(wearer);
     }
 }

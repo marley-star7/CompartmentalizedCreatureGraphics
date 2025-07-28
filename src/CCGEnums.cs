@@ -2,6 +2,18 @@
 
 public static class CCGEnums
 {
+    public class DynamicCosmeticID : ExtEnum<DynamicCosmeticID>
+    {
+        public DynamicCosmeticID(string value, bool register = false) : base(value, register) { }
+    }
+
+    public class DynamicCosmeticPropertiesID : ExtEnum<DynamicCosmeticPropertiesID>
+    {
+        public DynamicCosmeticPropertiesID(string value, bool register = false) : base(value, register) { }
+    }
+
+    // TODO: make extEnum for storing cosmetic preset data rather than using strings in dictionary.
+
     public enum SlugcatCosmeticLayer
     {
         None,

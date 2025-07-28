@@ -15,14 +15,14 @@ public class DynamicSlugcatFullHeadAttachedCosmetic : DynamicSlugcatCosmetic
 
     public SpriteInfo[] spritesInfo;
 
-    public DynamicSlugcatFullHeadAttachedCosmetic(SpriteInfo[] spritesInfo, SpriteLayerGroup[] spriteLayerGroups) : base(spriteLayerGroups)
+    public DynamicSlugcatFullHeadAttachedCosmetic(Player wearer, SpriteInfo[] spritesInfo, SpriteLayerGroup[] spriteLayerGroups) : base(wearer, spriteLayerGroups)
     {
         this.spritesInfo = spritesInfo;
     }
 
     public override void InitiateSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        this.sLeaser = sLeaser;
+        this._sLeaser = sLeaser;
 
         sLeaser.sprites = new FSprite[spritesInfo.Length];
 
@@ -37,10 +37,10 @@ public class DynamicSlugcatFullHeadAttachedCosmetic : DynamicSlugcatCosmetic
 
     public override void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        if (player == null)
+        if (Player == null)
             return;
 
-        var playerGraphics = (PlayerGraphics)player.graphicsModule;
+        var playerGraphics = (PlayerGraphics)Player.graphicsModule;
         var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
 
         if (playerGraphicsCCGData.sLeaser == null)
@@ -51,14 +51,14 @@ public class DynamicSlugcatFullHeadAttachedCosmetic : DynamicSlugcatCosmetic
         var offsetFaceAngleForBehindHeadPosY = playerGraphicsCCGData.BaseFaceSprite.y - playerGraphicsCCGData.BaseHeadSprite.y;
 
         //-- Loop through and update all sprites behind the head + in front of face match the face sprites sprite.
-        for (int i = 0; i < sLeaser.sprites.Length; i++)
+        for (int i = 0; i < _sLeaser.sprites.Length; i++)
         {
-            sLeaser.sprites[i].x = playerGraphicsCCGData.BaseHeadSprite.x + offsetFaceAngleForBehindHeadPosX * spritesInfo[i].distanceFromHeadModifier;
-            sLeaser.sprites[i].y = playerGraphicsCCGData.BaseHeadSprite.y + offsetFaceAngleForBehindHeadPosY * spritesInfo[i].distanceFromHeadModifier;
-            sLeaser.sprites[i].scaleX = playerGraphicsCCGData.BaseHeadSprite.scaleX;
-            sLeaser.sprites[i].scaleY = playerGraphicsCCGData.BaseHeadSprite.scaleY;
-            sLeaser.sprites[i].rotation = playerGraphicsCCGData.faceRotation;
-            sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(spritesInfo[i].name + playerGraphicsCCGData.faceAngle);
+            _sLeaser.sprites[i].x = playerGraphicsCCGData.BaseHeadSprite.x + offsetFaceAngleForBehindHeadPosX * spritesInfo[i].distanceFromHeadModifier;
+            _sLeaser.sprites[i].y = playerGraphicsCCGData.BaseHeadSprite.y + offsetFaceAngleForBehindHeadPosY * spritesInfo[i].distanceFromHeadModifier;
+            _sLeaser.sprites[i].scaleX = playerGraphicsCCGData.BaseHeadSprite.scaleX;
+            _sLeaser.sprites[i].scaleY = playerGraphicsCCGData.BaseHeadSprite.scaleY;
+            _sLeaser.sprites[i].rotation = playerGraphicsCCGData.faceRotation;
+            _sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(spritesInfo[i].name + playerGraphicsCCGData.faceAngle);
         }
     }
 }

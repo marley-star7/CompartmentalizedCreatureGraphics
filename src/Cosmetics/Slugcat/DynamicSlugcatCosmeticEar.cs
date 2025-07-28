@@ -1,50 +1,47 @@
 ﻿namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 
-public class DynamicSlugcatEarCosmetic : DynamicSlugcatFaceCosmetic
+public class DynamicSlugcatCosmeticEar : DynamicSlugcatFaceCosmetic
 {
-    public Color earColor;
+    public class Properties : DynamicSlugcatFaceCosmetic.Properties
+    {
+        public Color earColor;
+        public float rad = 5f;
+
+        public Properties()
+        {
+            earColor = Color.white;
+            rad = 5f; // Default radius for the ear.
+        }
+    }
+    public new Properties properties => (Properties)base.properties;
 
     public Vector2 pos;
     public Vector2 lastPos;
-    public float rad = 5f;
 
     private SharedPhysics.TerrainCollisionData scratchTerrainCollisionData;
 
-    public DynamicSlugcatEarCosmetic(SpriteLayerGroup[] spriteLayerGroups) : base(spriteLayerGroups)
+    public DynamicSlugcatCosmeticEar(Player wearer, Properties properties) : base(wearer, properties)
     {
-    }
 
-    private float GetPlayerThreat()
-    {
-        if (player == null)
-            return 0f;
-        if (player.abstractCreature.world.game.GameOverModeActive)
-            return 0f;
-        if (player.abstractCreature.world.game.manager.musicPlayer != null && player.abstractCreature.world.game.manager.musicPlayer.threatTracker != null)
-            return player.abstractCreature.world.game.manager.musicPlayer.threatTracker.currentMusicAgnosticThreat;
-        if (player.abstractCreature.world.game.manager.fallbackThreatDetermination == null)
-            player.abstractCreature.world.game.manager.fallbackThreatDetermination = new ThreatDetermination(0);
-
-        return player.abstractCreature.world.game.manager.fallbackThreatDetermination.currentMusicAgnosticThreat;
     }
     
     public override void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         base.OnWearerDrawSprites(wearerSLeaser, rCam, timeStacker, camPos);
 
-        var playerGraphics = (PlayerGraphics)player.graphicsModule;
+        var playerGraphics = (PlayerGraphics)Player.graphicsModule;
         var playerGraphicsData = playerGraphics.GetPlayerGraphicsCCGData();
 
         //-- MR7: To achieve the effect of being behind we make get an offset from face angle different to position the head.
         var offsetFaceAngleForBehindHeadPosX = playerGraphicsData.BaseFaceSprite.x - playerGraphicsData.BaseHeadSprite.x;
         var offsetFaceAngleForBehindHeadPosY = playerGraphicsData.BaseFaceSprite.y - playerGraphicsData.BaseHeadSprite.y;
         //-- Loop through and update all sprites behind the head + in front of face match the face sprites sprite.
-        for (int i = 0; i < sLeaser.sprites.Length; i++)
+        for (int i = 0; i < _sLeaser.sprites.Length; i++)
         {
-            sLeaser.sprites[i].color = earColor;
+            _sLeaser.sprites[i].color = properties.earColor;
         }
 
-        Vector2 dirLowerChunkToMainChunk = Custom.DirVec(player.bodyChunks[1].pos, player.mainBodyChunk.pos);
+        Vector2 dirLowerChunkToMainChunk = Custom.DirVec(Player.bodyChunks[1].pos, Player.mainBodyChunk.pos);
 
         //-- MR7: 1 distance = 1 pixel in RW, and base ears are positioned 5 pixels out.
         var earPosOffset = posOffset;
@@ -59,7 +56,7 @@ public class DynamicSlugcatEarCosmetic : DynamicSlugcatFaceCosmetic
 
         //-- MR7: If player is under threat, make their ears shift down a bit more. 
 
-        var threat = GetPlayerThreat();
+        var threat = Player.GetThreat();
         if (threat > 0.01f)
         {
             var maxEarRotation = 90f;
