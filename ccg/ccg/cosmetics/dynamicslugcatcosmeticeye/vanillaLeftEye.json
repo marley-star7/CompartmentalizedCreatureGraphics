@@ -2,7 +2,7 @@
   "spriteNames": [ "ccgSlugcatEye" ],
   "spriteLayerGroups": [
     {
-      "layer": 1,
+      "layerName": "Eye",
       "startSpriteIndex": 0,
       "endSpriteIndex": 0
     }

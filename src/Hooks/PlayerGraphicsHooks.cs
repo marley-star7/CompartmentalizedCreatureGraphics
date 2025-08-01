@@ -51,7 +51,7 @@ internal static class PlayerGraphicsHooks
             player.EquipSlugcatCosmeticsPreset(PresetManager.GetDefaultSlugcatCosmeticsPreset(self.player.slugcatStats.name));
 
         //-- MR7: Currently we just re-order again even though this runs twice techincally, since base thing adds to container, but this works for now in solving the layering issue.
-        self.AddDynamicCosmeticsToContainer(sLeaser, rCam, null);
+        //self.AddDynamicCosmeticsToContainer(sLeaser, rCam, null);
     }
 
     internal static void PlayerGraphics_DrawSprites(On.PlayerGraphics.orig_DrawSprites orig, PlayerGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)

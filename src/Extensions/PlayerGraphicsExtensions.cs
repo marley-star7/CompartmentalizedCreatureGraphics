@@ -150,7 +150,7 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
     public float faceRotationTimeStacked = 0;
 }
 
-public static class PlayerGraphicsCCGExtension
+public static class PlayerGraphicsCCGExtensions
 {
     /// <summary>
     /// Dir char set to R for right, or L for left, leave empty for nothing.

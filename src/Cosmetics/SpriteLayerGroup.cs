@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace CompartmentalizedCreatureGraphics.Cosmetics;
 
-namespace CompartmentalizedCreatureGraphics.Cosmetics;
-
-//-- MR7: TODO: Come up with a better name for this struct, more indiciative of what it is.
 public struct SpriteLayerGroup
 {
-    [JsonProperty("layer")]
+    [JsonProperty("layerName")]
     public int layer;
 
     [JsonProperty("startSpriteIndex")]

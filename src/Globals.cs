@@ -2,6 +2,7 @@
 global using System.Collections.Generic;
 global using System.IO;
 global using System.Linq;
+global using System.Reflection;
 global using static System.Linq.Queryable;
 
 global using System.Runtime.CompilerServices;
@@ -15,6 +16,7 @@ global using BepInEx.Logging;
 global using RWCustom;
 
 global using Newtonsoft.Json;
+global using Newtonsoft.Json.Serialization;
 global using Newtonsoft.Json.Linq;
 
 global using MRCustom.Math;

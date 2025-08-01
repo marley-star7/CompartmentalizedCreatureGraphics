@@ -29,7 +29,7 @@ public class GraphicsModuleCCGData
     }
 }
 
-public static class GraphicsModuleCraftingExtension
+public static class GraphicsModuleCraftingExtensions
 {
     internal static readonly ConditionalWeakTable<GraphicsModule, GraphicsModuleCCGData> craftingDataConditionalWeakTable = new();
 

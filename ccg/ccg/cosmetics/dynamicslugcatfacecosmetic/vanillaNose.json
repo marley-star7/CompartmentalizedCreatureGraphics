@@ -2,7 +2,7 @@
   "spriteNames": [ "ccgSlugcatNose" ],
   "spriteLayerGroups": [
     {
-      "layer": 1,
+      "layerName": "Nose",
       "startSpriteIndex": 0,
       "endSpriteIndex": 0
     }

@@ -4,7 +4,7 @@
   ],
   "spriteLayerGroups": [
     {
-      "layer": 1,
+      "layerName": "Ear",
       "startSpriteIndex": 0,
       "endSpriteIndex": 0
     }

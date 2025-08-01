@@ -11,7 +11,8 @@ public class DynamicSlugcatCosmeticFaceCritcos : Critcos
         var settings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            MissingMemberHandling = MissingMemberHandling.Error
+            MissingMemberHandling = MissingMemberHandling.Error,
+            ContractResolver = new CreatureCosmeticLayerContractResolver<CCGEnums.SlugcatCosmeticLayer>()
         };
 
         DynamicSlugcatFaceCosmetic.Properties properties = JsonConvert.DeserializeObject<DynamicSlugcatFaceCosmetic.Properties>(json, settings);

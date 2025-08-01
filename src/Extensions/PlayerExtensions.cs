@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CompartmentalizedCreatureGraphics.Extensions;
 
-public static class PlayerExtension
+public static class PlayerExtensions
 {
     /// <summary>
     /// Creates a cosmetic that simply holds the information of the base player graphics sprites in the cosmetics system.
