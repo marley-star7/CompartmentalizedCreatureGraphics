@@ -9,24 +9,28 @@ namespace CompartmentalizedCreatureGraphics.Cosmetics;
 //-- MR7: TODO: Come up with a better name for this struct, more indiciative of what it is.
 public struct SpriteLayerGroup
 {
+    [JsonProperty("layer")]
     public int layer;
 
-    public int firstSpriteIndex;
-    public int lastSpriteIndex;
+    [JsonProperty("startSpriteIndex")]
+    public int startSpriteIndex;
+
+    [JsonProperty("endSpriteIndex")]
+    public int endSpriteIndex;
 
     public bool needsReorder = false;
 
     public SpriteLayerGroup(int layer, int firstSpriteIndex)
     {
         this.layer = layer;
-        this.firstSpriteIndex = firstSpriteIndex;
-        lastSpriteIndex = firstSpriteIndex;
+        this.startSpriteIndex = firstSpriteIndex;
+        endSpriteIndex = firstSpriteIndex;
     }
 
     public SpriteLayerGroup(int layer, int firstSpriteIndex, int lastSpriteIndex)
     {
         this.layer = layer;
-        this.firstSpriteIndex = firstSpriteIndex;
-        this.lastSpriteIndex = lastSpriteIndex;
+        this.startSpriteIndex = firstSpriteIndex;
+        this.endSpriteIndex = lastSpriteIndex;
     }
 }

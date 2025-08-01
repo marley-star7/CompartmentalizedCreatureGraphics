@@ -2,50 +2,95 @@
 
 public abstract class Critcos
 {
-    private readonly static Dictionary<string, Dictionary<string, DynamicCreatureCosmetic.Properties>> loadedDynamicCosmeticProperties = new();
+    /// <summary>
+    /// String is the properties ID, which is used to reference the loaded properties.
+    /// </summary>
+    private readonly Dictionary<string, DynamicCreatureCosmetic.Properties> loadedDynamicCosmeticProperties = new();
 
-    public Critcos()
-    {
-    }
+    public abstract Type DynamicCreatureCosmeticType { get; }
+    public abstract Type DynamicCreatureCosmeticPropertiesType { get; }
 
-    public abstract DynamicCreatureCosmetic.Properties ParseProperties(Dictionary<string, object> jsonData);
+    public string CosmeticTypeID => ConvertCosmeticTypeToID(DynamicCreatureCosmeticType);
 
-    // TODO: move the dictionary containing loaded properties to this class, so that it can be used to retrieve properties by ID.
-    public abstract DynamicCreatureCosmetic.Properties GetPropertiesFromPropertiesID(string propertiesID);
+    /// <summary>
+    /// This should parse the json data sent to the proper properties, and return.
+    /// </summary>
+    /// <param name="jsonData"></param>
+    /// <returns></returns>
+    public abstract DynamicCreatureCosmetic.Properties ParseProperties(string json);
+
+    /// <summary>
+    /// This should return a dynamic cosmetic with loaded properties from the id, of the correct type.
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="propertiesID"></param>
+    /// <returns></returns>
+    public abstract DynamicCreatureCosmetic CreateDynamicCosmeticForPlayer(Player player, string propertiesId);
 
     //
     // Utility methods
     //
 
-    public void AddLoadedDynamicCosmeticProperties(string cosmeticTypeID, string propertiesID, DynamicCreatureCosmetic.Properties properties)
+    /// <summary>
+    /// Normalize the name to lowercase for consistency, so user's don't have to worry about case sensitivity when referencing cosmetics.
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    private string ConvertCosmeticTypeToID(Type cosmeticType)
     {
-        cosmeticTypeID = CosmeticManager.PrepareStringForReference(cosmeticTypeID);
-        propertiesID = CosmeticManager.PrepareStringForReference(cosmeticTypeID);
+        return cosmeticType.Name.ToLowerInvariant();
+    }
 
-        if (!loadedDynamicCosmeticProperties.TryGetValue(cosmeticTypeID, out var propertiesDictionary))
+    /// <summary>
+    /// Adds a set of dynamic cosmetic properties to the collection of loaded properties.
+    /// </summary>
+    /// <remarks>If the specified <paramref name="propertiesId"/> already exists in the collection, the
+    /// addition is skipped, and a warning is logged.</remarks>
+    /// <param name="propertiesId">The unique identifier for the cosmetic properties. This identifier is processed to ensure it is suitable for
+    /// reference.</param>
+    /// <param name="properties">The dynamic cosmetic properties to be added.</param>
+    public void AddLoadedDynamicCosmeticProperties(string propertiesId, DynamicCreatureCosmetic.Properties properties)
+    {
+        propertiesId = CosmeticManager.PrepareStringForReference(propertiesId);
+
+        if (loadedDynamicCosmeticProperties.ContainsKey(propertiesId))
         {
-            Plugin.LogDebug($"No loaded dynamic cosmetic properties found for type ID: {cosmeticTypeID}");
+            Plugin.LogWarning($"Dynamic cosmetic properties with ID: {propertiesId} is already loaded, skipping addition.");
+            return;
+        }
+        if (properties == null)
+        {
+            Plugin.LogError($"Failed adding loaded dynamicCosmeticProperties, Properties is null??");
             return;
         }
 
-        propertiesDictionary.Add(propertiesID, properties);
+        loadedDynamicCosmeticProperties.Add(propertiesId, properties);
+        Plugin.LogDebug($"Added loaded property id: {propertiesId} to {this.GetType().Name} your proof is that the scale var of the property is ({properties.scaleX}, {properties.scaleY})");
     }
 
-    public DynamicCreatureCosmetic.Properties? GetLoadedDynamicCosmeticProperties(string cosmeticTypeID, string propertiesID)
+    /// <summary>
+    /// Retrieves the loaded dynamic cosmetic properties associated with the specified properties ID.
+    /// </summary>
+    /// <param name="propertiesId"></param>
+    /// <returns></returns>
+    public DynamicCreatureCosmetic.Properties? GetLoadedPropertiesFromPropertiesId(string propertiesId)
     {
-        cosmeticTypeID = CosmeticManager.PrepareStringForReference(cosmeticTypeID);
-        propertiesID = CosmeticManager.PrepareStringForReference(cosmeticTypeID);
+        propertiesId = CosmeticManager.PrepareStringForReference(propertiesId);
+        if (loadedDynamicCosmeticProperties.TryGetValue(propertiesId, out var properties))
+            return properties;
 
-        if (!loadedDynamicCosmeticProperties.TryGetValue(cosmeticTypeID, out var propertiesDictionary))
-        {
-            Plugin.LogDebug($"No loaded dynamic cosmetic properties found for type ID: {cosmeticTypeID}");
-            return null;
-        }
-        if (!propertiesDictionary.TryGetValue(propertiesID, out var properties))
-        {
-            Plugin.LogDebug($"No loaded dynamic cosmetic properties found for type ID: {cosmeticTypeID} and properties ID: {propertiesID}");
-            return null;
-        }
-        return properties;
+        Plugin.LogError($"Could not get loaded properties for properties id: {propertiesId}, returning null");
+        return null;
+    }
+
+    /// <summary>
+    /// Attempts to retrieve the loaded dynamic cosmetic properties associated with the specified properties ID.
+    /// </summary>
+    /// <param name="propertiesId"></param>
+    /// <param name="properties"></param>
+    public bool TryGetLoadedPropertiesFromPropertiesId(string propertiesId, out DynamicCreatureCosmetic.Properties? properties)
+    {
+        propertiesId = CosmeticManager.PrepareStringForReference(propertiesId);
+        return loadedDynamicCosmeticProperties.TryGetValue(propertiesId, out properties);
     }
 }

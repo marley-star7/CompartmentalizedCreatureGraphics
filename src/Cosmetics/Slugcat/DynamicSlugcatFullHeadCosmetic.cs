@@ -1,4 +1,5 @@
-﻿namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
+﻿/*
+namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 
 public class DynamicSlugcatFullHeadAttachedCosmetic : DynamicSlugcatCosmetic
 {
@@ -62,3 +63,5 @@ public class DynamicSlugcatFullHeadAttachedCosmetic : DynamicSlugcatCosmetic
         }
     }
 }
+
+*/

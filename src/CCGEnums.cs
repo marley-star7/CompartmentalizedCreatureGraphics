@@ -13,6 +13,8 @@ public static class CCGEnums
     }
 
     // TODO: make extEnum for storing cosmetic preset data rather than using strings in dictionary.
+    // TODO: convert this to a list of strings or something, and then add system to allow adding between some.
+    // TODO: use a json converter for that, ask deepseek for one.
 
     public enum SlugcatCosmeticLayer
     {

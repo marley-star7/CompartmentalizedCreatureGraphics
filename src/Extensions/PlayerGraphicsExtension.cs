@@ -143,8 +143,11 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
     }
 
     public Vector2 facePos = Vector2.zero;
-    public float faceRotation = 0;
-    public float snappedFaceRotationSnapDegrees = 0;
+
+    public float faceRotation;
+    public float lastFaceRotation;
+
+    public float faceRotationTimeStacked = 0;
 }
 
 public static class PlayerGraphicsCCGExtension

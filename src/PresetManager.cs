@@ -26,10 +26,11 @@ public static class PresetManager
     /// Load a slugcat cosmetic preset by it's name.
     /// </summary>
     /// <param name="slugcatName"></param>
-    public static SlugcatCosmeticsPreset LoadDefaultSlugcatCosmeticsPreset(SlugcatStats.Name slugcatName)
+    public static SlugcatCosmeticsPreset GetDefaultSlugcatCosmeticsPreset(SlugcatStats.Name slugcatName)
     {
         if (defaultSlugcatCosmeticsPresets.TryGetValue(slugcatName, out var slugcatCosmeticsPreset))
         {
+            Plugin.LogDebug($"Got slugcat cosmetic preset for slugcatStats.Name: {slugcatName}!");
             return slugcatCosmeticsPreset;
         }
         else if (defaultSlugcatCosmeticsPresets.TryGetValue(SlugcatStats.Name.White, out var missingSlugcatCosmeticsPreset))
@@ -56,32 +57,16 @@ public static class PresetManager
             foreach (string path in directory)
             {
                 var fileName = Path.GetFileNameWithoutExtension(path);
-                Plugin.LogDebug($"Loading slugcat cosmetics preset of filename: {fileName} at path: {path}");
+                Plugin.LogDebug($"Loading slugcat cosmetics preset of filename: {fileName}, at path: {path}");
 
-                var jsonData = Json.Parser.Parse(File.ReadAllText(path)) as Dictionary<string, object>;
-                if (jsonData == null)
+                var json = File.ReadAllText(path);
+                var slugcatPreset = ParseSlugcatCosmeticsPresetJson(File.ReadAllText(path));
+
+                if (slugcatPreset.name.TryGetExtEnum(out SlugcatStats.Name slugcatName))
                 {
-                    Plugin.LogError($"Failed to parse JSON data for slugcat cosmetics preset at path: {path}, JSON Data is null, skipping this preset");
-                    continue;
+                    StoreSlugcatCosmeticsPreset(slugcatName, slugcatPreset);
+                    Plugin.LogDebug($"Loaded slugcat cosmetics preset: {fileName} for slugcat: {slugcatName}, your proof is that the base head sprite name is {slugcatPreset.baseHeadSpriteName}");
                 }
-
-                if (!jsonData.Keys.First().TryGetExtEnum(out SlugcatStats.Name slugcatName))
-                {
-                    Plugin.LogError($"Failed to find slugcat name in JSON data for slugcat cosmetics preset at path: {path}, skipping this preset");
-                    continue;
-                }
-
-                var slugcatPresetJsonData = jsonData.Values.First() as Dictionary<string, object>;
-                if (slugcatPresetJsonData == null)
-                {
-                    Plugin.LogError($"Failed to parse slugcat cosmetics preset JSON data at path: {path}, JSON Data is null, skipping this preset");
-                    continue;
-                }
-
-                var slugcatPreset = ParseSlugcatCosmeticsPresetJson(slugcatPresetJsonData);
-                StoreSlugcatCosmeticsPreset(slugcatName, slugcatPreset);
-
-                Plugin.LogDebug($"Loaded slugcat cosmetics preset: {fileName} for slugcat: {slugcatName}, your proof is that the base head sprite name is {slugcatPreset.baseHeadSpriteName}");
             }
         }
         catch (Exception e)
@@ -110,34 +95,44 @@ public static class PresetManager
     // PARSING
     //
 
-    private static SlugcatCosmeticsPreset ParseSlugcatCosmeticsPresetJson(Dictionary<string, object> jsonData)
+    private static SlugcatCosmeticsPreset ParseSlugcatCosmeticsPresetJson(string json)
     {
-        var preset = new SlugcatCosmeticsPreset();
+        var settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            MissingMemberHandling = MissingMemberHandling.Error,
+            Converters = { new StringTupleObjectConverter("cosmeticTypeId", "propertiesId") }
+        };
 
+        SlugcatCosmeticsPreset preset = JsonConvert.DeserializeObject<SlugcatCosmeticsPreset>(json, settings);
+
+        /*
         // Parse base sprites
         ParseBaseSprites(preset, jsonData);
 
         // Parse dynamic cosmetics
         ParseDynamicCosmetics(preset, jsonData);
+        */
 
         return preset;
     }
 
+    /*
     private static void ParseBaseSprites(SlugcatCosmeticsPreset preset, Dictionary<string, object> jsonData)
     {
-        preset.baseHeadSpriteName = ParseSprite(jsonData, nameof(preset.baseHeadSpriteName), preset.baseHeadSpriteName);
-        preset.baseFaceSpriteName = ParseSprite(jsonData, nameof(preset.baseFaceSpriteName), preset.baseFaceSpriteName);
-        preset.baseBodySpriteName = ParseSprite(jsonData, nameof(preset.baseBodySpriteName), preset.baseBodySpriteName);
-        preset.baseArmSpriteName = ParseSprite(jsonData, nameof(preset.baseArmSpriteName), preset.baseArmSpriteName);
-        preset.baseLegsSpriteName = ParseSprite(jsonData, nameof(preset.baseLegsSpriteName), preset.baseLegsSpriteName);
-        preset.baseHipsSpriteName = ParseSprite(jsonData, nameof(preset.baseHipsSpriteName), preset.baseHipsSpriteName);
-        preset.baseTailSpriteName = ParseSprite(jsonData, nameof(preset.baseTailSpriteName), preset.baseTailSpriteName);
-        preset.basePixelSpriteName = ParseSprite(jsonData, nameof(preset.basePixelSpriteName), preset.basePixelSpriteName);
+        preset.baseHeadSpriteName = TryParseSpriteOrUseDefaultSprite(jsonData, nameof(preset.baseHeadSpriteName), preset.baseHeadSpriteName);
+        preset.baseFaceSpriteName = TryParseSpriteOrUseDefaultSprite(jsonData, nameof(preset.baseFaceSpriteName), preset.baseFaceSpriteName);
+        preset.baseBodySpriteName = TryParseSpriteOrUseDefaultSprite(jsonData, nameof(preset.baseBodySpriteName), preset.baseBodySpriteName);
+        preset.baseArmSpriteName = TryParseSpriteOrUseDefaultSprite(jsonData, nameof(preset.baseArmSpriteName), preset.baseArmSpriteName);
+        preset.baseLegsSpriteName = TryParseSpriteOrUseDefaultSprite(jsonData, nameof(preset.baseLegsSpriteName), preset.baseLegsSpriteName);
+        preset.baseHipsSpriteName = TryParseSpriteOrUseDefaultSprite(jsonData, nameof(preset.baseHipsSpriteName), preset.baseHipsSpriteName);
+        preset.baseTailSpriteName = TryParseSpriteOrUseDefaultSprite(jsonData, nameof(preset.baseTailSpriteName), preset.baseTailSpriteName);
+        preset.basePixelSpriteName = TryParseSpriteOrUseDefaultSprite(jsonData, nameof(preset.basePixelSpriteName), preset.basePixelSpriteName);
     }
 
-    private static string ParseSprite(Dictionary<string, object> jsonData, string propertyName, string defaultValue)
+    private static string TryParseSpriteOrUseDefaultSprite(Dictionary<string, object> jsonData, string propertyName, string defaultValue)
     {
-        if (MRJson.TryParseStringProperty(jsonData, propertyName, out var spriteName))
+        if (MRJson.TryParseStringProperty(jsonData, propertyName, out string spriteName))
             return spriteName;
         else
         {
@@ -148,13 +143,7 @@ public static class PresetManager
 
     private static void ParseDynamicCosmetics(SlugcatCosmeticsPreset preset, Dictionary<string, object> jsonData)
     {
-        if (!jsonData.TryGetValue("dynamicCosmetics", out var dynamicCosmeticsObj))
-        {
-            Plugin.LogError("Failed to find dynamicCosmetics in slugcat cosmetics preset JSON data, using empty list");
-            return;
-        }
-
-        if (dynamicCosmeticsObj is not List<object> dynamicCosmeticsList)
+        if (MRJson.TryParsePropertyAsList(jsonData, "dynamicCosmetics", out var dynamicCosmeticsList))
         {
             Plugin.LogError("dynamicCosmetics is not an array, skipping dynamic cosmetics");
             return;
@@ -180,7 +169,12 @@ public static class PresetManager
                 continue;
             }
 
+            cosmeticTypeID = CosmeticManager.PrepareStringForReference(cosmeticTypeID);
+            propertiesID = CosmeticManager.PrepareStringForReference(propertiesID);
+
             preset.dynamicCosmetics.Add((cosmeticTypeID, propertiesID));
+            Plugin.LogDebug($"Added propertiesID: {propertiesID} of cosmeticTypeID {cosmeticTypeID} to preset");
         }
     }
+    */
 }

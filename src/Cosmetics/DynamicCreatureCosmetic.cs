@@ -7,16 +7,22 @@ public class DynamicCreatureCosmetic : UpdatableAndDeletable, IDynamicCreatureCo
 {
     public class Properties
     {
+        [JsonProperty("scaleX")]
         public float scaleX = 1f;
+
+        [JsonProperty("scaleY")]
         public float scaleY = 1f;
 
-        public SpriteLayerGroup[] spriteLayerGroups = new SpriteLayerGroup[0];
+        [JsonProperty("spriteLayerGroups")]
+        public SpriteLayerGroup[] spriteLayerGroups = new SpriteLayerGroup[0]{};
     }
 
-    private Creature _wearer;
+    protected Creature _wearer;
     public Creature Wearer => _wearer;
 
     public GraphicsModule WearerGraphics => _wearer.graphicsModule;
+
+    protected Properties _properties;
 
     protected RoomCamera.SpriteLeaser? _sLeaser;
     public RoomCamera.SpriteLeaser? SLeaser
@@ -24,32 +30,19 @@ public class DynamicCreatureCosmetic : UpdatableAndDeletable, IDynamicCreatureCo
         get => _sLeaser;
     }
 
-    public SpriteLayerGroup[] _spriteLayerGroups;
     public SpriteLayerGroup[] SpriteLayerGroups
     {
-        get => _spriteLayerGroups;
-        set
-        {
-            _spriteLayerGroups = value;
-        }
+        get => _properties.spriteLayerGroups;
     }
     public SpriteEffectGroup[] spriteEffectGroups;
 
-    public DynamicCreatureCosmetic(Creature wearer, SpriteLayerGroup[] spriteLayers)
+    public DynamicCreatureCosmetic(Creature wearer, Properties properties)
     {
         this._wearer = wearer;
-        this._spriteLayerGroups = spriteLayers;
+        this._properties = properties;
         this.spriteEffectGroups = new SpriteEffectGroup[0];
 
-        var wearerCCGData = wearer.graphicsModule.GetGraphicsModuleCCGData();
-
-        wearerCCGData.cosmetics.Add(this);
-        // Add this cosmetics sprite layers information to the wearer graphics module data.
-        for (int i = 0; i < SpriteLayerGroups.Length; i++)
-            wearerCCGData.layersCosmetics[SpriteLayerGroups[i].layer].Add(this);
-
-        if (this._wearer.room != null)
-            wearer.room.AddObject(this);
+        wearer.EquipDynamicCreatureCosmetic(this);
     }
 
     ~DynamicCreatureCosmetic()

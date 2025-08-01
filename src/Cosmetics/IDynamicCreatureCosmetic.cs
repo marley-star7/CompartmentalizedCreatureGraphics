@@ -67,7 +67,7 @@ public static class IDynamicCreatureCosmeticExtension
                 // Do not reference any cosmetics that are also not properly ordered yet.
                 if (candidate is IDynamicCreatureCosmetic dynamicCandidate && dynamicCandidate.SpriteLayerGroups[dynamicCandidate.GetLayerGroupIndexForLayer(refLayer)].needsReorder)
                 {
-                    Plugin.LogDebug($"Checking candidate: {dynamicCandidate.SLeaser.sprites[dynamicCandidate.SpriteLayerGroups[dynamicCandidate.GetLayerGroupIndexForLayer(refLayer)].firstSpriteIndex].element.name} in layer {refLayer}, not ordered yet, skipping...");
+                    Plugin.LogDebug($"Checking candidate: {dynamicCandidate.SLeaser.sprites[dynamicCandidate.SpriteLayerGroups[dynamicCandidate.GetLayerGroupIndexForLayer(refLayer)].startSpriteIndex].element.name} in layer {refLayer}, not ordered yet, skipping...");
                     continue;
                 }
 
@@ -91,14 +91,14 @@ public static class IDynamicCreatureCosmeticExtension
         //-- MR7: I just put this as a void function in case I ever want to move it out later.
         void OrderSpritesInFrontOtherCosmeticInLayerGroup(SpriteLayerGroup layerGroup, ICreatureCosmetic referenceCosmetic, SpriteLayerGroup referenceCosmeticLayerGroup)
         {
-            var referenceSprite = referenceCosmetic.SLeaser.sprites[referenceCosmeticLayerGroup.lastSpriteIndex];
+            var referenceSprite = referenceCosmetic.SLeaser.sprites[referenceCosmeticLayerGroup.endSpriteIndex];
 
             // Position first sprite in front of reference
-            cosmetic.SLeaser.sprites[layerGroup.firstSpriteIndex].MoveInFrontOfOtherNode(referenceSprite);
-            Plugin.LogDebug("sprite of: " + cosmetic.SLeaser.sprites[layerGroup.firstSpriteIndex].element.name + " positioned in front of sprite " + referenceSprite.element.name);
+            cosmetic.SLeaser.sprites[layerGroup.startSpriteIndex].MoveInFrontOfOtherNode(referenceSprite);
+            Plugin.LogDebug("sprite of: " + cosmetic.SLeaser.sprites[layerGroup.startSpriteIndex].element.name + " positioned in front of sprite " + referenceSprite.element.name);
 
             // Position remaining sprites in sequence
-            for (int i = layerGroup.firstSpriteIndex + 1; i < layerGroup.lastSpriteIndex; i++)
+            for (int i = layerGroup.startSpriteIndex + 1; i < layerGroup.endSpriteIndex; i++)
             {
                 cosmetic.SLeaser.sprites[i].MoveInFrontOfOtherNode(cosmetic.SLeaser.sprites[i - 1]);
                 Plugin.LogDebug("sprite of: " + cosmetic.SLeaser.sprites[i].element.name + " positioned in front of sprite " + cosmetic.SLeaser.sprites[i - 1].element.name);

@@ -2,18 +2,13 @@
 
 public class DynamicSlugcatCosmeticEar : DynamicSlugcatFaceCosmetic
 {
-    public class Properties : DynamicSlugcatFaceCosmetic.Properties
+    public new class Properties : DynamicSlugcatFaceCosmetic.Properties
     {
         public Color earColor;
         public float rad = 5f;
-
-        public Properties()
-        {
-            earColor = Color.white;
-            rad = 5f; // Default radius for the ear.
-        }
     }
-    public new Properties properties => (Properties)base.properties;
+
+    public new Properties properties => (Properties)_properties;
 
     public Vector2 pos;
     public Vector2 lastPos;
@@ -88,10 +83,15 @@ public class DynamicSlugcatCosmeticEar : DynamicSlugcatFaceCosmetic
         }
         */
 
-        Sprite.x = pos.x;
-        Sprite.y = pos.y;
-        Sprite.rotation = earFinalRotation;
-        Sprite.color = playerGraphicsData.BaseHeadSprite.color;
+        for (int i = 0; i < SLeaser.sprites.Length; i++)
+        {
+            var currentSprite = SLeaser.sprites[i];
+
+            currentSprite.x = pos.x;
+            currentSprite.y = pos.y;
+            currentSprite.rotation = earFinalRotation;
+            currentSprite.color = playerGraphicsData.BaseHeadSprite.color;
+        }
 
         lastPos = pos;
     }

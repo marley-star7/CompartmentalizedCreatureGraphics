@@ -36,7 +36,7 @@ public class OriginalCreatureGraphicsCosmeticReference : ICreatureCosmetic
         // Add this cosmetics sprite layers information to the wearer graphics module data.
         for (int i = 0; i < SpriteLayerGroups.Length; i++)
         {
-            Plugin.LogDebug($"Adding cosmetic with sprite {this.SLeaser.sprites[SpriteLayerGroups[i].firstSpriteIndex].element.name} to layer {SpriteLayerGroups[i].layer}");
+            Plugin.LogDebug($"Adding cosmetic with sprite {this.SLeaser.sprites[SpriteLayerGroups[i].startSpriteIndex].element.name} to layer {SpriteLayerGroups[i].layer}");
             wearerCCGData.layersCosmetics[SpriteLayerGroups[i].layer].Add(this);
         }
     }

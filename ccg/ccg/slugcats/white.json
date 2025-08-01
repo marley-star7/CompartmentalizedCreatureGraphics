@@ -1,0 +1,33 @@
+{
+  "name": "White",
+  "baseHeadSpriteName": "ccgSlugcatHead",
+  "baseFaceSpriteName": "marNothing",
+  "baseBodySpriteName": "marError64",
+  "baseArmSpriteName": "marError64",
+  "baseLegsSpriteName": "marError64",
+  "baseHipsSpriteName": "marError64",
+  "baseTailSpriteName": "marError64",
+  "basePixelSpriteName": "marError64",
+  "dynamicCosmetics": [
+    {
+      "cosmeticTypeId": "dynamicSlugcatCosmeticEye",
+      "propertiesId": "vanillaLeftEye"
+    },
+    {
+      "cosmeticTypeId": "dynamicSlugcatCosmeticEye",
+      "propertiesId": "vanillaRightEye"
+    },
+    {
+      "cosmeticTypeId": "dynamicSlugcatFaceCosmetic",
+      "propertiesId": "vanillaNose"
+    },
+    {
+      "cosmeticTypeId": "dynamicSlugcatCosmeticEar",
+      "propertiesId": "vanillaLeftEar"
+    },
+    {
+      "cosmeticTypeId": "dynamicSlugcatCosmeticEar",
+      "propertiesId": "vanillaRightEar"
+    }
+  ]
+}

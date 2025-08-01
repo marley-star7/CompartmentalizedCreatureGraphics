@@ -6,10 +6,16 @@ global using static System.Linq.Queryable;
 
 global using System.Runtime.CompilerServices;
 global using System.Runtime.Serialization.Formatters.Binary;
+
 global using UnityEngine;
+
 global using BepInEx;
 global using BepInEx.Logging;
+
 global using RWCustom;
+
+global using Newtonsoft.Json;
+global using Newtonsoft.Json.Linq;
 
 global using MRCustom.Math;
 global using MRCustom.Json;

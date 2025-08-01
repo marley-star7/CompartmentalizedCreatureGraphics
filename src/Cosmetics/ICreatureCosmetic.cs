@@ -6,7 +6,7 @@ public interface ICreatureCosmetic
 {
     public RoomCamera.SpriteLeaser SLeaser{ get; }
 
-    public SpriteLayerGroup[] SpriteLayerGroups { get; set; }
+    public SpriteLayerGroup[] SpriteLayerGroups { get; }
 
     //-- MR7: TODO: There is probably a miniscule bit of unneccessary overhead that the OnWearer* functions are not in DynamicCosmetics exclusively, but I don't think it's worth it to change it right now.
     // CreatureCosmeticGraphicsReferences will never need the OnWearer* functions for example, yet are still ran in updates.

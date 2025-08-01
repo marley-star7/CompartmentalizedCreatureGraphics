@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CompartmentalizedCreatureGraphics.Cosmetics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,26 +50,10 @@ public static class PlayerExtension
         );
     }
 
-    public static void EquipDynamicSlugcatCosmetic(this Player player, string cosmeticTypeID, string propertiesID)
+    public static void EquipDynamicSlugcatCosmetic(this Player player, string cosmeticTypeId, string propertiesId)
     {
-        var properties = CosmeticManager.GetLoadedDynamicCosmeticProperties(cosmeticTypeID, propertiesID);
-        var cosmeticType = CosmeticManager.GetCosmeticTypeFromCosmeticTypeID(cosmeticTypeID);
-
-        IDynamicCreatureCosmetic creatureCosmetic = (IDynamicCreatureCosmetic)Activator.CreateInstance(cosmeticType, player, properties);
-        EquipDynamicSlugcatCosmetic(player, creatureCosmetic);
-    }
-
-    public static void EquipDynamicSlugcatCosmetic(this Player player, IDynamicCreatureCosmetic creatureCosmetic)
-    {
-        var ccgData = ((PlayerGraphics)player.graphicsModule).GetPlayerGraphicsCCGData();
-        // Add the cosmetic to the player graphics data.
-        ccgData.cosmetics.Add(creatureCosmetic);
-        // Add the cosmetic to the correct layer.
-        for (int i = 0; i < creatureCosmetic.SpriteLayerGroups.Length; i++)
-        {
-            Plugin.LogDebug($"Adding cosmetic with sprite {creatureCosmetic.SLeaser.sprites[creatureCosmetic.SpriteLayerGroups[i].firstSpriteIndex].element.name} to layer {creatureCosmetic.SpriteLayerGroups[i].layer}");
-            ccgData.layersCosmetics[creatureCosmetic.SpriteLayerGroups[i].layer].Add(creatureCosmetic);
-        }
+        Plugin.LogDebug($"Equipping cosmeticTypeID {cosmeticTypeId} of propertiesID {propertiesId} to player");
+        CosmeticManager.GetCritcosFromCosmeticTypeId(cosmeticTypeId).CreateDynamicCosmeticForPlayer(player, propertiesId);
     }
 
     public static void EquipSlugcatCosmeticsPreset(this Player player, SlugcatCosmeticsPreset preset)
@@ -79,18 +64,7 @@ public static class PlayerExtension
         ccgData.cosmeticsPreset = preset;
         for (int i = 0; i < preset.dynamicCosmetics.Count; i++)
         {
-            var presetDynamicCosmeticTypeId = preset.dynamicCosmetics[i].Item1;
-            string presetPropertiesId = preset.dynamicCosmetics[i].Item2;
-
-            CosmeticManager.DynamicCosmeticTypeInfo? presetDynamicCosmeticTypeInfo = CosmeticManager.GetCosmeticTypeInfoFromCosmeticTypeID(presetDynamicCosmeticTypeId);
-            var presetDynamicCosmeticType = presetDynamicCosmeticTypeInfo.Value.CosmeticType;
-            var presetPropertiesType = presetDynamicCosmeticTypeInfo.Value.PropertiesType;
-
-            // TODO: make a function to create a dynamic cosmetic from the type id and properties id inside of each cosmetic's code, overgoing this stupidity.
-            var properties = CosmeticManager.GetLoadedDynamicCosmeticProperties<typeof(presetPropertiesType))>(presetDynamicCosmeticTypeId, presetPropertiesId);
-
-            IDynamicCreatureCosmetic creatureCosmetic = (IDynamicCreatureCosmetic)Activator.CreateInstance(presetDynamicCosmeticType, player, properties);
-            EquipDynamicSlugcatCosmetic(player, creatureCosmetic);
+            EquipDynamicSlugcatCosmetic(player, preset.dynamicCosmetics[i].cosmeticTypeId, preset.dynamicCosmetics[i].propertiesId);
         }
 
         ccgData.compartmentalizedGraphicsEnabled = true;

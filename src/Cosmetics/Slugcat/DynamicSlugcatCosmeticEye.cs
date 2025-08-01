@@ -24,11 +24,13 @@ public class DynamicSlugcatCosmeticEye : DynamicSlugcatFaceCosmetic
             extraText = "Dead";
 
         if (playerGraphicsCCGData.faceSide == properties.side)
-            Sprite.element = Futile.atlasManager.GetElementWithName(properties.spriteName + extraText + playerGraphicsCCGData.faceAngle);
+            extraText += playerGraphicsCCGData.faceAngle;
         else
-            Sprite.element = Futile.atlasManager.GetElementWithName(properties.spriteName + extraText + "A0");
+            extraText += "A0";
 
-        //-- MR7: Snap the rotation and placement so it doesn't break at weird spots.
-        Sprite.rotation = MarMathf.Snap(playerGraphicsCCGData.faceRotation, properties.snapValue);
+        for (int i = 0; i < properties.spriteNames.Length; i++)
+        {
+            SLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(properties.spriteNames[i] + extraText);
+        }
     }
 }

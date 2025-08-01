@@ -1,0 +1,20 @@
+{
+  "spriteNames": [ "ccgSlugcatNose" ],
+  "spriteLayerGroups": [
+    {
+      "layer": 1,
+      "startSpriteIndex": 0,
+      "endSpriteIndex": 0
+    }
+  ],
+  "anglePositions": [
+    [ -6, -2 ],
+    [ -3, -1 ],
+    [ 0, 0 ],
+    [ 3, -1 ],
+    [ 6, -2 ]
+  ],
+  "scaleX": 1,
+  "scaleY": 1,
+  "snap": 15
+}

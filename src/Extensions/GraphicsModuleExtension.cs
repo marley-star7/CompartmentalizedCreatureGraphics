@@ -1,4 +1,6 @@
-﻿namespace CompartmentalizedCreatureGraphics.Extensions;
+﻿using CompartmentalizedCreatureGraphics.Cosmetics;
+
+namespace CompartmentalizedCreatureGraphics.Extensions;
 
 public class GraphicsModuleCCGData
 {
@@ -36,6 +38,24 @@ public static class GraphicsModuleCraftingExtension
         return craftingDataConditionalWeakTable.GetValue(graphicsModule, _ => new GraphicsModuleCCGData(graphicsModule));
     }
 
+    public static void EquipDynamicCreatureCosmetic(this Creature creature, IDynamicCreatureCosmetic cosmetic)
+    {
+        var wearerCCGData = creature.graphicsModule.GetGraphicsModuleCCGData();
+
+        wearerCCGData.cosmetics.Add(cosmetic);
+        // Add this cosmetics sprite layers information to the wearer graphics module data.
+        for (int i = 0; i < cosmetic.SpriteLayerGroups.Length; i++)
+            wearerCCGData.layersCosmetics[cosmetic.SpriteLayerGroups[i].layer].Add(cosmetic);
+
+        if (creature.room != null)
+            creature.room.AddObject(cosmetic as UpdatableAndDeletable);
+    }
+
+
+    //
+    // Internal stuff
+    //
+
     internal static void AddDynamicCosmeticsToContainer(this GraphicsModule graphicsModule, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
     {
         var graphicsModuleCCGData = graphicsModule.GetGraphicsModuleCCGData();
@@ -68,30 +88,4 @@ public static class GraphicsModuleCraftingExtension
             }
         }
     }
-
-    // TODO: need to set up system for normal cosmetics too, so that they are stored in the layers,
-    // Then can check easily for the fnode position in this loop that would correspond to in front of base head for example.
-    /*
-    public static FNode GetFrontFNodeInLayer(this GraphicsModule graphicsModule, int layer)
-    {
-        var ccgData = graphicsModule.GetGraphicsModuleCCGData();
-        // If we have no cosmetics in this layer, return the most relevant fNode instead.
-        if (ccgData.cosmeticLayersDynamicCosmetics.Count > 0)
-        {
-            var firstCosmeticInLayer = ccgData.cosmeticLayersDynamicCosmetics[layer].First();
-            return firstCosmeticInLayer.FirstSpriteInSpritesLayer(layer);
-        }
-        else
-        {
-            for (int i = layer; i <= 0; i-- )
-        }
-    }
-
-    public static FNode GetBackFNodeInLayer(this GraphicsModule graphicsModule, int layer)
-    {
-        var ccgData = graphicsModule.GetGraphicsModuleCCGData();
-        var lastCosmeticInLayer = ccgData.cosmeticLayersDynamicCosmetics[layer].Last();
-        return lastCosmeticInLayer.LastSpriteInSpritesLayer(layer);
-    }
-    */
 }

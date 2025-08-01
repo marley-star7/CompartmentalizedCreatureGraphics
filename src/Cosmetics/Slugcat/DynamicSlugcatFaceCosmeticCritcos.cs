@@ -3,21 +3,23 @@ namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 
 public class DynamicSlugcatCosmeticFaceCritcos : Critcos
 {
-    public override DynamicCreatureCosmetic.Properties ParseProperties(Dictionary<string, object> jsonData)
+    public override Type DynamicCreatureCosmeticType => typeof(DynamicSlugcatFaceCosmetic);
+    public override Type DynamicCreatureCosmeticPropertiesType => typeof(DynamicSlugcatFaceCosmetic.Properties);
+
+    public override DynamicCreatureCosmetic.Properties ParseProperties(string json)
     {
-        DynamicCreatureCosmetic.Properties properties = new DynamicCreatureCosmetic.Properties();
+        var settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            MissingMemberHandling = MissingMemberHandling.Error
+        };
 
-        if (MRJson.TryParseFloatProperty(jsonData, nameof(properties.scaleX), out float scaleX))
-            properties.scaleX = scaleX;
-
-        if (MRJson.TryParseFloatProperty(jsonData, nameof(properties.scaleY), out float scaleY))
-            properties.scaleX = scaleX;
-
+        DynamicSlugcatFaceCosmetic.Properties properties = JsonConvert.DeserializeObject<DynamicSlugcatFaceCosmetic.Properties>(json, settings);
         return properties;
     }
 
-    public override DynamicCreatureCosmetic.Properties GetPropertiesFromPropertiesID(string propertiesID)
+    public override DynamicCreatureCosmetic CreateDynamicCosmeticForPlayer(Player player, string propertiesId)
     {
-        throw new NotImplementedException();
+        return new DynamicSlugcatFaceCosmetic(player, (DynamicSlugcatFaceCosmetic.Properties)GetLoadedPropertiesFromPropertiesId(propertiesId));
     }
 }
