@@ -2,9 +2,9 @@
 
 public class DynamicSlugcatCosmetic : DynamicCreatureCosmetic
 {
-    public Player Player => (Player)Wearer;
+    public Player player => (Player)wearer;
 
-    public DynamicSlugcatCosmetic(Player wearer, DynamicCreatureCosmetic.Properties properties) : base(wearer, properties)
+    public DynamicSlugcatCosmetic(PlayerGraphics playerGraphics, DynamicCreatureCosmetic.Properties properties) : base(playerGraphics, properties)
     {
     }
 }

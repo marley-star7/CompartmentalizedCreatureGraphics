@@ -17,42 +17,42 @@ public class DynamicCreatureCosmetic : UpdatableAndDeletable, IDynamicCreatureCo
         public SpriteLayerGroup[] spriteLayerGroups = new SpriteLayerGroup[0]{};
     }
 
-    protected Creature _wearer;
-    public Creature Wearer => _wearer;
+    public Creature wearer => _wearerGraphics.owner as Creature;
 
-    public GraphicsModule WearerGraphics => _wearer.graphicsModule;
+    protected GraphicsModule _wearerGraphics;
+    public GraphicsModule wearerGraphics => _wearerGraphics;
 
     protected Properties _properties;
 
     protected RoomCamera.SpriteLeaser? _sLeaser;
-    public RoomCamera.SpriteLeaser? SLeaser
+    public RoomCamera.SpriteLeaser? sLeaser
     {
         get => _sLeaser;
     }
 
-    public SpriteLayerGroup[] SpriteLayerGroups
+    public SpriteLayerGroup[] spriteLayerGroups
     {
         get => _properties.spriteLayerGroups;
     }
     public SpriteEffectGroup[] spriteEffectGroups;
 
-    public DynamicCreatureCosmetic(Creature wearer, Properties properties)
+    public DynamicCreatureCosmetic(GraphicsModule wearerGraphics, Properties properties)
     {
-        this._wearer = wearer;
+        this._wearerGraphics = wearerGraphics;
         this._properties = properties;
         this.spriteEffectGroups = new SpriteEffectGroup[0];
 
-        wearer.EquipDynamicCreatureCosmetic(this);
+        wearerGraphics.AddCreatureCosmetic(this);
     }
 
     ~DynamicCreatureCosmetic()
     {
-        var wearerCCGData = Wearer.graphicsModule.GetGraphicsModuleCCGData();
+        var wearerCCGData = wearer.graphicsModule.GetGraphicsModuleCCGData();
 
         wearerCCGData.cosmetics.Remove(this);
         // Properly remove this cosmetics sprite layers information to the wearer graphics module data.
-        for (int i = 0; i < SpriteLayerGroups.Length; i++)
-            wearerCCGData.layersCosmetics[SpriteLayerGroups[i].layer].Remove(this);
+        for (int i = 0; i < spriteLayerGroups.Length; i++)
+            wearerCCGData.layersCosmetics[spriteLayerGroups[i].layer].Remove(this);
 
         this.Destroy();
     }
@@ -98,28 +98,21 @@ public class DynamicCreatureCosmetic : UpdatableAndDeletable, IDynamicCreatureCo
     public void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         this._sLeaser = sLeaser;
+
+        if (slatedForDeletetion || room != rCam.room)
+        {
+            sLeaser.CleanSpritesAndRemove();
+        }
     }
 
     public virtual void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
-
+        this._sLeaser = sLeaser;
     }
 
-    public virtual void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
+    public void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
     {
-        newContainer ??= rCam.ReturnFContainer("Midground");
-
-        foreach (FSprite fsprite in sLeaser.sprites)
-        {
-            fsprite.RemoveFromContainer();
-            newContainer.AddChild(fsprite);
-        }
-
-        if (Wearer == null)
-        {
-            Plugin.LogError("Cannot add cosmetic to container - wearer is null");
-            return;
-        }
+        this._sLeaser = sLeaser;
     }
 
     public void Unequip()

@@ -32,7 +32,7 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
 
     protected Vector2 posOffset = Vector2.zero;
 
-    public DynamicSlugcatFaceCosmetic(Player wearer, Properties properties) : base(wearer, properties)
+    public DynamicSlugcatFaceCosmetic(PlayerGraphics wearerGraphics, Properties properties) : base(wearerGraphics, properties)
     {
     }
 
@@ -53,7 +53,10 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
 
     public override void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        var playerGraphics = (PlayerGraphics)Player.graphicsModule;
+        if (sLeaser == null)
+            return;
+
+        var playerGraphics = (PlayerGraphics)player.graphicsModule;
         var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
 
         var currentAnglePosIndex = Mathf.Clamp(properties.anglePositions.Length / 2 + playerGraphicsCCGData.faceAngleNum, 0, properties.anglePositions.Length - 1);
@@ -77,9 +80,9 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
     }
 
     // TODO: temp thing for proof of concept, later use cosmetic effects.
-    public override void OnWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)
+    public override void ApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, RoomPalette palette)
     {
-        if (_sLeaser == null)
+        if (sLeaser == null)
             return;
 
         for (int i = 0; i < _sLeaser.sprites.Length; i++)

@@ -1,4 +1,6 @@
 ﻿using CompartmentalizedCreatureGraphics.Cosmetics;
+using IL;
+using UnityEngine.PlayerLoop;
 
 namespace CompartmentalizedCreatureGraphics.Extensions;
 
@@ -29,63 +31,124 @@ public class GraphicsModuleCCGData
     }
 }
 
-public static class GraphicsModuleCraftingExtensions
+public static class GraphicsModuleCCGExtensions
 {
-    internal static readonly ConditionalWeakTable<GraphicsModule, GraphicsModuleCCGData> craftingDataConditionalWeakTable = new();
+    internal static readonly ConditionalWeakTable<GraphicsModule, GraphicsModuleCCGData> ccgDataConditionalWeakTable = new();
 
     public static GraphicsModuleCCGData GetGraphicsModuleCCGData(this GraphicsModule graphicsModule)
     {
-        return craftingDataConditionalWeakTable.GetValue(graphicsModule, _ => new GraphicsModuleCCGData(graphicsModule));
+        return ccgDataConditionalWeakTable.GetValue(graphicsModule, gm =>
+        {
+            // Check type at creation time
+            if (graphicsModule is PlayerGraphics playerGraphics)
+                return new PlayerGraphicsCCGData(playerGraphics);
+            else
+                return new GraphicsModuleCCGData(graphicsModule); // Default case
+        });
     }
 
-    public static void EquipDynamicCreatureCosmetic(this Creature creature, IDynamicCreatureCosmetic cosmetic)
+    public static void AddCreatureCosmetic(this GraphicsModule self, ICreatureCosmetic cosmetic)
     {
-        var wearerCCGData = creature.graphicsModule.GetGraphicsModuleCCGData();
+        var selfCCGData = self.GetGraphicsModuleCCGData();
 
-        wearerCCGData.cosmetics.Add(cosmetic);
+        selfCCGData.cosmetics.Add(cosmetic);
         // Add this cosmetics sprite layers information to the wearer graphics module data.
-        for (int i = 0; i < cosmetic.SpriteLayerGroups.Length; i++)
-            wearerCCGData.layersCosmetics[cosmetic.SpriteLayerGroups[i].layer].Add(cosmetic);
+        for (int i = 0; i < cosmetic.spriteLayerGroups.Length; i++)
+            selfCCGData.layersCosmetics[cosmetic.spriteLayerGroups[i].layer].Add(cosmetic);
 
-        if (creature.room != null)
-            creature.room.AddObject(cosmetic as UpdatableAndDeletable);
+        if (cosmetic is IDynamicCreatureCosmetic dynamicCosmetic && dynamicCosmetic is UpdatableAndDeletable dynamicCosmeticUpdatable)
+        {
+            self.owner.room.AddObject(dynamicCosmeticUpdatable);
+        }
     }
 
+    public static void RemoveCreatureCosmetic(this GraphicsModule self, ICreatureCosmetic cosmetic)
+    {
+        var selfCCGData = self.GetGraphicsModuleCCGData();
+
+        selfCCGData.cosmetics.Remove(cosmetic);
+        // Add this cosmetics sprite layers information to the wearer graphics module data.
+        for (int i = 0; i < cosmetic.spriteLayerGroups.Length; i++)
+            selfCCGData.layersCosmetics[cosmetic.spriteLayerGroups[i].layer].Remove(cosmetic);
+
+        if (cosmetic is IDynamicCreatureCosmetic dynamicCosmetic && dynamicCosmetic is UpdatableAndDeletable dynamicCosmeticUpdatable)
+        {
+            dynamicCosmeticUpdatable.RemoveFromRoom();
+        }
+    }
+
+    public static void AddDynamicCreatureCosmeticsToRoom(this GraphicsModule self)
+    {
+        if (self.owner.room == null)
+            return;
+
+        var wearerCCGData = self.GetGraphicsModuleCCGData();
+
+        for (int i = 0; i < wearerCCGData.cosmetics.Count; i++)
+        {
+            if (wearerCCGData.cosmetics[i] is UpdatableAndDeletable cosmeticUpdatable 
+                && cosmeticUpdatable.room != self.owner.room)
+            {
+                cosmeticUpdatable.RemoveFromRoom();
+                self.owner.room.AddObject(cosmeticUpdatable);
+            }
+        }
+    }
+
+    public static void RemoveDynamicCreatureCosmeticsFromRoom(this GraphicsModule self)
+    {
+        if (self.owner.room == null)
+            return;
+
+        var wearerCCGData = self.GetGraphicsModuleCCGData();
+
+        for (int i = 0; i < wearerCCGData.cosmetics.Count; i++)
+        {
+            if (wearerCCGData.cosmetics[i] is UpdatableAndDeletable cosmeticUpdatable)
+                cosmeticUpdatable.RemoveFromRoom();
+        }
+    }
 
     //
     // Internal stuff
     //
 
-    internal static void AddDynamicCosmeticsToContainer(this GraphicsModule graphicsModule, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
+    public static void ReorderDynamicCosmetics(this GraphicsModule graphicsModule)
     {
         var graphicsModuleCCGData = graphicsModule.GetGraphicsModuleCCGData();
+        Plugin.LogDebug($"//");
+        Plugin.LogDebug($"//-- Reordering Dynamic Cosmetics.");
+        Plugin.LogDebug($"//");
 
         for (int i = 0; i < graphicsModuleCCGData.cosmetics.Count; i++)
         {
-            if (graphicsModuleCCGData.cosmetics[i] is not IDynamicCreatureCosmetic dynamicCosmetic)
-                continue;
-
-            dynamicCosmetic.AddToContainer(sLeaser, rCam, newContainer);
-            dynamicCosmetic.SetLayerGroupsNeedsReorder(true);
+            if (graphicsModuleCCGData.cosmetics[i] is IDynamicCreatureCosmetic dynamicCosmetic)
+            {
+                dynamicCosmetic.SetLayerGroupsNeedsReorder(true);
+            }
         }
 
-        Plugin.LogDebug($"Adding {graphicsModuleCCGData.cosmetics.Count} dynamic cosmetics to container.");
-
-        // We go by the layersCosmetics list, which contains all cosmetics in the order they should be rendered.
-        // Traveling bottom up.
 
         for (int layerIndex = 0; layerIndex < graphicsModuleCCGData.layersCosmetics.Count; layerIndex++)
         {
             var currentLayerCosmetics = graphicsModuleCCGData.layersCosmetics[layerIndex];
             for (int j = 0; j < currentLayerCosmetics.Count; j++)
             {
-                if (currentLayerCosmetics[j] is not IDynamicCreatureCosmetic dynamicCosmetic)
-                    continue;
-
-                //-- MR7: TODO: RENAME THESE FUNCTIONS OH MY GAWDD
-                dynamicCosmetic.ReorderSpritesInLayerGroup(layerIndex);
-                dynamicCosmetic.SetLayerGroupNeedsReorder(layerIndex, false);
+                if (currentLayerCosmetics[j] is IDynamicCreatureCosmetic dynamicCosmetic)
+                    dynamicCosmetic.ReorderSpritesInLayerGroup(layerIndex);
             }
         }
+
+        Plugin.LogDebug($"//");
+        Plugin.LogDebug($"//-- Reordering Finished.");
+        Plugin.LogDebug($"//");
+    }
+
+    internal static void AddDynamicCosmeticsToContainer(this GraphicsModule graphicsModule, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
+    {
+        var graphicsModuleCCGData = graphicsModule.GetGraphicsModuleCCGData();
+        Plugin.LogDebug($"Adding {graphicsModuleCCGData.cosmetics.Count} dynamic cosmetics to container.");
+
+        graphicsModule.ReorderDynamicCosmetics();
     }
 }

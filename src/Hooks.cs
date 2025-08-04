@@ -4,8 +4,12 @@ public static class Hooks
 {
     internal static void ApplyHooks()
     {
+        ApplyPhysicalObjectHooks();
+        ApplyGraphicsModuleHooks();
+
         ApplyPlayerHooks();
         ApplyPlayerGraphicsHooks();
+
         ApplyLizardGraphicsHooks();
     }
 
@@ -13,9 +17,41 @@ public static class Hooks
     {
         On.RainWorld.PostModsInit -= Plugin.RainWorld_PostModsInit;
 
+        RemovePhysicalObjectHooks();
+        RemoveGraphicsModuleHooks();
+
         RemovePlayerHooks();
         RemovePlayerGraphicsHooks();
+
         RemoveLizardGraphicsHooks();
+    }
+
+    private static void ApplyPhysicalObjectHooks()
+    {
+        On.PhysicalObject.InitiateGraphicsModule += PhysicalObjectHooks.PhysicalObject_InitiateGraphicsModule;
+        On.PhysicalObject.RemoveGraphicsModule += PhysicalObjectHooks.PhysicalObject_RemoveGraphicsModule;
+    }
+
+    private static void RemovePhysicalObjectHooks()
+    {
+        On.PhysicalObject.InitiateGraphicsModule -= PhysicalObjectHooks.PhysicalObject_InitiateGraphicsModule;
+        On.PhysicalObject.RemoveGraphicsModule -= PhysicalObjectHooks.PhysicalObject_RemoveGraphicsModule;
+    }
+
+    private static void ApplyGraphicsModuleHooks()
+    {
+        On.GraphicsModule.InitiateSprites += GraphicsModuleHooks.GraphicsModule_InitiateSprites;
+        On.GraphicsModule.DrawSprites += GraphicsModuleHooks.GraphicsModule_DrawSprites;
+        On.GraphicsModule.ApplyPalette += GraphicsModuleHooks.GraphicsModule_ApplyPalette;
+        On.GraphicsModule.AddToContainer += GraphicsModuleHooks.GraphicsModule_AddToContainer;
+    }
+
+    private static void RemoveGraphicsModuleHooks()
+    {
+        On.GraphicsModule.InitiateSprites -= GraphicsModuleHooks.GraphicsModule_InitiateSprites;
+        On.GraphicsModule.DrawSprites -= GraphicsModuleHooks.GraphicsModule_DrawSprites;
+        On.GraphicsModule.ApplyPalette -= GraphicsModuleHooks.GraphicsModule_ApplyPalette;
+        On.GraphicsModule.AddToContainer -= GraphicsModuleHooks.GraphicsModule_AddToContainer;
     }
 
     private static void ApplyPlayerHooks()

@@ -6,15 +6,15 @@
 /// </summary>
 public class OriginalCreatureGraphicsCosmeticReference : ICreatureCosmetic
 {
-    public Creature wearer;
+    public GraphicsModule wearerGraphics;
 
-    public RoomCamera.SpriteLeaser SLeaser
+    public RoomCamera.SpriteLeaser sLeaser
     {
-        get => wearer.graphicsModule.GetGraphicsModuleCCGData().sLeaser;
+        get => wearerGraphics.GetGraphicsModuleCCGData().sLeaser;
     }
 
     protected SpriteLayerGroup[] _spriteLayerGroups;
-    public SpriteLayerGroup[] SpriteLayerGroups {
+    public SpriteLayerGroup[] spriteLayerGroups {
         get => _spriteLayerGroups; 
         set { _spriteLayerGroups = value;  }
     }
@@ -22,23 +22,12 @@ public class OriginalCreatureGraphicsCosmeticReference : ICreatureCosmetic
     protected int startSpriteIndex;
     // TODO: fill this out so that it has the first sprite index refrence, and size. and would work with normal player sprites.
 
-    public OriginalCreatureGraphicsCosmeticReference(Creature wearer, SpriteLayerGroup[] spriteLayerGroups)
+    public OriginalCreatureGraphicsCosmeticReference(GraphicsModule wearerGraphics, SpriteLayerGroup[] spriteLayerGroups)
     {
-        this.wearer = wearer;
+        this.wearerGraphics = wearerGraphics;
         this._spriteLayerGroups = spriteLayerGroups;
-    }
 
-    public void Equip(Creature wearer)
-    {
-        var wearerCCGData = wearer.graphicsModule.GetGraphicsModuleCCGData();
-
-        wearerCCGData.cosmetics.Add(this);
-        // Add this cosmetics sprite layers information to the wearer graphics module data.
-        for (int i = 0; i < SpriteLayerGroups.Length; i++)
-        {
-            Plugin.LogDebug($"Adding cosmetic with sprite {this.SLeaser.sprites[SpriteLayerGroups[i].startSpriteIndex].element.name} to layer {SpriteLayerGroups[i].layer}");
-            wearerCCGData.layersCosmetics[SpriteLayerGroups[i].layer].Add(this);
-        }
+        wearerGraphics.AddCreatureCosmetic(this);
     }
 
     public void OnWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)

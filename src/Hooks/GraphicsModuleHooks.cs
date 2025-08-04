@@ -1,35 +1,54 @@
-﻿/*
-using UnityEngine;
-using RWCustom;
+﻿
+using CompartmentalizedCreatureGraphics.Extensions;
 
-namespace SlugCrafting;
-
-public static partial class Hooks
+internal static class GraphicsModuleHooks
 {
-    //-- Add hooks
-    internal static void ApplyGraphicsModuleHooks()
+    internal static void GraphicsModule_InitiateSprites(On.GraphicsModule.orig_InitiateSprites orig, GraphicsModule self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        On.PlayerGraphics.InitiateSprites += GraphicsModule_InitiateSprites;
-        On.PlayerGraphics.DrawSprites += GraphicsModule_DrawSprites;
-    }
+        var selfCCGData = self.GetGraphicsModuleCCGData();
+        selfCCGData.sLeaser = sLeaser;
 
-    //-- Remove hooks
-    internal static void RemoveGraphicsModuleHooks()
-    {
-        On.PlayerGraphics.InitiateSprites -= GraphicsModule_InitiateSprites;
-        On.PlayerGraphics.DrawSprites += GraphicsModule_DrawSprites;
-    }
+        for (int i = 0; i < selfCCGData.cosmetics.Count; i++)
+        {
+            self.AddDynamicCreatureCosmeticsToRoom();
+        }
 
-    private static void GraphicsModule_InitiateSprites(On.PlayerGraphics.orig_InitiateSprites orig, PlayerGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
-    {
-        self.GetGraphicsModuleCraftingData().sLeaser = sLeaser;
         orig(self, sLeaser, rCam);
     }
 
-    private static void GraphicsModule_DrawSprites(On.PlayerGraphics.orig_DrawSprites orig, PlayerGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    internal static void GraphicsModule_DrawSprites(On.GraphicsModule.orig_DrawSprites orig, GraphicsModule self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        self.GetGraphicsModuleCraftingData().sLeaser = sLeaser;
+        var selfCCGData = self.GetGraphicsModuleCCGData();
+        selfCCGData.sLeaser = sLeaser;
+
         orig(self, sLeaser, rCam, timeStacker, camPos);
+
+        for (int i = 0; i < selfCCGData.cosmetics.Count; i++)
+        {
+            selfCCGData.cosmetics[i].OnWearerDrawSprites(sLeaser, rCam, timeStacker, camPos);
+        }
+    }
+
+    internal static void GraphicsModule_ApplyPalette(On.GraphicsModule.orig_ApplyPalette orig, GraphicsModule self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
+    {
+        var selfCCGData = self.GetGraphicsModuleCCGData();
+        selfCCGData.sLeaser = sLeaser;
+
+        orig(self, sLeaser, rCam, palette);
+
+        for (int i = 0; i < selfCCGData.cosmetics.Count; i++)
+        {
+            selfCCGData.cosmetics[i].OnWearerApplyPalette(sLeaser, rCam, in palette);
+        }
+    }
+
+    internal static void GraphicsModule_AddToContainer(On.GraphicsModule.orig_AddToContainer orig, GraphicsModule self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
+    {
+        var selfCCGData = self.GetGraphicsModuleCCGData();
+        selfCCGData.sLeaser = sLeaser;
+
+        orig(self, sLeaser, rCam, newContainer);
+
+        self.AddDynamicCosmeticsToContainer(sLeaser, rCam, newContainer);
     }
 }
-*/

@@ -9,7 +9,10 @@ internal static class PlayerGraphicsHooks
     {
         orig(self, ow);
 
-        var selfCCGData = self.GetPlayerGraphicsCCGData();
+        self.CreateAndAddOriginalPlayerGraphicsCosmeticReference();
+
+        if (PresetManager.defaultSlugcatCosmeticsPresets.ContainsKey(self.player.slugcatStats.name))
+            self.CreateAndAddSlugcatCosmeticsPreset(PresetManager.GetDefaultSlugcatCosmeticsPreset(self.player.slugcatStats.name));
     }
 
     /// <summary>
@@ -38,20 +41,10 @@ internal static class PlayerGraphicsHooks
 
     internal static void PlayerGraphics_InitiateSprites(On.PlayerGraphics.orig_InitiateSprites orig, PlayerGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
     {
-        var playerGraphicsCCGData = self.GetPlayerGraphicsCCGData();
-        playerGraphicsCCGData.sLeaser = sLeaser;
-
-        var player = self.player;
-
+        self.GetGraphicsModuleCCGData().sLeaser = sLeaser;
         orig(self, sLeaser, rCam);
 
-        player.AddOriginalPlayerGraphicsCosmeticReference();
-
-        if (PresetManager.defaultSlugcatCosmeticsPresets.ContainsKey(self.player.slugcatStats.name))
-            player.EquipSlugcatCosmeticsPreset(PresetManager.GetDefaultSlugcatCosmeticsPreset(self.player.slugcatStats.name));
-
-        //-- MR7: Currently we just re-order again even though this runs twice techincally, since base thing adds to container, but this works for now in solving the layering issue.
-        //self.AddDynamicCosmeticsToContainer(sLeaser, rCam, null);
+        self.ReorderDynamicCosmetics();
     }
 
     internal static void PlayerGraphics_DrawSprites(On.PlayerGraphics.orig_DrawSprites orig, PlayerGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
@@ -119,7 +112,7 @@ internal static class PlayerGraphicsHooks
                     break;
 
                 case > 0.45f:
-                    self.SetFaceAngle(2);
+                    self.SetFaceAngle(1);
                     break;
 
                 case < -0.9f:
@@ -127,7 +120,7 @@ internal static class PlayerGraphicsHooks
                     break;
 
                 case < -0.45f:
-                    self.SetFaceAngle(-2);
+                    self.SetFaceAngle(-1);
                     break;
 
                 default:
@@ -138,32 +131,19 @@ internal static class PlayerGraphicsHooks
         }
 
         selfCCGData.faceRotationTimeStacked = Mathf.Lerp(selfCCGData.lastFaceRotation, selfCCGData.faceRotation, timeStacker);
-
-        // Finally draw all the cosmetics.
-        for (int i = 0; i < selfCCGData.cosmetics.Count; i++)
-        {
-            selfCCGData.cosmetics[i].OnWearerDrawSprites(sLeaser, rCam, timeStacker, camPos);
-        }
     }
 
-    internal static void PlayerGraphics_ApplyPalette(On.PlayerGraphics.orig_ApplyPalette orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
+    internal static void PlayerGraphics_ApplyPalette(On.PlayerGraphics.orig_ApplyPalette orig, PlayerGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
-        var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
-        playerGraphicsCCGData.sLeaser = sLeaser;
-        orig(playerGraphics, sLeaser, rCam, palette);
-
-        for (int i = 0; i < playerGraphicsCCGData.cosmetics.Count; i++)
-        {
-            playerGraphicsCCGData.cosmetics[i].OnWearerApplyPalette(sLeaser, rCam, in palette);
-        }
+        self.GetGraphicsModuleCCGData().sLeaser = sLeaser;
+        orig(self, sLeaser, rCam, palette);
     }
 
-    internal static void PlayerGraphics_AddToContainer(On.PlayerGraphics.orig_AddToContainer orig, PlayerGraphics playerGraphics, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)
+    internal static void PlayerGraphics_AddToContainer(On.PlayerGraphics.orig_AddToContainer orig, PlayerGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)
     {
-        var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
-        playerGraphicsCCGData.sLeaser = sLeaser;
-        orig(playerGraphics, sLeaser, rCam, newContatiner);
+        self.GetGraphicsModuleCCGData().sLeaser = sLeaser;
+        orig(self, sLeaser, rCam, newContatiner);
 
-        playerGraphics.AddDynamicCosmeticsToContainer(sLeaser, rCam, newContatiner);
+        self.AddDynamicCosmeticsToContainer(sLeaser, rCam, newContatiner);
     }
 }

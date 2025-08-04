@@ -20,8 +20,10 @@ public class DynamicSlugcatCosmeticEarCritcos : Critcos
         return properties;
     }
 
-    public override DynamicCreatureCosmetic CreateDynamicCosmeticForPlayer(Player player, string propertiesId)
+    public override DynamicCreatureCosmetic CreateDynamicCosmeticForCreature(GraphicsModule graphicsModule, string propertiesId)
     {
+        var playerGraphics = graphicsModule as PlayerGraphics;
+
         var properties = GetLoadedPropertiesFromPropertiesId(propertiesId) as DynamicSlugcatCosmeticEar.Properties;
         if (properties == null)
         {
@@ -29,6 +31,6 @@ public class DynamicSlugcatCosmeticEarCritcos : Critcos
             return null;
         }
         else
-            return new DynamicSlugcatCosmeticEar(player, properties);
+            return new DynamicSlugcatCosmeticEar(playerGraphics, properties);
     }
 }

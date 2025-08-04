@@ -25,7 +25,7 @@ public abstract class Critcos
     /// <param name="player"></param>
     /// <param name="propertiesID"></param>
     /// <returns></returns>
-    public abstract DynamicCreatureCosmetic CreateDynamicCosmeticForPlayer(Player player, string propertiesId);
+    public abstract DynamicCreatureCosmetic CreateDynamicCosmeticForCreature(GraphicsModule graphicsModule, string propertiesId);
 
     //
     // Utility methods

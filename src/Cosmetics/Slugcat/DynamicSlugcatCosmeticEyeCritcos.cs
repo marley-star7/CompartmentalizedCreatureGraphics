@@ -18,8 +18,8 @@ public class DynamicSlugcatCosmeticEyeCritcos : Critcos
         return properties;
     }
 
-    public override DynamicCreatureCosmetic CreateDynamicCosmeticForPlayer(Player player, string propertiesId)
+    public override DynamicCreatureCosmetic CreateDynamicCosmeticForCreature(GraphicsModule graphicsModule, string propertiesId)
     {
-        return new DynamicSlugcatCosmeticEye(player, (DynamicSlugcatCosmeticEye.Properties)GetLoadedPropertiesFromPropertiesId(propertiesId));
+        return new DynamicSlugcatCosmeticEye(graphicsModule as PlayerGraphics, (DynamicSlugcatCosmeticEye.Properties)GetLoadedPropertiesFromPropertiesId(propertiesId));
     }
 }

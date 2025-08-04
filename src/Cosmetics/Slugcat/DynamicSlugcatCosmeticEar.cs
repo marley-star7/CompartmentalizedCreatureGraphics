@@ -15,16 +15,19 @@ public class DynamicSlugcatCosmeticEar : DynamicSlugcatFaceCosmetic
 
     private SharedPhysics.TerrainCollisionData scratchTerrainCollisionData;
 
-    public DynamicSlugcatCosmeticEar(Player wearer, Properties properties) : base(wearer, properties)
+    public DynamicSlugcatCosmeticEar(PlayerGraphics wearerGraphics, Properties properties) : base(wearerGraphics, properties)
     {
 
     }
     
     public override void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
+        if (sLeaser == null)
+            return;
+
         base.OnWearerDrawSprites(wearerSLeaser, rCam, timeStacker, camPos);
 
-        var playerGraphics = (PlayerGraphics)Player.graphicsModule;
+        var playerGraphics = (PlayerGraphics)player.graphicsModule;
         var playerGraphicsData = playerGraphics.GetPlayerGraphicsCCGData();
 
         //-- MR7: To achieve the effect of being behind we make get an offset from face angle different to position the head.
@@ -36,7 +39,7 @@ public class DynamicSlugcatCosmeticEar : DynamicSlugcatFaceCosmetic
             _sLeaser.sprites[i].color = properties.earColor;
         }
 
-        Vector2 dirLowerChunkToMainChunk = Custom.DirVec(Player.bodyChunks[1].pos, Player.mainBodyChunk.pos);
+        Vector2 dirLowerChunkToMainChunk = Custom.DirVec(player.bodyChunks[1].pos, player.mainBodyChunk.pos);
 
         //-- MR7: 1 distance = 1 pixel in RW, and base ears are positioned 5 pixels out.
         var earPosOffset = posOffset;
@@ -51,7 +54,7 @@ public class DynamicSlugcatCosmeticEar : DynamicSlugcatFaceCosmetic
 
         //-- MR7: If player is under threat, make their ears shift down a bit more. 
 
-        var threat = Player.GetThreat();
+        var threat = player.GetThreat();
         if (threat > 0.01f)
         {
             var maxEarRotation = 90f;
@@ -83,9 +86,9 @@ public class DynamicSlugcatCosmeticEar : DynamicSlugcatFaceCosmetic
         }
         */
 
-        for (int i = 0; i < SLeaser.sprites.Length; i++)
+        for (int i = 0; i < sLeaser.sprites.Length; i++)
         {
-            var currentSprite = SLeaser.sprites[i];
+            var currentSprite = sLeaser.sprites[i];
 
             currentSprite.x = pos.x;
             currentSprite.y = pos.y;

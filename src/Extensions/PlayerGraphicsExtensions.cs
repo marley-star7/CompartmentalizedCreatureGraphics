@@ -152,6 +152,16 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
 
 public static class PlayerGraphicsCCGExtensions
 {
+    public static PlayerGraphicsCCGData GetPlayerGraphicsCCGData(this PlayerGraphics playerGraphics)
+    {
+        if (playerGraphics == null)
+            throw new ArgumentNullException(nameof(playerGraphics));
+
+        return (PlayerGraphicsCCGData)GraphicsModuleCCGExtensions.ccgDataConditionalWeakTable.GetValue(
+            (GraphicsModule)playerGraphics,
+            _ => new PlayerGraphicsCCGData(playerGraphics));
+    }
+
     /// <summary>
     /// Dir char set to R for right, or L for left, leave empty for nothing.
     /// </summary>
@@ -232,5 +242,67 @@ public static class PlayerGraphicsCCGExtensions
         return faceSpriteName;
     }
 
-    public static PlayerGraphicsCCGData GetPlayerGraphicsCCGData(this PlayerGraphics playerGraphics) => (PlayerGraphicsCCGData) GraphicsModuleCraftingExtension.craftingDataConditionalWeakTable.GetValue(playerGraphics, _ => new PlayerGraphicsCCGData(playerGraphics));
+    //
+    //
+    //
+
+    /// <summary>
+    /// Creates a cosmetic that simply holds the information of the base player graphics sprites in the cosmetics system.
+    /// This is so that we can place cosmetics in front and behind the base player graphics sprites, and also so that we can easily access the base player graphics sprites in the cosmetics system.
+    /// </summary>
+    /// <param name="playerGraphics"></param>
+    /// <returns></returns>
+    internal static void CreateAndAddOriginalPlayerGraphicsCosmeticReference(this PlayerGraphics playerGraphics)
+    {
+        // The Magic Sheet of Sprite Bull-Sheet
+        /* 
+        Sprite 0 = BodyA
+        Sprite 1 = HipsA
+        Sprite 2 = Tail
+        Sprite 3 = HeadA || B
+        Sprite 4 = LegsA
+        Sprite 5 = Arm
+        Sprite 6 = Arm
+        Sprite 7 = TerrainHand
+        sprite 8 = TerrainHand
+        sprite 9 = FaceA
+        sprite 10 = Futile_White with shader Flatlight
+        sprite 11 = pixel Mark of comunication
+        */
+
+        new OriginalCreatureGraphicsCosmeticReference(playerGraphics,
+            new SpriteLayerGroup[]
+            {
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseBody, 0),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseHips, 1),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseTail, 2),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseHead, 3),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseLegs, 4),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseLeftArm, 5),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseRightArm, 6),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseLeftTerrainHand, 7),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseRightTerrainHand, 8),
+                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseFace, 9),
+            }
+        );
+    }
+
+    public static void CreateAndAddDynamicSlugcatCosmetic(this PlayerGraphics self, string cosmeticTypeId, string propertiesId)
+    {
+        Plugin.LogDebug($"Equipping cosmeticTypeID {cosmeticTypeId} of propertiesID {propertiesId} to player");
+        CosmeticManager.GetCritcosFromCosmeticTypeId(cosmeticTypeId).CreateDynamicCosmeticForCreature(self, propertiesId);
+    }
+
+    public static void CreateAndAddSlugcatCosmeticsPreset(this PlayerGraphics self, SlugcatCosmeticsPreset preset)
+    {
+        var ccgData = self.GetPlayerGraphicsCCGData();
+
+        ccgData.cosmeticsPreset = preset;
+        for (int i = 0; i < preset.dynamicCosmetics.Count; i++)
+        {
+            CreateAndAddDynamicSlugcatCosmetic(self, preset.dynamicCosmetics[i].cosmeticTypeId, preset.dynamicCosmetics[i].propertiesId);
+        }
+
+        ccgData.compartmentalizedGraphicsEnabled = true;
+    }
 }

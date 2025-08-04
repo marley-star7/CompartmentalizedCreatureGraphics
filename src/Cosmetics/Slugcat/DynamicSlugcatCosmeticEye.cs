@@ -2,16 +2,19 @@
 
 public class DynamicSlugcatCosmeticEye : DynamicSlugcatFaceCosmetic
 {
-    public DynamicSlugcatCosmeticEye(Player wearer, Properties properties) : base(wearer, properties)
+    public DynamicSlugcatCosmeticEye(PlayerGraphics wearerGraphics, Properties properties) : base(wearerGraphics, properties)
     {
     }
 
     public override void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
+        if (sLeaser == null)
+            return;
+
         base.OnWearerDrawSprites(wearerSLeaser, rCam, timeStacker, camPos);
         //-- MR7: TODO: Maybe make the sideways head turn sprite move two pixels down only when sideways.
 
-        var playerGraphics = (PlayerGraphics)Player.graphicsModule;
+        var playerGraphics = (PlayerGraphics)player.graphicsModule;
         var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
 
         var extraText = "";
@@ -30,7 +33,7 @@ public class DynamicSlugcatCosmeticEye : DynamicSlugcatFaceCosmetic
 
         for (int i = 0; i < properties.spriteNames.Length; i++)
         {
-            SLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(properties.spriteNames[i] + extraText);
+            sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(properties.spriteNames[i] + extraText);
         }
     }
 }

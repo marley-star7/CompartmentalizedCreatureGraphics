@@ -4,9 +4,9 @@ namespace CompartmentalizedCreatureGraphics.Cosmetics;
 
 public interface ICreatureCosmetic
 {
-    public RoomCamera.SpriteLeaser SLeaser{ get; }
+    public RoomCamera.SpriteLeaser? sLeaser{ get; }
 
-    public SpriteLayerGroup[] SpriteLayerGroups { get; }
+    public SpriteLayerGroup[] spriteLayerGroups { get; }
 
     //-- MR7: TODO: There is probably a miniscule bit of unneccessary overhead that the OnWearer* functions are not in DynamicCosmetics exclusively, but I don't think it's worth it to change it right now.
     // CreatureCosmeticGraphicsReferences will never need the OnWearer* functions for example, yet are still ran in updates.
@@ -30,7 +30,7 @@ public static class ICosmeticExtension
 {
     public static bool IsEquipped(this IDynamicCreatureCosmetic cosmetic)
     {
-        return cosmetic.Wearer != null;
+        return cosmetic.wearer != null;
     }
 
     //
@@ -39,9 +39,9 @@ public static class ICosmeticExtension
 
     public static int GetLayerGroupIndexForLayer(this ICreatureCosmetic cosmetic, int layer)
     {
-        for (int i = 0; i < cosmetic.SpriteLayerGroups.Length; i++)
+        for (int i = 0; i < cosmetic.spriteLayerGroups.Length; i++)
         {
-            if (cosmetic.SpriteLayerGroups[i].layer == layer)
+            if (cosmetic.spriteLayerGroups[i].layer == layer)
             {
                 return i;
             }
@@ -55,11 +55,11 @@ public static class ICosmeticExtension
 
     public static FSprite GetFirstSprite(this ICreatureCosmetic creatureCosmetic)
     {
-        return creatureCosmetic.SLeaser.sprites[0];
+        return creatureCosmetic.sLeaser.sprites[0];
     }
 
     public static FSprite GetLastSprite(this ICreatureCosmetic creatureCosmetic)
     {
-        return creatureCosmetic.SLeaser.sprites[creatureCosmetic.SLeaser.sprites.Length - 1];
+        return creatureCosmetic.sLeaser.sprites[creatureCosmetic.sLeaser.sprites.Length - 1];
     }
 }
