@@ -31,6 +31,7 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
     public new Properties properties => (Properties)_properties;
 
     protected Vector2 posOffset = Vector2.zero;
+    protected float sidedScale = 0;
 
     public DynamicSlugcatFaceCosmetic(PlayerGraphics wearerGraphics, Properties properties) : base(wearerGraphics, properties)
     {
@@ -47,8 +48,6 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
             sLeaser.sprites[i] = new FSprite(properties.spriteNames[0] + "A0", true);
             sLeaser.sprites[i].color = properties.spriteColor;
         }
-
-        AddToContainer(sLeaser, rCam, null);
     }
 
     public override void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
@@ -62,7 +61,7 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
         var currentAnglePosIndex = Mathf.Clamp(properties.anglePositions.Length / 2 + playerGraphicsCCGData.faceAngleNum, 0, properties.anglePositions.Length - 1);
         posOffset = properties.anglePositions[currentAnglePosIndex];
 
-        float sidedScale = 1f;
+        sidedScale = 1f;
         if (properties.side != 0 && properties.side != playerGraphicsCCGData.faceSide)
             sidedScale = -1f;
 

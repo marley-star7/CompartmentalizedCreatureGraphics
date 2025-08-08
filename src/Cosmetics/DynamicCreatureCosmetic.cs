@@ -66,7 +66,7 @@ public class DynamicCreatureCosmetic : UpdatableAndDeletable, IDynamicCreatureCo
 
     }
 
-    //-- MR7: Since RoomPalette is a struct, it's slightly more performant to use "in" keyword.
+    //-- MS7: Since RoomPalette is a struct, it's slightly more performant to use "in" keyword.
     public virtual void OnWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)
     {
 
@@ -113,10 +113,5 @@ public class DynamicCreatureCosmetic : UpdatableAndDeletable, IDynamicCreatureCo
     public void AddToContainer(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
     {
         this._sLeaser = sLeaser;
-    }
-
-    public void Unequip()
-    {
-        throw new NotImplementedException();
     }
 }

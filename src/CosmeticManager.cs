@@ -5,7 +5,7 @@ namespace CompartmentalizedCreatureGraphics;
 public static class CosmeticManager
 {
     //
-    //-- MR7: The only stuff user has to care about.
+    //-- MS7: The only stuff user has to care about.
     //
 
     private readonly static Dictionary<string, Critcos> registeredCritcoses = new();
@@ -22,7 +22,7 @@ public static class CosmeticManager
     }
 
     //
-    //-- MR7: And everything else lol...
+    //-- MS7: And everything else lol...
     //
 
     public static Critcos GetCritcosFromCosmeticTypeId(string cosmeticTypeId)
@@ -61,7 +61,7 @@ public static class CosmeticManager
     private static string[]? GetDirectoryForCosmeticPropertiesOfCosmeticTypeId(string cosmeticTypeId)
     {
         cosmeticTypeId = PrepareStringForReference(cosmeticTypeId);
-        //-- MR7: Get the path to the cosmetic preset name, path is decided directly from the name of the type for consitency.
+        //-- MS7: Get the path to the cosmetic preset name, path is decided directly from the name of the type for consitency.
         var directory = AssetManager.ListDirectory(Plugin.CosmeticPropertiesDirectory + "/" + cosmeticTypeId);
 
         if (directory == null || directory.Length == 0)
@@ -125,7 +125,7 @@ public static class CosmeticManager
     }
 
     /// <summary>
-    /// MR7: Prepare the name for cosmetic reference, this is just a simple method to ensure that the name is lowercase.
+    /// MS7: Prepare the name for cosmetic reference, this is just a simple method to ensure that the name is lowercase.
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
@@ -136,7 +136,7 @@ public static class CosmeticManager
 
     internal static void LoadCosmeticProperties()
     {
-        //-- MR7: Little seperators to help it stand out ore in the log.
+        //-- MS7: Little seperators to help it stand out ore in the log.
         Plugin.LogDebug("//");
         Plugin.LogDebug("//-- Loading cosmetic properties...");
         Plugin.LogDebug("//");

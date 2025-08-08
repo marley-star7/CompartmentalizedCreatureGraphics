@@ -12,6 +12,9 @@ public struct SpriteEffectGroup
 
     public SpriteEffectGroup(params int[] sprites)
     {
-        this.sprites = sprites;
+        if (sprites.Length > 0)
+            this.sprites = sprites;
+        else
+            this.sprites = new int[0];
     }
 }

@@ -12,7 +12,7 @@ public class DynamicSlugcatCosmeticEye : DynamicSlugcatFaceCosmetic
             return;
 
         base.OnWearerDrawSprites(wearerSLeaser, rCam, timeStacker, camPos);
-        //-- MR7: TODO: Maybe make the sideways head turn sprite move two pixels down only when sideways.
+        //-- MS7: TODO: Maybe make the sideways head turn sprite move two pixels down only when sideways.
 
         var playerGraphics = (PlayerGraphics)player.graphicsModule;
         var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();

@@ -16,7 +16,7 @@ internal static class PlayerGraphicsHooks
     }
 
     /// <summary>
-    /// MR7: We do all of our calculations of saving details about chunk positioning and stuff in here, since it only occurs every update (40fps) anyways.
+    /// MS7: We do all of our calculations of saving details about chunk positioning and stuff in here, since it only occurs every update (40fps) anyways.
     /// Then we do the time stacked variables stuff in drawSprites since that runs every frame.
     /// </summary>
     /// <param name="orig"></param>
@@ -54,7 +54,7 @@ internal static class PlayerGraphicsHooks
 
         orig(self, sLeaser, rCam, timeStacker, camPos);
 
-        //-- MR7: For compatability, only do slugcat compartmentalized graphics if it is enabled for this scug.
+        //-- MS7: For compatability, only do slugcat compartmentalized graphics if it is enabled for this scug.
         // By default, it is not.
         if (!selfCCGData.compartmentalizedGraphicsEnabled)
             return;
@@ -88,7 +88,7 @@ internal static class PlayerGraphicsHooks
             selfCCGData.facePos = new Vector2(selfCCGData.BaseFaceSprite.x, selfCCGData.BaseFaceSprite.y);
         }
 
-        //-- MR7: If player is sideways and not in zero g, offset the face sprite rotation around the head relative to how horizontal.
+        //-- MS7: If player is sideways and not in zero g, offset the face sprite rotation around the head relative to how horizontal.
         // This is to fake the effect of how the current head turns sideways on horizontals such as when crouching or flipping.
         // (It also makes flips look alot more weighty and rad)
 
@@ -96,7 +96,7 @@ internal static class PlayerGraphicsHooks
         {
             self.SetFaceAngle(0);
         }
-        //-- MR7: Taken from source to calculate when using side angles.
+        //-- MS7: Taken from source to calculate when using side angles.
         else if ((player.bodyMode == Player.BodyModeIndex.Stand && player.input[0].x != 0) || player.bodyMode == Player.BodyModeIndex.Crawl)
         {
             var correctAngle = MarMath.NonzeroSign(dirLowerChunkToMainChunkTimeStacked.x) * 2;

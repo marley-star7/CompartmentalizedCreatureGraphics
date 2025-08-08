@@ -13,7 +13,7 @@ public class GraphicsModuleCCGData
     /// </summary>
     public bool compartmentalizedGraphicsEnabled = false;
 
-    //-- MR7: TODO: could swap these lists with swapback arrays for better performance if necessary down the line.
+    //-- MS7: TODO: could swap these lists with swapback arrays for better performance if necessary down the line.
 
     public List<ICreatureCosmetic> cosmetics = new();
     /// <summary>

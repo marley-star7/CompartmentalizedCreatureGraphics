@@ -50,7 +50,7 @@ public static class IDynamicCreatureCosmeticExtension
 
     private static void OrderSpritesInFrontOtherCosmeticInLayerGroup(this IDynamicCreatureCosmetic cosmetic, SpriteLayerGroup layerGroup, ICreatureCosmetic? referenceCosmetic, SpriteLayerGroup referenceCosmeticLayerGroup)
     {
-        //-- MR7: Behold, my wall of way too many checks because I was frustrated at some error lol.
+        //-- MS7: Behold, my wall of way too many checks because I was frustrated at some error lol.
         if (cosmetic.sLeaser == null)
         {
             Plugin.LogError($"OrderSpritesInFrontOtherCosmeticInLayerGroup failed!, this cosmetic sprite leaser is null!");

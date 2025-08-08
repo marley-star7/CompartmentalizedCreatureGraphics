@@ -35,7 +35,7 @@ public static class PresetManager
         }
         else if (defaultSlugcatCosmeticsPresets.TryGetValue(SlugcatStats.Name.White, out var missingSlugcatCosmeticsPreset))
         {
-            //-- MR7: TODO: Add a more proper default missing slugcat that is more obvious something is wrong, filled with error texture.
+            //-- MS7: TODO: Add a more proper default missing slugcat that is more obvious something is wrong, filled with error texture.
             // Just add another SlugcatStats.Name called "MarError" or something.
 
             Plugin.LogError($"Failed to find slugcat cosmetics preset for slugcat: {slugcatName}, returning default preset (Survivor)");

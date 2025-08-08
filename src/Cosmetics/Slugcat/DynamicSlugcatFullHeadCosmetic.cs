@@ -47,7 +47,7 @@ public class DynamicSlugcatFullHeadAttachedCosmetic : DynamicSlugcatCosmetic
         if (playerGraphicsCCGData.sLeaser == null)
             return;
 
-        //-- MR7: To achieve the effect of being behind we make get an offset from face angle different to position the head.
+        //-- MS7: To achieve the effect of being behind we make get an offset from face angle different to position the head.
         var offsetFaceAngleForBehindHeadPosX = playerGraphicsCCGData.BaseFaceSprite.x - playerGraphicsCCGData.BaseHeadSprite.x;
         var offsetFaceAngleForBehindHeadPosY = playerGraphicsCCGData.BaseFaceSprite.y - playerGraphicsCCGData.BaseHeadSprite.y;
 

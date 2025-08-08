@@ -22,7 +22,7 @@ public static class FNodeExtensions
 
         thisNode.RemoveFromContainer();
         otherNode.container.AddChild(thisNode);
-        //-- MR7: Force set container for bug fix.
+        //-- MS7: Force set container for bug fix.
         thisNode._container = otherNode._container;
 
         thisNode.MoveInFrontOfOtherNode(otherNode);

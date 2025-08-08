@@ -68,13 +68,13 @@ sealed class Plugin : BaseUnityPlugin
 
     private static void LoadPlugin(RainWorld rainWorld)
     {
+        Resources.LoadResources();
+
         //-- Do not re-apply hooks on restart mode!
         if (!restartMode)
         {
             Hooks.ApplyHooks();
         }
-
-        Resources.LoadResources();
     }
 
     public void OnDisable()

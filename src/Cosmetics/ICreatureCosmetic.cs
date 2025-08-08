@@ -8,13 +8,13 @@ public interface ICreatureCosmetic
 
     public SpriteLayerGroup[] spriteLayerGroups { get; }
 
-    //-- MR7: TODO: There is probably a miniscule bit of unneccessary overhead that the OnWearer* functions are not in DynamicCosmetics exclusively, but I don't think it's worth it to change it right now.
+    //-- MS7: TODO: There is probably a miniscule bit of unneccessary overhead that the OnWearer* functions are not in DynamicCosmetics exclusively, but I don't think it's worth it to change it right now.
     // CreatureCosmeticGraphicsReferences will never need the OnWearer* functions for example, yet are still ran in updates.
 
     public void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos);
 
     /// <summary>
-    /// -- MR7: Since RoomPalette is a struct, it's slightly more performant to use "in" keyword.
+    /// -- MS7: Since RoomPalette is a struct, it's slightly more performant to use "in" keyword.
     /// </summary>
     /// <param name="wearerSLeaser"></param>
     /// <param name="rCam"></param>

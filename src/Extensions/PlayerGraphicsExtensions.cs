@@ -8,7 +8,7 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
     // DEFAULT CCG PLACEMENT VALUES FOR BUILDING SCUG.
     //
 
-    //-- MR7: 1 Value = 1 pixel, it is all pixel perfect.
+    //-- MS7: 1 Value = 1 pixel, it is all pixel perfect.
 
     public static readonly Vector2[] DefaultVanillaLeftEarAnglePositions = new Vector2[]
     {
@@ -20,7 +20,7 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
         new Vector2(4, 4),
     };
 
-    //--MR7: 17 by 17, fix the it.
+    //--MS7: 17 by 17, fix the it.
     public static readonly Vector2 DefaultVanillaLeftEyePosition = new Vector2(-4f, 3f);
     public static readonly Vector2[] DefaultVanillaLeftEyeAnglePositions = new Vector2[]
     {

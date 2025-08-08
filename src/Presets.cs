@@ -2,7 +2,7 @@
 
 public static class Presets
 {
-    public static readonly float DefaultVanillaFaceSnapValue = 20f; //-- MR7: Found this is a good number to prevent weird angles, this or 10.
+    public static readonly float DefaultVanillaFaceSnapValue = 20f; //-- MS7: Found this is a good number to prevent weird angles, this or 10.
 
     internal static void AddPresets()
     {
