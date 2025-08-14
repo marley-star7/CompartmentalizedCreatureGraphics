@@ -1,7 +1,4 @@
-﻿// TODO: better error handling and some cleanup,
-// TODO: can do this via getting nose cosmetic working, as enabling that is what caused current error, something with face cosmetic
-
-namespace CompartmentalizedCreatureGraphics;
+﻿namespace CompartmentalizedCreatureGraphics;
 
 // There are two types of dependencies:
 // 1. BepInDependency.DependencyFlags.HardDependency - The other mod *MUST* be installed, and your mod cannot run without it. This ensures their mod loads before yours, preventing errors.

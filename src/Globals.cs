@@ -22,6 +22,7 @@ global using Newtonsoft.Json.Linq;
 global using MRCustom.Math;
 global using MRCustom.Json;
 global using MRCustom.Extensions;
+global using MRCustom.Extensions.Creatures;
 
 global using Color = UnityEngine.Color;
 global using Vector2 = UnityEngine.Vector2;
