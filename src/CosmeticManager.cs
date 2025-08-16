@@ -18,7 +18,9 @@ public static class CosmeticManager
             return;
         }
         registeredCritcoses.Add(critcos.CosmeticTypeID, critcos);
+#if DEBUG
         Plugin.LogDebug($"Registered Critcos with name: {critcos.CosmeticTypeID}");
+#endif
     }
 
     //
@@ -80,7 +82,9 @@ public static class CosmeticManager
     {
         dynamicCosmeticTypeID = PrepareStringForReference(dynamicCosmeticTypeID);
 
+#if DEBUG
         Plugin.LogDebug($"Loading cosmetic properties for cosmetic type id: {dynamicCosmeticTypeID}");
+#endif
 
         try
         {
@@ -95,8 +99,9 @@ public static class CosmeticManager
             foreach (string path in directory)
             {
                 var propertiesId = GetCosmeticPropertiesIdFromPath(path);
-
+#if DEBUG
                 Plugin.LogDebug($"Loading cosmetic properties id: {propertiesId} at path: {path}");
+#endif
 
                 /*
                 var jsonData = Json.Parser.Parse(File.ReadAllText(path)) as Dictionary<string, object>;
@@ -137,15 +142,19 @@ public static class CosmeticManager
     internal static void LoadCosmeticProperties()
     {
         //-- MS7: Little seperators to help it stand out ore in the log.
+#if DEBUG
         Plugin.LogDebug("//");
         Plugin.LogDebug("//-- Loading cosmetic properties...");
         Plugin.LogDebug("//");
+#endif
 
         foreach (var cosmeticType in registeredCritcoses)
             LoadPropertiesOfCosmeticTypeId(cosmeticType.Key);
 
+#if DEBUG
         Plugin.LogDebug("//");
         Plugin.LogDebug("//-- Finished loading cosmetic properties.");
         Plugin.LogDebug("//");
+#endif
     }
 }

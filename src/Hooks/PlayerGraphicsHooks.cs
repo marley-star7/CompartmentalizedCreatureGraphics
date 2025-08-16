@@ -39,19 +39,9 @@ internal static class PlayerGraphicsHooks
     // IDRAWABLE
     //
 
-    internal static void PlayerGraphics_InitiateSprites(On.PlayerGraphics.orig_InitiateSprites orig, PlayerGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
-    {
-        self.GetGraphicsModuleCCGData().sLeaser = sLeaser;
-        orig(self, sLeaser, rCam);
-
-        self.ReorderDynamicCosmetics();
-    }
-
     internal static void PlayerGraphics_DrawSprites(On.PlayerGraphics.orig_DrawSprites orig, PlayerGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         var selfCCGData = self.GetPlayerGraphicsCCGData();
-        selfCCGData.sLeaser = sLeaser;
-
         orig(self, sLeaser, rCam, timeStacker, camPos);
 
         //-- MS7: For compatability, only do slugcat compartmentalized graphics if it is enabled for this scug.
@@ -131,19 +121,5 @@ internal static class PlayerGraphicsHooks
         }
 
         selfCCGData.faceRotationTimeStacked = Mathf.Lerp(selfCCGData.lastFaceRotation, selfCCGData.faceRotation, timeStacker);
-    }
-
-    internal static void PlayerGraphics_ApplyPalette(On.PlayerGraphics.orig_ApplyPalette orig, PlayerGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
-    {
-        self.GetGraphicsModuleCCGData().sLeaser = sLeaser;
-        orig(self, sLeaser, rCam, palette);
-    }
-
-    internal static void PlayerGraphics_AddToContainer(On.PlayerGraphics.orig_AddToContainer orig, PlayerGraphics self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContatiner)
-    {
-        self.GetGraphicsModuleCCGData().sLeaser = sLeaser;
-        orig(self, sLeaser, rCam, newContatiner);
-
-        self.AddDynamicCosmeticsToContainer(sLeaser, rCam, newContatiner);
     }
 }

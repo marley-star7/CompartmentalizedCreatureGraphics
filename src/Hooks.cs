@@ -9,8 +9,6 @@ public static class Hooks
 
         ApplyPlayerHooks();
         ApplyPlayerGraphicsHooks();
-
-        ApplyLizardGraphicsHooks();
     }
 
     internal static void RemoveHooks()
@@ -22,8 +20,6 @@ public static class Hooks
 
         RemovePlayerHooks();
         RemovePlayerGraphicsHooks();
-
-        RemoveLizardGraphicsHooks();
     }
 
     private static void ApplyPhysicalObjectHooks()
@@ -71,10 +67,7 @@ public static class Hooks
         On.PlayerGraphics.ctor += PlayerGraphicsHooks.PlayerGraphics_ctor;
         On.PlayerGraphics.Update += PlayerGraphicsHooks.PlayerGraphics_Update;
 
-        On.PlayerGraphics.InitiateSprites += PlayerGraphicsHooks.PlayerGraphics_InitiateSprites;
         On.PlayerGraphics.DrawSprites += PlayerGraphicsHooks.PlayerGraphics_DrawSprites;
-        On.PlayerGraphics.ApplyPalette += PlayerGraphicsHooks.PlayerGraphics_ApplyPalette;
-        On.PlayerGraphics.AddToContainer += PlayerGraphicsHooks.PlayerGraphics_AddToContainer;
     }
 
     private static void RemovePlayerGraphicsHooks()
@@ -82,19 +75,6 @@ public static class Hooks
         On.PlayerGraphics.ctor -= PlayerGraphicsHooks.PlayerGraphics_ctor;
         On.PlayerGraphics.Update -= PlayerGraphicsHooks.PlayerGraphics_Update;
 
-        On.PlayerGraphics.InitiateSprites -= PlayerGraphicsHooks.PlayerGraphics_InitiateSprites;
         On.PlayerGraphics.DrawSprites -= PlayerGraphicsHooks.PlayerGraphics_DrawSprites;
-        On.PlayerGraphics.ApplyPalette -= PlayerGraphicsHooks.PlayerGraphics_ApplyPalette;
-        On.PlayerGraphics.AddToContainer -= PlayerGraphicsHooks.PlayerGraphics_AddToContainer;
-    }
-
-    private static void ApplyLizardGraphicsHooks()
-    {
-        On.LizardGraphics.InitiateSprites += LizardGraphicsHooks.LizardGraphics_InitiateSprites;
-    }
-
-    private static void RemoveLizardGraphicsHooks()
-    {
-        On.LizardGraphics.InitiateSprites -= LizardGraphicsHooks.LizardGraphics_InitiateSprites;
     }
 }
