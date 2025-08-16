@@ -84,13 +84,13 @@ internal static class PlayerGraphicsHooks
 
         if (player.room != null && player.EffectiveRoomGravity == 0f)
         {
-            self.SetFaceAngle(0);
+            self.SetFaceSpriteAngle(0);
         }
         //-- MS7: Taken from source to calculate when using side angles.
         else if ((player.bodyMode == Player.BodyModeIndex.Stand && player.input[0].x != 0) || player.bodyMode == Player.BodyModeIndex.Crawl)
         {
             var correctAngle = MarMath.NonzeroSign(dirLowerChunkToMainChunkTimeStacked.x) * 2;
-            self.SetFaceAngle(correctAngle);
+            self.SetFaceSpriteAngle(correctAngle);
         }
         else
         {
@@ -98,23 +98,23 @@ internal static class PlayerGraphicsHooks
             switch (dirLowerChunkToMainChunkTimeStacked.x)
             {
                 case > 0.9f:
-                    self.SetFaceAngle(2);
+                    self.SetFaceSpriteAngle(2);
                     break;
 
                 case > 0.45f:
-                    self.SetFaceAngle(1);
+                    self.SetFaceSpriteAngle(1);
                     break;
 
                 case < -0.9f:
-                    self.SetFaceAngle(-2);
+                    self.SetFaceSpriteAngle(-2);
                     break;
 
                 case < -0.45f:
-                    self.SetFaceAngle(-1);
+                    self.SetFaceSpriteAngle(-1);
                     break;
 
                 default:
-                    self.SetFaceAngle(0);
+                    self.SetFaceSpriteAngle(0);
                     break;
 
             }

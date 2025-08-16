@@ -121,10 +121,10 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
     /// <summary>
     /// Face angle goes between (A0, A1, A2)
     /// </summary>
-    public string faceAngle = "A0";
+    public string faceSpriteAngle = "A0";
     /// Asymmetrical face angle goes between (-A2, -A1, A0, A1, A2)
     /// </summary>
-    public string faceAngleAsymmetrical = "A0";
+    public string faceSpriteAngleAsymmetrical = "A0";
 
     public WeakReference<PlayerGraphics> playerGraphicsRef;
 
@@ -168,7 +168,7 @@ public static class PlayerGraphicsCCGExtensions
     /// <param name="playerGraphics"></param>
     /// <param name="angleNum"></param>
     /// <param name="dirChar"></param>
-    public static void SetFaceAngle(this PlayerGraphics playerGraphics, int angleNum)
+    public static void SetFaceSpriteAngle(this PlayerGraphics playerGraphics, int angleNum)
     {
         var ccgData = playerGraphics.GetPlayerGraphicsCCGData();
         ccgData.faceAngleNum = angleNum;
@@ -176,24 +176,24 @@ public static class PlayerGraphicsCCGExtensions
         switch (angleNum)
         {
             case -2:
-                ccgData.faceAngle = "A2";
-                ccgData.faceAngleAsymmetrical = "-A2";
+                ccgData.faceSpriteAngle = "A2";
+                ccgData.faceSpriteAngleAsymmetrical = "-A2";
                 break;
             case -1:
-                ccgData.faceAngle = "A1";
-                ccgData.faceAngleAsymmetrical = "-A1";
+                ccgData.faceSpriteAngle = "A1";
+                ccgData.faceSpriteAngleAsymmetrical = "-A1";
                 break;
             case 0:
-                ccgData.faceAngle = "A0";
-                ccgData.faceAngleAsymmetrical = "A0";
+                ccgData.faceSpriteAngle = "A0";
+                ccgData.faceSpriteAngleAsymmetrical = "A0";
                 break;
             case 1:
-                ccgData.faceAngle = "A1";
-                ccgData.faceAngleAsymmetrical = "A1";
+                ccgData.faceSpriteAngle = "A1";
+                ccgData.faceSpriteAngleAsymmetrical = "A1";
                 break;
             case 2:
-                ccgData.faceAngle = "A2";
-                ccgData.faceAngleAsymmetrical = "A2";
+                ccgData.faceSpriteAngle = "A2";
+                ccgData.faceSpriteAngleAsymmetrical = "A2";
                 break;
         }
     }

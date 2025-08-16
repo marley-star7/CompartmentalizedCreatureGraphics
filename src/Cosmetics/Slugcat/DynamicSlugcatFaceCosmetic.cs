@@ -12,9 +12,9 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
         /// All calculations are done with half the length treated as the center value.
         /// Currently only supports up to two index in either direction.
         /// </summary>
-        [JsonProperty("anglePositions")]
+        [JsonProperty("spriteAnglePositions")]
         [JsonConverter(typeof(Vector2ArrayJsonConverter))]
-        public Vector2[] anglePositions = new Vector2[]{Vector2.zero};
+        public Vector2[] spriteAnglePositions = new Vector2[]{Vector2.zero};
 
         [JsonProperty("spriteNames")]
         public string[] spriteNames = { "marError64" };
@@ -58,8 +58,8 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
         var playerGraphics = (PlayerGraphics)player.graphicsModule;
         var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
 
-        var currentAnglePosIndex = Mathf.Clamp(properties.anglePositions.Length / 2 + playerGraphicsCCGData.faceAngleNum, 0, properties.anglePositions.Length - 1);
-        posOffset = properties.anglePositions[currentAnglePosIndex];
+        var currentAnglePosIndex = Mathf.Clamp(properties.spriteAnglePositions.Length / 2 + playerGraphicsCCGData.faceAngleNum, 0, properties.spriteAnglePositions.Length - 1);
+        posOffset = properties.spriteAnglePositions[currentAnglePosIndex];
 
         sidedScale = 1f;
         if (properties.side != 0 && properties.side != playerGraphicsCCGData.faceSide)

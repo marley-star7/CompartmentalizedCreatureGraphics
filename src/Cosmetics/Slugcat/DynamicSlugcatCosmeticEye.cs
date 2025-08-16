@@ -27,7 +27,7 @@ public class DynamicSlugcatCosmeticEye : DynamicSlugcatFaceCosmetic
             extraText = "Dead";
 
         if (playerGraphicsCCGData.faceSide == properties.side)
-            extraText += playerGraphicsCCGData.faceAngle;
+            extraText += playerGraphicsCCGData.faceSpriteAngle;
         else
             extraText += "A0";
 

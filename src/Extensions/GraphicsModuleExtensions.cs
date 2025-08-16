@@ -151,4 +151,13 @@ public static class GraphicsModuleCCGExtensions
 
         graphicsModule.ReorderDynamicCosmetics();
     }
+
+    public static string GetSymmetricalAngleFromAsymmetrical(in string angle)
+    {
+        if (angle.StartsWith("-"))
+        {
+            return angle.Remove(0, 1);
+        }
+        return angle;
+    }
 }
