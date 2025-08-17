@@ -50,7 +50,7 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
         }
     }
 
-    public override void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    public override void PostWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         if (sLeaser == null)
             return;

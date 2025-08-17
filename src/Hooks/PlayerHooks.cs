@@ -10,7 +10,7 @@ internal static class PlayerHooks
         var ccgData = playerGraphics.GetGraphicsModuleCCGData();
         for (int i = 0; i < ccgData.cosmetics.Count; i++)
         {
-            ccgData.cosmetics[i].OnWearerTerrainImpact(player, chunk, direction, speed, firstContact);
+            ccgData.cosmetics[i].PostWearerTerrainImpact(player, chunk, direction, speed, firstContact);
         }
     }
 
@@ -22,7 +22,7 @@ internal static class PlayerHooks
         var ccgData = playerGraphics.GetGraphicsModuleCCGData();
         for (int i = 0; i < ccgData.cosmetics.Count; i++)
         {
-            ccgData.cosmetics[i].OnWearerCollide(player, otherObject, myChunk, otherChunk);
+            ccgData.cosmetics[i].PostWearerCollide(player, otherObject, myChunk, otherChunk);
         }
     }
 }

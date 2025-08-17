@@ -61,13 +61,18 @@ public class DynamicCreatureCosmetic : UpdatableAndDeletable, IDynamicCreatureCo
     // WEARER IDRAWABLES
     //
 
-    public virtual void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    public virtual void PostWearerInitiateSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam)
+    {
+
+    }
+
+    public virtual void PostWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
 
     }
 
     //-- MS7: Since RoomPalette is a struct, it's slightly more performant to use "in" keyword.
-    public virtual void OnWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)
+    public virtual void PostWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)
     {
 
     }
@@ -76,12 +81,12 @@ public class DynamicCreatureCosmetic : UpdatableAndDeletable, IDynamicCreatureCo
     // COLLISION
     //
 
-    public virtual void OnWearerCollide(Player player, PhysicalObject otherObject, int myChunk, int otherChunk)
+    public virtual void PostWearerCollide(Player player, PhysicalObject otherObject, int myChunk, int otherChunk)
     {
 
     }
 
-    public virtual void OnWearerTerrainImpact(Player player, int chunk, IntVector2 direction, float speed, bool firstContact)
+    public virtual void PostWearerTerrainImpact(Player player, int chunk, IntVector2 direction, float speed, bool firstContact)
     {
 
     }

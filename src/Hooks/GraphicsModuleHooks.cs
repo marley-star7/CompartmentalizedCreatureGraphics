@@ -9,6 +9,12 @@ internal static class GraphicsModuleHooks
 
         orig(self, sLeaser, rCam);
         self.ReorderDynamicCosmetics();
+
+        var cosmetics = data.cosmetics;
+        for (int i = 0, count = cosmetics.Count; i < count; i++)
+        {
+            cosmetics[i].PostWearerInitiateSprites(sLeaser, rCam);
+        }
     }
 
     internal static void GraphicsModule_DrawSprites(On.GraphicsModule.orig_DrawSprites orig, GraphicsModule self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
@@ -45,7 +51,7 @@ internal static class GraphicsModuleHooks
         var cosmetics = data.cosmetics;
         for (int i = 0, count = cosmetics.Count; i < count; i++)
         {
-            cosmetics[i].OnWearerDrawSprites(sLeaser, rCam, timeStacker, camPos);
+            cosmetics[i].PostWearerDrawSprites(sLeaser, rCam, timeStacker, camPos);
         }
     }
 
@@ -63,7 +69,7 @@ internal static class GraphicsModuleHooks
         var cosmetics = data.cosmetics;
         for (int i = 0, count = cosmetics.Count; i < count; i++)
         {
-            cosmetics[i].OnWearerApplyPalette(sLeaser, rCam, in palette);
+            cosmetics[i].PostWearerApplyPalette(sLeaser, rCam, in palette);
         }
     }
 

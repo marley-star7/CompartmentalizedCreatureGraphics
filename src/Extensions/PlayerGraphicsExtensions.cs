@@ -162,6 +162,13 @@ public static class PlayerGraphicsCCGExtensions
             _ => new PlayerGraphicsCCGData(playerGraphics));
     }
 
+    public static void SetFaceSpriteAngle(this PlayerGraphics playerGraphics, string spriteAngle)
+    {
+        var ccgData = playerGraphics.GetPlayerGraphicsCCGData();
+        ccgData.faceSpriteAngle = GraphicsModuleCCGExtensions.GetSymmetricalAngleFromAsymmetrical(spriteAngle);
+        ccgData.faceSpriteAngleAsymmetrical = spriteAngle;
+    }
+
     /// <summary>
     /// Dir char set to R for right, or L for left, leave empty for nothing.
     /// </summary>
@@ -195,6 +202,23 @@ public static class PlayerGraphicsCCGExtensions
                 ccgData.faceSpriteAngle = "A2";
                 ccgData.faceSpriteAngleAsymmetrical = "A2";
                 break;
+        }
+    }
+
+    public static string GetFaceSpriteAngleAsymmetrical(int angleNum)
+    {
+        switch (angleNum)
+        {
+            case -2:
+                return "-A2";
+            case -1:
+                return "-A1";
+            case 1:
+                return "A1";
+            case 2:
+                return "A2";
+            default:
+                return "A0";
         }
     }
 
@@ -304,5 +328,27 @@ public static class PlayerGraphicsCCGExtensions
         }
 
         ccgData.compartmentalizedGraphicsEnabled = true;
+    }
+
+    public static string GetFaceAngleForRotation(Vector2 rotation)
+    {
+        switch (rotation.x)
+        {
+            case > 0.9f:
+                return "A2";
+
+            case > 0.45f:
+                return "A1";
+
+            case < -0.9f:
+                return "-A2";
+
+            case < -0.45f:
+                return "-A1";
+
+            default:
+                return "A0";
+
+        }
     }
 }

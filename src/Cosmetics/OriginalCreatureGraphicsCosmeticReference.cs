@@ -30,22 +30,27 @@ public class OriginalCreatureGraphicsCosmeticReference : ICreatureCosmetic
         wearerGraphics.AddCreatureCosmetic(this);
     }
 
-    public void OnWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)
+    public void PostWearerInitiateSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam)
     {
 
     }
 
-    public void OnWearerCollide(Player player, PhysicalObject otherObject, int myChunk, int otherChunk)
+    public void PostWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)
     {
 
     }
 
-    public void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    public void PostWearerCollide(Player player, PhysicalObject otherObject, int myChunk, int otherChunk)
     {
 
     }
 
-    public void OnWearerTerrainImpact(Player player, int chunk, IntVector2 direction, float speed, bool firstContact)
+    public void PostWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    {
+
+    }
+
+    public void PostWearerTerrainImpact(Player player, int chunk, IntVector2 direction, float speed, bool firstContact)
     {
 
     }

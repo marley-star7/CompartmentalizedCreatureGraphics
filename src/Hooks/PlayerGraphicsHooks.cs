@@ -86,38 +86,20 @@ internal static class PlayerGraphicsHooks
         {
             self.SetFaceSpriteAngle(0);
         }
-        //-- MS7: Taken from source to calculate when using side angles.
-        else if ((player.bodyMode == Player.BodyModeIndex.Stand && player.input[0].x != 0) || player.bodyMode == Player.BodyModeIndex.Crawl)
+        else if (player.bodyMode == Player.BodyModeIndex.Stand && player.input[0].x != 0)
         {
-            var correctAngle = MarMath.NonzeroSign(dirLowerChunkToMainChunkTimeStacked.x) * 2;
+            var correctAngle = MarMath.MatchSign((int)dirLowerChunkToMainChunkTimeStacked.x, player.input[0].x) * 2;
+            self.SetFaceSpriteAngle(correctAngle);
+        }    
+        else if (player.bodyMode == Player.BodyModeIndex.Crawl)
+        {
+            //-- MS7: Taken from source to calculate when using side angles.
+            var correctAngle = Math.Sign(dirLowerChunkToMainChunkTimeStacked.x) * 2;
             self.SetFaceSpriteAngle(correctAngle);
         }
         else
         {
-            // The further the body is rotated sideways, swap the face angles to sideways.
-            switch (dirLowerChunkToMainChunkTimeStacked.x)
-            {
-                case > 0.9f:
-                    self.SetFaceSpriteAngle(2);
-                    break;
-
-                case > 0.45f:
-                    self.SetFaceSpriteAngle(1);
-                    break;
-
-                case < -0.9f:
-                    self.SetFaceSpriteAngle(-2);
-                    break;
-
-                case < -0.45f:
-                    self.SetFaceSpriteAngle(-1);
-                    break;
-
-                default:
-                    self.SetFaceSpriteAngle(0);
-                    break;
-
-            }
+            self.SetFaceSpriteAngle(PlayerGraphicsCCGExtensions.GetFaceAngleForRotation(dirLowerChunkToMainChunkTimeStacked));
         }
 
         selfCCGData.faceRotationTimeStacked = Mathf.Lerp(selfCCGData.lastFaceRotation, selfCCGData.faceRotation, timeStacker);

@@ -11,7 +11,9 @@ public interface ICreatureCosmetic
     //-- MS7: TODO: There is probably a miniscule bit of unneccessary overhead that the OnWearer* functions are not in DynamicCosmetics exclusively, but I don't think it's worth it to change it right now.
     // CreatureCosmeticGraphicsReferences will never need the OnWearer* functions for example, yet are still ran in updates.
 
-    public void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos);
+    public void PostWearerInitiateSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam);
+
+    public void PostWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos);
 
     /// <summary>
     /// -- MS7: Since RoomPalette is a struct, it's slightly more performant to use "in" keyword.
@@ -19,11 +21,11 @@ public interface ICreatureCosmetic
     /// <param name="wearerSLeaser"></param>
     /// <param name="rCam"></param>
     /// <param name="palette"></param>
-    public void OnWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette);
+    public void PostWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette);
 
-    public void OnWearerCollide(Player player, PhysicalObject otherObject, int myChunk, int otherChunk);
+    public void PostWearerCollide(Player player, PhysicalObject otherObject, int myChunk, int otherChunk);
 
-    public void OnWearerTerrainImpact(Player player, int chunk, IntVector2 direction, float speed, bool firstContact);
+    public void PostWearerTerrainImpact(Player player, int chunk, IntVector2 direction, float speed, bool firstContact);
 }
 
 public static class ICosmeticExtension

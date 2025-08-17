@@ -6,12 +6,12 @@ public class DynamicSlugcatCosmeticEye : DynamicSlugcatFaceCosmetic
     {
     }
 
-    public override void OnWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    public override void PostWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         if (sLeaser == null)
             return;
 
-        base.OnWearerDrawSprites(wearerSLeaser, rCam, timeStacker, camPos);
+        base.PostWearerDrawSprites(wearerSLeaser, rCam, timeStacker, camPos);
         //-- MS7: TODO: Maybe make the sideways head turn sprite move two pixels down only when sideways.
 
         var playerGraphics = (PlayerGraphics)player.graphicsModule;
