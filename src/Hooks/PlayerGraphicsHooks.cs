@@ -88,7 +88,8 @@ internal static class PlayerGraphicsHooks
         }
         else if (player.bodyMode == Player.BodyModeIndex.Stand && player.input[0].x != 0)
         {
-            var correctAngle = MarMath.MatchSign((int)dirLowerChunkToMainChunkTimeStacked.x, player.input[0].x) * 2;
+            var correctAngle = (int)dirLowerChunkToMainChunkTimeStacked.x;
+            //correctAngle = MarMath.MatchSign(correctAngle, player.input[0].x) * 2;
             self.SetFaceSpriteAngle(correctAngle);
         }    
         else if (player.bodyMode == Player.BodyModeIndex.Crawl)
