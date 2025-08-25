@@ -8,6 +8,9 @@
     <ProduceReferenceAssembly>True</ProduceReferenceAssembly>
     <RootNamespace>CompartmentalizedCreatureGraphics</RootNamespace>
     <AssemblyName>CompartmentalizedCreatureGraphics</AssemblyName>
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	  <!-- Optional: Suppress warnings for missing comments -->
+	  <!--<NoWarn>$(NoWarn);1591</NoWarn> -->
   </PropertyGroup>
 
 	<PropertyGroup>

@@ -7,15 +7,6 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
 {
     public new class Properties : DynamicCreatureCosmetic.Properties
     {
-        /// <summary>
-        /// The Default position set for the cosmetic at each angle.
-        /// All calculations are done with half the length treated as the center value.
-        /// Currently only supports up to two index in either direction.
-        /// </summary>
-        [JsonProperty("spriteAnglePositions")]
-        [JsonConverter(typeof(Vector2ArrayJsonConverter))]
-        public Vector2[] spriteAnglePositions = new Vector2[]{Vector2.zero};
-
         [JsonProperty("spriteNames")]
         public string[] spriteNames = { "marError64" };
 
@@ -26,6 +17,11 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
 
         [JsonProperty("snap")]
         public float snap = 0f;
+
+        [JsonProperty("spriteAnglePropertiesId")]
+        public string spriteAnglePropertiesId = "";
+
+        public SpriteAngleProperties spriteAngleProperties = new(new Vector2[] { Vector2.zero });
     }
 
     public new Properties properties => (Properties)_properties;
@@ -58,14 +54,15 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
         var playerGraphics = (PlayerGraphics)player.graphicsModule;
         var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
 
-        var currentAnglePosIndex = Mathf.Clamp(properties.spriteAnglePositions.Length / 2 + playerGraphicsCCGData.faceAngleNum, 0, properties.spriteAnglePositions.Length - 1);
-        posOffset = properties.spriteAnglePositions[currentAnglePosIndex];
+        var currentAnglePosIndex = Mathf.Clamp(properties.spriteAngleProperties.positions.Length / 2 + playerGraphicsCCGData.faceSpriteAngleNum, 0, properties.spriteAngleProperties.positions.Length - 1);
+        posOffset = properties.spriteAngleProperties.positions[currentAnglePosIndex];
 
         sidedScale = 1f;
         if (properties.side != 0 && properties.side != playerGraphicsCCGData.faceSide)
             sidedScale = -1f;
 
-        var finalRotation = MarMathf.Snap(playerGraphicsCCGData.faceRotationTimeStacked, properties.snap);
+        var faceRotationTimeStacked = Vector2.Lerp(playerGraphicsCCGData.lastFaceRotation, playerGraphicsCCGData.faceRotation, timeStacker);
+        var finalRotation = MarMathf.Snap(Custom.VecToDeg(faceRotationTimeStacked), properties.snap);
 
         var rotatedPosOffset = Custom.RotateAroundVector(posOffset, Vector2.zero, finalRotation);
         for (int i = 0; i < _sLeaser.sprites.Length; i++)

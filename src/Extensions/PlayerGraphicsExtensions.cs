@@ -113,10 +113,31 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
         get { return sLeaser.sprites[11]; }
     }
 
-    public int faceAngleNum = 0;
+    public enum FaceSpriteAnglingMode
+    {
+        /// <summary>
+        /// The face angle will not be changed by any automatic system.
+        /// </summary>
+        Manual,
+        /// <summary>
+        /// The face angle will lerp slowly according to faceAngleValue.
+        /// </summary>
+        LerpFaceAngleValue,
+        /// <summary>
+        /// The face angle will rotate to match the direction the body would be facing,
+        /// Looking sideways when the body is horiztonal, and straight when vertical.
+        /// </summary>
+        AngleWithBodyDirection,
+
+        FullAngleToBodyDirection,
+    }
+
+    public FaceSpriteAnglingMode faceSpriteAnglingMode = FaceSpriteAnglingMode.LerpFaceAngleValue;
+
+    public int faceSpriteAngleNum = 0;
     public int faceSide
     {
-        get { return Math.Sign(faceAngleNum); }
+        get { return Math.Sign(faceSpriteAngleNum); }
     }
     /// <summary>
     /// Face angle goes between (A0, A1, A2)
@@ -144,10 +165,11 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
 
     public Vector2 facePos = Vector2.zero;
 
-    public float faceRotation;
-    public float lastFaceRotation;
+    public Vector2 faceRotation;
+    public Vector2 lastFaceRotation;
 
-    public float faceRotationTimeStacked = 0;
+    public float faceAngleValue;
+    public float lastFaceAngleValue;
 }
 
 public static class PlayerGraphicsCCGExtensions
@@ -178,7 +200,7 @@ public static class PlayerGraphicsCCGExtensions
     public static void SetFaceSpriteAngle(this PlayerGraphics playerGraphics, int angleNum)
     {
         var ccgData = playerGraphics.GetPlayerGraphicsCCGData();
-        ccgData.faceAngleNum = angleNum;
+        ccgData.faceSpriteAngleNum = angleNum;
 
         switch (angleNum)
         {

@@ -24,15 +24,52 @@ internal static class PlayerGraphicsHooks
     internal static void PlayerGraphics_Update(On.PlayerGraphics.orig_Update orig, PlayerGraphics self)
     {
         orig(self);
+        var player = self.player;
         var playerGraphicsCCGData = self.GetPlayerGraphicsCCGData();
 
         playerGraphicsCCGData.lastFaceRotation = playerGraphicsCCGData.faceRotation;
+        playerGraphicsCCGData.lastFaceAngleValue = playerGraphicsCCGData.faceAngleValue;
 
         Vector2 lastDirLowerChunkToMainChunk = Custom.DirVec(self.player.bodyChunks[1].pos, self.player.mainBodyChunk.pos);
         Vector2 dirLowerChunkToMainChunk = Custom.DirVec(self.player.bodyChunks[1].pos, self.player.mainBodyChunk.pos);
 
-        playerGraphicsCCGData.faceRotation = Custom.VecToDeg(dirLowerChunkToMainChunk);
-        playerGraphicsCCGData.faceRotation -= dirLowerChunkToMainChunk.x * 90;
+        var faceRotationDegrees = Custom.VecToDeg(dirLowerChunkToMainChunk);
+        faceRotationDegrees -= dirLowerChunkToMainChunk.x * 90;
+        playerGraphicsCCGData.faceRotation = Custom.DegToVec(faceRotationDegrees);
+
+        //-- MS7: If player is sideways and not in zero g, offset the face sprite rotation around the head relative to how horizontal.
+        // This is to fake the effect of how the current head turns sideways on horizontals such as when crouching or flipping.
+        // (It also makes flips look alot more weighty and rad)
+
+        var idealFaceSpriteAngleRotationZ = 0f;
+
+        if (player.room != null && player.EffectiveRoomGravity == 0f
+            || player.bodyMode == Player.BodyModeIndex.Default
+            || player.bodyMode == Player.BodyModeIndex.Stand && player.input[0].x == 0)
+        {
+            idealFaceSpriteAngleRotationZ = 0f;
+            playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.LerpFaceAngleValue;
+        }
+        else if (player.Stunned)
+        {
+            playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.AngleWithBodyDirection;
+        }
+        else if (player.bodyMode == Player.BodyModeIndex.Stand && player.input[0].x != 0)
+        {
+            //-- MS7: Taken from source to calculate when using side angles.
+            idealFaceSpriteAngleRotationZ = player.input[0].x;
+            playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.LerpFaceAngleValue;
+        }
+        else if (player.bodyMode == Player.BodyModeIndex.Crawl)
+        {
+            playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.FullAngleToBodyDirection;
+        }
+        else
+        {
+            playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.AngleWithBodyDirection;
+        }
+
+        playerGraphicsCCGData.faceAngleValue = Mathf.Lerp(playerGraphicsCCGData.faceAngleValue, idealFaceSpriteAngleRotationZ, 0.7f);
     }
 
     //
@@ -78,31 +115,21 @@ internal static class PlayerGraphicsHooks
             selfCCGData.facePos = new Vector2(selfCCGData.BaseFaceSprite.x, selfCCGData.BaseFaceSprite.y);
         }
 
-        //-- MS7: If player is sideways and not in zero g, offset the face sprite rotation around the head relative to how horizontal.
-        // This is to fake the effect of how the current head turns sideways on horizontals such as when crouching or flipping.
-        // (It also makes flips look alot more weighty and rad)
-
-        if (player.room != null && player.EffectiveRoomGravity == 0f)
+        if (selfCCGData.faceSpriteAnglingMode == PlayerGraphicsCCGData.FaceSpriteAnglingMode.LerpFaceAngleValue)
         {
-            self.SetFaceSpriteAngle(0);
+            var faceAngleValueTimeStacked = Mathf.Lerp(selfCCGData.lastFaceAngleValue, selfCCGData.faceAngleValue, timeStacker);
+            var faceSpriteAngle = (int)(faceAngleValueTimeStacked * 2.5f); // Goes from -2 to 2, so multiply by 2 from the -1 to 1 it was before.
+            self.SetFaceSpriteAngle(faceSpriteAngle);
         }
-        else if (player.bodyMode == Player.BodyModeIndex.Stand && player.input[0].x != 0)
-        {
-            var correctAngle = (int)dirLowerChunkToMainChunkTimeStacked.x;
-            //correctAngle = MarMath.MatchSign(correctAngle, player.input[0].x) * 2;
-            self.SetFaceSpriteAngle(correctAngle);
-        }    
-        else if (player.bodyMode == Player.BodyModeIndex.Crawl)
+        else if (selfCCGData.faceSpriteAnglingMode == PlayerGraphicsCCGData.FaceSpriteAnglingMode.FullAngleToBodyDirection)
         {
             //-- MS7: Taken from source to calculate when using side angles.
             var correctAngle = Math.Sign(dirLowerChunkToMainChunkTimeStacked.x) * 2;
             self.SetFaceSpriteAngle(correctAngle);
         }
-        else
+        else if (selfCCGData.faceSpriteAnglingMode == PlayerGraphicsCCGData.FaceSpriteAnglingMode.AngleWithBodyDirection)
         {
             self.SetFaceSpriteAngle(PlayerGraphicsCCGExtensions.GetFaceAngleForRotation(dirLowerChunkToMainChunkTimeStacked));
         }
-
-        selfCCGData.faceRotationTimeStacked = Mathf.Lerp(selfCCGData.lastFaceRotation, selfCCGData.faceRotation, timeStacker);
     }
 }

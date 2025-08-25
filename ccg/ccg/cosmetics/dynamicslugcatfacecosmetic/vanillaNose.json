@@ -7,13 +7,7 @@
       "endSpriteIndex": 0
     }
   ],
-  "spriteAnglePositions": [
-    [ -6, -2 ],
-    [ -3, -1 ],
-    [ 0, 0 ],
-    [ 3, -1 ],
-    [ 6, -2 ]
-  ],
+  "spriteAnglePropertiesId": "vanillaNose",
   "scaleX": 1,
   "scaleY": 1,
   "snap": 15

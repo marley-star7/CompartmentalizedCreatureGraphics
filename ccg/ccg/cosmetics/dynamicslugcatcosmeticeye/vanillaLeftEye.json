@@ -7,13 +7,7 @@
       "endSpriteIndex": 0
     }
   ],
-  "spriteAnglePositions": [
-    [ -6, 1 ],
-    [ -5, 2 ],
-    [ -3, 3 ],
-    [ -1, 2 ],
-    [ 2, 1 ]
-  ],
+  "spriteAnglePropertiesId": "vanillaLeftEye",
   "scaleX": 1,
   "scaleY": 1,
   "side": -1,

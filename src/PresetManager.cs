@@ -50,6 +50,10 @@ public static class PresetManager
 
     internal static void LoadSlugcatCosmeticsPresets()
     {
+        Plugin.LogInfo("//");
+        Plugin.LogInfo("//-- Loading CCG slugcat cosmetics presets...");
+        Plugin.LogInfo("//");
+
         var directory = GetDirectoryForSlugcatPresets();
 
         try
@@ -65,7 +69,7 @@ public static class PresetManager
                 if (slugcatPreset.name.TryGetExtEnum(out SlugcatStats.Name slugcatName))
                 {
                     StoreSlugcatCosmeticsPreset(slugcatName, slugcatPreset);
-                    Plugin.LogDebug($"Loaded slugcat cosmetics preset: {fileName} for slugcat: {slugcatName}, your proof is that the base head sprite name is {slugcatPreset.baseHeadSpriteName}");
+                    Plugin.LogInfo($"Loaded slugcat cosmetics preset: {fileName} for slugcat: {slugcatName}, your proof is that the base head sprite name is {slugcatPreset.baseHeadSpriteName}");
                 }
             }
         }

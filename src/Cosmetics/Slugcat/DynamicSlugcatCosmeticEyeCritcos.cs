@@ -10,11 +10,12 @@ public class DynamicSlugcatCosmeticEyeCritcos : Critcos
         var settings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            MissingMemberHandling = MissingMemberHandling.Error,
             ContractResolver = new CreatureCosmeticLayerContractResolver<CCGEnums.SlugcatCosmeticLayer>()
         };
 
         DynamicSlugcatCosmeticEye.Properties properties = JsonConvert.DeserializeObject<DynamicSlugcatCosmeticEye.Properties>(json, settings);
+        properties.spriteAngleProperties = CosmeticManager.GetSpriteAnglePropertiesForId(properties.spriteAnglePropertiesId);
+
         return properties;
     }
 

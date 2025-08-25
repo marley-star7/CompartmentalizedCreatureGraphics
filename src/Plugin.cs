@@ -20,6 +20,10 @@ sealed class Plugin : BaseUnityPlugin
     /// </summary>
     public const string CosmeticPropertiesDirectory = "ccg/cosmetics";
     /// <summary>
+    /// This is the directory where the sprite angle properties are stored. It is used to load the sprite angle properties from json files.
+    /// </summary>
+    public const string SpriteAnglePropertiesDirectory = "ccg/spriteangles";
+    /// <summary>
     /// This is the directory where the default character presets are stored. It is used to load the default character presets from json files.
     /// </summary>
     public const string SlugcatCosmeticsPresetsDirectory = "ccg/slugcats";
@@ -98,8 +102,12 @@ sealed class Plugin : BaseUnityPlugin
             Plugin.Logger.LogError(e.Message);
         }
 
+        CosmeticManager.LoadSpriteAngleProperties();
         CosmeticManager.LoadCosmeticProperties();
         PresetManager.LoadSlugcatCosmeticsPresets();
+        Plugin.LogInfo("//");
+        Plugin.LogInfo("//-- CCG presets and properties finished loading...");
+        Plugin.LogInfo("//");
     }
 
     internal static void LogInfo(object ex) => Logger.LogInfo(ex);

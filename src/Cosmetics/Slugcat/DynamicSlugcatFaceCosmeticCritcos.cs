@@ -11,16 +11,17 @@ public class DynamicSlugcatCosmeticFaceCritcos : Critcos
         var settings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            MissingMemberHandling = MissingMemberHandling.Error,
             ContractResolver = new CreatureCosmeticLayerContractResolver<CCGEnums.SlugcatCosmeticLayer>()
         };
 
         DynamicSlugcatFaceCosmetic.Properties properties = JsonConvert.DeserializeObject<DynamicSlugcatFaceCosmetic.Properties>(json, settings);
+        properties.spriteAngleProperties = CosmeticManager.GetSpriteAnglePropertiesForId(properties.spriteAnglePropertiesId);
+
         return properties;
     }
 
     public override DynamicCreatureCosmetic CreateDynamicCosmeticForCreature(GraphicsModule graphicsModule, string propertiesId)
     {
-        return new DynamicSlugcatFaceCosmetic(graphicsModule as PlayerGraphics, (DynamicSlugcatFaceCosmetic.Properties)GetLoadedPropertiesFromPropertiesId(propertiesId));
+        return new DynamicSlugcatFaceCosmetic(graphicsModule as PlayerGraphics, GetLoadedPropertiesFromPropertiesId(propertiesId) as DynamicSlugcatFaceCosmetic.Properties);
     }
 }

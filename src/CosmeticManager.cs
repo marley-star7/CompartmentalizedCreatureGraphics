@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime;
 
 namespace CompartmentalizedCreatureGraphics;
 
@@ -9,6 +10,8 @@ public static class CosmeticManager
     //
 
     private readonly static Dictionary<string, Critcos> registeredCritcoses = new();
+
+    private readonly static Dictionary<string, SpriteAngleProperties> loadedSpriteAngleProperties = new();
 
     public static void RegisterCritcos(Critcos critcos)
     {
@@ -23,9 +26,18 @@ public static class CosmeticManager
 #endif
     }
 
-    //
-    //-- MS7: And everything else lol...
-    //
+    public static SpriteAngleProperties GetSpriteAnglePropertiesForId(string spriteAnglePropertiesId)
+    {
+        spriteAnglePropertiesId = PrepareStringForReference(spriteAnglePropertiesId);
+
+        if (loadedSpriteAngleProperties.TryGetValue(spriteAnglePropertiesId, out var foundSpriteAngleProperties))
+        {
+            return foundSpriteAngleProperties;
+        }
+
+        Plugin.LogError($"Failed to get sprite angle properties for id: {spriteAnglePropertiesId}, returning default (single 0,0 position)");
+        return new SpriteAngleProperties(new Vector2[] {Vector2.zero});
+    }
 
     public static Critcos GetCritcosFromCosmeticTypeId(string cosmeticTypeId)
     {
@@ -78,6 +90,54 @@ public static class CosmeticManager
         return Path.GetFileNameWithoutExtension(path);
     }
 
+    private static string GetSpriteAnglePropertiesIdFromPath(string path)
+    {
+        // Remove the file extension and return the name.
+        return Path.GetFileNameWithoutExtension(path);
+    }
+
+    private static SpriteAngleProperties ParseSpriteAngleProperties(string json)
+    {
+        var settings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            MissingMemberHandling = MissingMemberHandling.Error,
+        };
+
+        return JsonConvert.DeserializeObject<SpriteAngleProperties>(json, settings);
+    }
+
+    private static void AddLoadedSpriteAngleProperties(string id, SpriteAngleProperties properties)
+    {
+        id = PrepareStringForReference(id);
+
+        if (loadedSpriteAngleProperties.ContainsKey(id))
+        {
+            Plugin.LogWarning($"Sprite angle properties with ID: {id} is already loaded, skipping addition.");
+            return;
+        }
+        loadedSpriteAngleProperties.Add(id, properties);
+    }
+
+    internal static void LoadSpriteAngleProperties()
+    {
+        Plugin.LogInfo("//");
+        Plugin.LogInfo("//-- Loading CCG sprite angle properties...");
+        Plugin.LogInfo("//");
+
+        var directory = AssetManager.ListDirectory(Plugin.SpriteAnglePropertiesDirectory);
+
+        foreach (string path in directory)
+        {
+            var id = GetSpriteAnglePropertiesIdFromPath(path);
+            Plugin.LogInfo($"Loading sprite angle properties id {id} at path: {path}");
+
+            var json = File.ReadAllText(path);
+            var parsedSpriteAngleProperties = ParseSpriteAngleProperties(json);
+            AddLoadedSpriteAngleProperties(id, parsedSpriteAngleProperties);
+        }
+    }
+
     private static void LoadPropertiesOfCosmeticTypeId(string dynamicCosmeticTypeID)
     {
         dynamicCosmeticTypeID = PrepareStringForReference(dynamicCosmeticTypeID);
@@ -99,9 +159,7 @@ public static class CosmeticManager
             foreach (string path in directory)
             {
                 var propertiesId = GetCosmeticPropertiesIdFromPath(path);
-#if DEBUG
-                Plugin.LogDebug($"Loading cosmetic properties id: {propertiesId} at path: {path}");
-#endif
+                Plugin.LogInfo($"Loading cosmetic properties id: {propertiesId} at path: {path}");
 
                 /*
                 var jsonData = Json.Parser.Parse(File.ReadAllText(path)) as Dictionary<string, object>;
@@ -141,20 +199,12 @@ public static class CosmeticManager
 
     internal static void LoadCosmeticProperties()
     {
-        //-- MS7: Little seperators to help it stand out ore in the log.
-#if DEBUG
-        Plugin.LogDebug("//");
-        Plugin.LogDebug("//-- Loading cosmetic properties...");
-        Plugin.LogDebug("//");
-#endif
+        //-- MS7: Little seperators to help it stand out more in the log.
+        Plugin.LogInfo("//");
+        Plugin.LogInfo("//-- Loading CCG cosmetic properties...");
+        Plugin.LogInfo("//");
 
         foreach (var cosmeticType in registeredCritcoses)
             LoadPropertiesOfCosmeticTypeId(cosmeticType.Key);
-
-#if DEBUG
-        Plugin.LogDebug("//");
-        Plugin.LogDebug("//-- Finished loading cosmetic properties.");
-        Plugin.LogDebug("//");
-#endif
     }
 }
