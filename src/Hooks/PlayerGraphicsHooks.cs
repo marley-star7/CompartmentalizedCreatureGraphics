@@ -41,27 +41,26 @@ internal static class PlayerGraphicsHooks
         // This is to fake the effect of how the current head turns sideways on horizontals such as when crouching or flipping.
         // (It also makes flips look alot more weighty and rad)
 
-        var idealFaceSpriteAngleRotationZ = 0f;
-
         if (player.room != null && player.EffectiveRoomGravity == 0f
-            || player.bodyMode == Player.BodyModeIndex.Default
             || player.bodyMode == Player.BodyModeIndex.Stand && player.input[0].x == 0)
         {
-            idealFaceSpriteAngleRotationZ = 0f;
+            playerGraphicsCCGData.targetFaceAngleValue = 0f;
             playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.LerpFaceAngleValue;
         }
-        else if (player.Stunned)
+        else if (player.Stunned
+            || player.bodyMode == Player.BodyModeIndex.Default)
         {
             playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.AngleWithBodyDirection;
         }
         else if (player.bodyMode == Player.BodyModeIndex.Stand && player.input[0].x != 0)
         {
             //-- MS7: Taken from source to calculate when using side angles.
-            idealFaceSpriteAngleRotationZ = player.input[0].x;
+            playerGraphicsCCGData.targetFaceAngleValue = player.input[0].x;
             playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.LerpFaceAngleValue;
         }
         else if (player.bodyMode == Player.BodyModeIndex.Crawl)
         {
+            playerGraphicsCCGData.targetFaceAngleValue = Math.Sign(dirLowerChunkToMainChunk.x);
             playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.FullAngleToBodyDirection;
         }
         else
@@ -69,7 +68,7 @@ internal static class PlayerGraphicsHooks
             playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.AngleWithBodyDirection;
         }
 
-        playerGraphicsCCGData.faceAngleValue = Mathf.Lerp(playerGraphicsCCGData.faceAngleValue, idealFaceSpriteAngleRotationZ, 0.7f);
+        playerGraphicsCCGData.faceAngleValue = Mathf.Lerp(playerGraphicsCCGData.faceAngleValue, playerGraphicsCCGData.targetFaceAngleValue, 0.45f);
     }
 
     //

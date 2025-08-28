@@ -1,4 +1,6 @@
-﻿namespace CompartmentalizedCreatureGraphics.Extensions;
+﻿using System.Xml.Linq;
+
+namespace CompartmentalizedCreatureGraphics.Extensions;
 
 public class PlayerGraphicsCCGData : GraphicsModuleCCGData
 {
@@ -170,6 +172,8 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
 
     public float faceAngleValue;
     public float lastFaceAngleValue;
+
+    public float targetFaceAngleValue;
 }
 
 public static class PlayerGraphicsCCGExtensions
@@ -184,47 +188,34 @@ public static class PlayerGraphicsCCGExtensions
             _ => new PlayerGraphicsCCGData(playerGraphics));
     }
 
-    public static void SetFaceSpriteAngle(this PlayerGraphics playerGraphics, string spriteAngle)
-    {
-        var ccgData = playerGraphics.GetPlayerGraphicsCCGData();
-        ccgData.faceSpriteAngle = GraphicsModuleCCGExtensions.GetSymmetricalAngleFromAsymmetrical(spriteAngle);
-        ccgData.faceSpriteAngleAsymmetrical = spriteAngle;
-    }
-
     /// <summary>
-    /// Dir char set to R for right, or L for left, leave empty for nothing.
+    /// -2 = "-A2"
+    /// -1 = "-A1"
+    /// 0 = "-A0"
+    /// 1 = "A1"
+    /// 2 = "A2"
     /// </summary>
     /// <param name="playerGraphics"></param>
     /// <param name="angleNum"></param>
-    /// <param name="dirChar"></param>
     public static void SetFaceSpriteAngle(this PlayerGraphics playerGraphics, int angleNum)
     {
         var ccgData = playerGraphics.GetPlayerGraphicsCCGData();
+
         ccgData.faceSpriteAngleNum = angleNum;
 
-        switch (angleNum)
-        {
-            case -2:
-                ccgData.faceSpriteAngle = "A2";
-                ccgData.faceSpriteAngleAsymmetrical = "-A2";
-                break;
-            case -1:
-                ccgData.faceSpriteAngle = "A1";
-                ccgData.faceSpriteAngleAsymmetrical = "-A1";
-                break;
-            case 0:
-                ccgData.faceSpriteAngle = "A0";
-                ccgData.faceSpriteAngleAsymmetrical = "A0";
-                break;
-            case 1:
-                ccgData.faceSpriteAngle = "A1";
-                ccgData.faceSpriteAngleAsymmetrical = "A1";
-                break;
-            case 2:
-                ccgData.faceSpriteAngle = "A2";
-                ccgData.faceSpriteAngleAsymmetrical = "A2";
-                break;
-        }
+        var angle = GetFaceSpriteAngleAsymmetrical(angleNum);
+        ccgData.faceSpriteAngle = angle;
+        ccgData.faceSpriteAngle = GraphicsModuleCCGExtensions.GetSymmetricalAngleFromAsymmetrical(angle);
+    }
+
+    public static void SetFaceSpriteAngle(this PlayerGraphics playerGraphics, string spriteAngle)
+    {
+        var ccgData = playerGraphics.GetPlayerGraphicsCCGData();
+
+        ccgData.faceSpriteAngle = spriteAngle;
+        ccgData.faceSpriteAngleAsymmetrical = spriteAngle;
+
+        ccgData.faceSpriteAngleNum = GetFaceSpriteAngleNum(spriteAngle);
     }
 
     public static string GetFaceSpriteAngleAsymmetrical(int angleNum)
@@ -241,6 +232,23 @@ public static class PlayerGraphicsCCGExtensions
                 return "A2";
             default:
                 return "A0";
+        }
+    }
+
+    public static int GetFaceSpriteAngleNum(string faceSpriteAngle)
+    {
+        switch (faceSpriteAngle)
+        {
+            case "-A2":
+                return -2;
+            case "-A1":
+                return -1;
+            case "A1":
+                return 1;
+            case "A2":
+                return 2;
+            default:
+                return 0;
         }
     }
 
@@ -352,24 +360,24 @@ public static class PlayerGraphicsCCGExtensions
         ccgData.compartmentalizedGraphicsEnabled = true;
     }
 
-    public static string GetFaceAngleForRotation(Vector2 rotation)
+    public static int GetFaceAngleForRotation(Vector2 rotation)
     {
         switch (rotation.x)
         {
             case > 0.9f:
-                return "A2";
+                return 2;
 
             case > 0.45f:
-                return "A1";
+                return 1;
 
             case < -0.9f:
-                return "-A2";
+                return -2;
 
             case < -0.45f:
-                return "-A1";
+                return -1;
 
             default:
-                return "A0";
+                return 0;
 
         }
     }
