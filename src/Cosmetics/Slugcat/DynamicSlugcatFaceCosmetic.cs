@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CompartmentalizedCreatureGraphics.Extensions;
+using Newtonsoft.Json;
 using System.IO;
 
 namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
@@ -16,8 +17,12 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
         public int side = 0;
 
         [JsonProperty("snap")]
-        public float snap = 0f;
+        public float snap = 15f;
 
+        /// <summary>
+        /// 1 int in distance = 1 pixel in RW,
+        /// Ex: base ears are positioned 5 pixels out.
+        /// </summary>
         [JsonProperty("spriteAnglePropertiesId")]
         public string spriteAnglePropertiesId = "";
 
@@ -26,7 +31,7 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
 
     public new Properties properties => (Properties)_properties;
 
-    protected Vector2 posOffset = Vector2.zero;
+    protected Vector2 anglePosOffset = Vector2.zero;
     protected float sidedScale = 0;
 
     public DynamicSlugcatFaceCosmetic(PlayerGraphics wearerGraphics, Properties properties) : base(wearerGraphics, properties)
@@ -46,6 +51,21 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
         }
     }
 
+    protected Vector2 GetAnglePosOffset(in int faceSpriteAngleNum)
+    {
+        var currentAnglePosIndex = Mathf.Clamp(properties.spriteAngleProperties.positions.Length / 2 + faceSpriteAngleNum, 0, properties.spriteAngleProperties.positions.Length - 1);
+        return properties.spriteAngleProperties.positions[currentAnglePosIndex];
+    }
+
+    protected float GetSidedScale(in int faceSide)
+    {
+        sidedScale = 1f;
+        if (properties.side != 0 && properties.side != faceSide)
+            sidedScale = -1f;
+
+        return sidedScale;
+    }
+
     public override void PostWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         if (sLeaser == null)
@@ -54,17 +74,15 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
         var playerGraphics = (PlayerGraphics)player.graphicsModule;
         var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
 
-        var currentAnglePosIndex = Mathf.Clamp(properties.spriteAngleProperties.positions.Length / 2 + playerGraphicsCCGData.faceSpriteAngleNum, 0, properties.spriteAngleProperties.positions.Length - 1);
-        posOffset = properties.spriteAngleProperties.positions[currentAnglePosIndex];
-
-        sidedScale = 1f;
-        if (properties.side != 0 && properties.side != playerGraphicsCCGData.faceSide)
-            sidedScale = -1f;
+        anglePosOffset = GetAnglePosOffset(playerGraphicsCCGData.faceSpriteAngleNum);
+        sidedScale = GetSidedScale(playerGraphicsCCGData.faceSide);
 
         var faceRotationTimeStacked = Vector2.Lerp(playerGraphicsCCGData.lastFaceRotation, playerGraphicsCCGData.faceRotation, timeStacker);
-        var finalRotation = MarMathf.Snap(Custom.VecToDeg(faceRotationTimeStacked), properties.snap);
+        var finalRotation = Custom.VecToDeg(faceRotationTimeStacked);
+        finalRotation = MarMathf.Snap(Custom.VecToDeg(faceRotationTimeStacked), properties.snap);
 
-        var rotatedPosOffset = Custom.RotateAroundVector(posOffset, Vector2.zero, finalRotation);
+        var rotatedPosOffset = Custom.RotateAroundVector(anglePosOffset, Vector2.zero, finalRotation);
+
         for (int i = 0; i < _sLeaser.sprites.Length; i++)
         {
             _sLeaser.sprites[i].x = playerGraphicsCCGData.facePos.x + rotatedPosOffset.x;

@@ -158,7 +158,7 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
         // Construct the cosmeticLayers dictionary depending on the size of the amount of layers in the enum.
         layersCosmetics = new Dictionary<int, List<ICreatureCosmetic>>();
 
-        var enumSize = Enum.GetValues(typeof(CCGEnums.SlugcatCosmeticLayer)).Length;
+        var enumSize = Enum.GetValues(typeof(Enums.SlugcatCosmeticLayer)).Length;
         for (int i = 0; i < enumSize; i++)
         {
             layersCosmetics.Add(i, new List<ICreatureCosmetic>());
@@ -327,16 +327,16 @@ public static class PlayerGraphicsCCGExtensions
         new OriginalCreatureGraphicsCosmeticReference(playerGraphics,
             new SpriteLayerGroup[]
             {
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseBody, 0),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseHips, 1),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseTail, 2),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseHead, 3),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseLegs, 4),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseLeftArm, 5),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseRightArm, 6),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseLeftTerrainHand, 7),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseRightTerrainHand, 8),
-                new SpriteLayerGroup((int)CCGEnums.SlugcatCosmeticLayer.BaseFace, 9),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseBody, 0),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseHips, 1),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseTail, 2),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseHead, 3),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseLegs, 4),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseLeftArm, 5),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseRightArm, 6),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseLeftTerrainHand, 7),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseRightTerrainHand, 8),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseFace, 9),
             }
         );
     }

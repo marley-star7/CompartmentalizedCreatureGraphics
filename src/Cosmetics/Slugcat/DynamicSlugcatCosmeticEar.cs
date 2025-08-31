@@ -1,4 +1,6 @@
-﻿namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
+﻿using CompartmentalizedCreatureGraphics.Extensions;
+
+namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 
 public class DynamicSlugcatCosmeticEar : DynamicSlugcatFaceCosmetic
 {
@@ -32,50 +34,38 @@ public class DynamicSlugcatCosmeticEar : DynamicSlugcatFaceCosmetic
         if (sLeaser == null)
             return;
 
-        base.PostWearerDrawSprites(wearerSLeaser, rCam, timeStacker, camPos);
+        lastPos = pos;
 
         var playerGraphics = (PlayerGraphics)player.graphicsModule;
         var playerGraphicsData = playerGraphics.GetPlayerGraphicsCCGData();
 
-        //-- MS7: To achieve the effect of being behind we make get an offset from face angle different to position the head.
-        var offsetFaceAngleForBehindHeadPosX = playerGraphicsData.BaseFaceSprite.x - playerGraphicsData.BaseHeadSprite.x;
-        var offsetFaceAngleForBehindHeadPosY = playerGraphicsData.BaseFaceSprite.y - playerGraphicsData.BaseHeadSprite.y;
+        anglePosOffset = GetAnglePosOffset(playerGraphicsData.faceSpriteAngleNum);
+        sidedScale = GetSidedScale(playerGraphicsData.faceSide);
 
-        Vector2 dirLowerChunkToMainChunk = Custom.DirVec(player.bodyChunks[1].pos, player.mainBodyChunk.pos);
+        Vector2 faceRotationTimeStacked = Vector2.Lerp(playerGraphicsData.lastFaceRotation, playerGraphicsData.faceRotation, timeStacker);
+        var faceRotationDegreesTimeStacked = Custom.VecToDeg(faceRotationTimeStacked);
 
-        //-- MS7: 1 distance = 1 pixel in RW, and base ears are positioned 5 pixels out.
-        var earPosOffset = posOffset;
-        float earPosAroundHeadRotationDegreesOffset = 0f;
         float earRotationOffset = properties.rotationOffsetDegrees;
 
         // MS7: Makes it so the ear rotates the right way depending on angle and side.
         float earRotationSide = properties.side * -sidedScale;
 
-        //-- MS7: If player is sideways, offset the rotation around the head based how much.
-        // Apply side multiplier to horizontal direction influence
-        earPosAroundHeadRotationDegreesOffset -= dirLowerChunkToMainChunk.x * 90 * earRotationSide;
-
-        // Base rotation offset - multiply by side to flip direction appropriately
-        earRotationOffset += dirLowerChunkToMainChunk.x * -60 * earRotationSide;
+        // Base rotation offset - multiplied by side to flip direction appropriately
+        earRotationOffset += faceRotationTimeStacked.x * -60 * earRotationSide;
 
         //-- MS7: TODO: make this curl be the baseline and then lerp to the max curve of 90 threat increase, rather than just the base add it is now, so it looks more natural.
         var maxEarRotation = 90f;
-        var earCurl = properties.curl;
+        var earCurlAmount = properties.curl;
 
         //-- MS7: If player is under threat, make their ears shift down a bit more. 
         var threat = player.GetThreat();
         if (threat > 0.01f)
-            earCurl += Mathf.Lerp(0.2f, 1, threat);
+            earCurlAmount += Mathf.Lerp(0.2f, 1, threat);
 
-        earRotationOffset += earCurl * maxEarRotation * earRotationSide;
-
-        pos = new Vector2(
-            playerGraphicsData.BaseHeadSprite.x + earPosOffset.x,
-            playerGraphicsData.BaseHeadSprite.y + earPosOffset.y
-        );
+        earRotationOffset += (earCurlAmount * maxEarRotation) * earRotationSide;
 
         // Final rotation calculation with proper side consideration
-        var earFinalRotation = Custom.VecToDeg(dirLowerChunkToMainChunk) * earRotationSide + earRotationOffset;
+        var earFinalRotation = (faceRotationDegreesTimeStacked * earRotationSide) + earRotationOffset;
 
         // Rotate the ears based on their offset around the heads center point.
         //earPosOffset = Custom.RotateAroundVector(earPosOffset, Vector2.zero, playerGraphicsData.BaseHeadSprite.rotation + earPosAroundHeadRotationDegreesOffset);
@@ -93,16 +83,21 @@ public class DynamicSlugcatCosmeticEar : DynamicSlugcatFaceCosmetic
         }
         */
 
+        //-- MS7: If player is sideways, offset the rotation around the head based how much.
+        // Apply side multiplier to horizontal direction influence
+        pos = playerGraphicsData.BaseHeadSprite.GetPosition() + Custom.RotateAroundVector(anglePosOffset, Vector2.zero, faceRotationDegreesTimeStacked * earRotationSide);
+        var finalPos = Vector2.Lerp(lastPos, pos, timeStacker);
+
         for (int i = 0; i < sLeaser.sprites.Length; i++)
         {
             var currentSprite = sLeaser.sprites[i];
 
-            currentSprite.x = pos.x;
-            currentSprite.y = pos.y;
+            currentSprite.x = finalPos.x;
+            currentSprite.y = finalPos.y;
             currentSprite.rotation = earFinalRotation;
             currentSprite.color = playerGraphicsData.BaseHeadSprite.color;
+            currentSprite.scaleX = properties.scaleX * sidedScale;
+            currentSprite.scaleY = properties.scaleY;
         }
-
-        lastPos = pos;
     }
 }

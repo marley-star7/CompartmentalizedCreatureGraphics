@@ -1,6 +1,6 @@
 ﻿namespace CompartmentalizedCreatureGraphics;
 
-public static class CCGEnums
+public static class Enums
 {
     public class DynamicCosmeticID : ExtEnum<DynamicCosmeticID>
     {

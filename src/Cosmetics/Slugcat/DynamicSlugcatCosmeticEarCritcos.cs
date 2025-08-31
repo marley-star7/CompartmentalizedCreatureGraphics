@@ -12,7 +12,7 @@ public class DynamicSlugcatCosmeticEarCritcos : Critcos
         var settings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            ContractResolver = new CreatureCosmeticLayerContractResolver<CCGEnums.SlugcatCosmeticLayer>()
+            ContractResolver = new CreatureCosmeticLayerContractResolver<Enums.SlugcatCosmeticLayer>()
         };
 
         DynamicSlugcatCosmeticEar.Properties properties = JsonConvert.DeserializeObject<DynamicSlugcatCosmeticEar.Properties>(json, settings);
