@@ -18,17 +18,22 @@ public static class Enums
         BaseTail,
         BaseLegs,
         BaseBody,
+        BodyCover,
+
         BaseLeftArm,
         BaseRightArm,
         BaseHips,
+
         BaseHead,
         Ear,
         EarCover,
+
         BaseFace,
         Eye,
         EyeCover,
         Nose,
         FaceMask,
+
         // Should be infront of almost all.
         BaseLeftTerrainHand,
         BaseRightTerrainHand,

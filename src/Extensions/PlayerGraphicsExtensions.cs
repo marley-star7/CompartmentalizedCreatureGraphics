@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using MRCustom;
+using System.Xml.Linq;
 
 namespace CompartmentalizedCreatureGraphics.Extensions;
 
@@ -72,47 +73,47 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
 
     public FSprite? BaseBodySprite
     {
-        get { return sLeaser.sprites[0]; }
+        get { return sLeaser.sprites[SpriteIndexes.Player.Body]; }
     }
     public FSprite? BaseHipsSprite
     {
-        get { return sLeaser.sprites[1]; }
+        get { return sLeaser.sprites[SpriteIndexes.Player.Hips]; }
     }
     public FSprite? BaseTailSprite
     {
-        get { return sLeaser.sprites[2]; }
+        get { return sLeaser.sprites[SpriteIndexes.Player.Tail]; }
     }
     public FSprite? BaseHeadSprite
     {
-        get { return sLeaser.sprites[3]; }
+        get { return sLeaser.sprites[SpriteIndexes.Player.Head]; }
     }
     public FSprite? BaseLegsSprite
     {
-        get { return sLeaser.sprites[4]; }
+        get { return sLeaser.sprites[SpriteIndexes.Player.Legs]; }
     }
     public FSprite? BaseLeftArmSprite
     {
-        get { return sLeaser.sprites[5]; }
+        get { return sLeaser.sprites[SpriteIndexes.Player.LeftArm]; }
     }
     public FSprite? BaseRightArmSprite
     {
-        get { return sLeaser.sprites[6]; }
+        get { return sLeaser.sprites[SpriteIndexes.Player.RightArm]; }
     }
     public FSprite? BaseLeftTerrainHandSprite
     {
-        get { return sLeaser.sprites[7]; }
+        get { return sLeaser.sprites[SpriteIndexes.Player.LeftTerrainHand]; }
     }
     public FSprite? BaseRightTerrainHandSprite
     {
-        get { return sLeaser.sprites[8]; }
+        get { return sLeaser.sprites[SpriteIndexes.Player.RightTerrainHand]; }
     }
     public FSprite? BaseFaceSprite
     {
-        get { return sLeaser.sprites[9]; }
+        get { return sLeaser.sprites[SpriteIndexes.Player.Face]; }
     }
-    public FSprite? BasePixelSprite
+    public FSprite? BaseMarkSprite
     {
-        get { return sLeaser.sprites[11]; }
+        get { return sLeaser.sprites[SpriteIndexes.Player.Mark]; }
     }
 
     public enum FaceSpriteAnglingMode
@@ -204,7 +205,7 @@ public static class PlayerGraphicsCCGExtensions
         ccgData.faceSpriteAngleNum = angleNum;
 
         var angle = GetFaceSpriteAngleAsymmetrical(angleNum);
-        ccgData.faceSpriteAngle = angle;
+        ccgData.faceSpriteAngleAsymmetrical = angle;
         ccgData.faceSpriteAngle = GraphicsModuleCCGExtensions.GetSymmetricalAngleFromAsymmetrical(angle);
     }
 
@@ -308,35 +309,21 @@ public static class PlayerGraphicsCCGExtensions
     /// <returns></returns>
     internal static void CreateAndAddOriginalPlayerGraphicsCosmeticReference(this PlayerGraphics playerGraphics)
     {
-        // The Magic Sheet of Sprite Bull-Sheet
-        /* 
-        Sprite 0 = BodyA
-        Sprite 1 = HipsA
-        Sprite 2 = Tail
-        Sprite 3 = HeadA || B
-        Sprite 4 = LegsA
-        Sprite 5 = Arm
-        Sprite 6 = Arm
-        Sprite 7 = TerrainHand
-        sprite 8 = TerrainHand
-        sprite 9 = FaceA
-        sprite 10 = Futile_White with shader Flatlight
-        sprite 11 = pixel Mark of comunication
-        */
-
         new OriginalCreatureGraphicsCosmeticReference(playerGraphics,
             new SpriteLayerGroup[]
             {
-                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseBody, 0),
-                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseHips, 1),
-                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseTail, 2),
-                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseHead, 3),
-                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseLegs, 4),
-                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseLeftArm, 5),
-                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseRightArm, 6),
-                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseLeftTerrainHand, 7),
-                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseRightTerrainHand, 8),
-                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseFace, 9),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseBody, SpriteIndexes.Player.Body),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseHips, SpriteIndexes.Player.Hips),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseTail, SpriteIndexes.Player.Tail),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseHead, SpriteIndexes.Player.Head),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseLegs, SpriteIndexes.Player.Legs),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseFace, SpriteIndexes.Player.Face),
+
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseLeftArm, SpriteIndexes.Player.LeftArm),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseRightArm, SpriteIndexes.Player.RightArm),
+
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseLeftTerrainHand, SpriteIndexes.Player.LeftTerrainHand),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseRightTerrainHand, SpriteIndexes.Player.RightTerrainHand),
             }
         );
     }

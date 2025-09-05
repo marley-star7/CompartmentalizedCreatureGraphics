@@ -6,15 +6,25 @@ using System.Threading.Tasks;
 
 namespace CompartmentalizedCreatureGraphics.Cosmetics;
 
+/// <summary>
+/// Group to categorizes sprites for a cosmetic by their index.
+/// </summary>
 public struct SpriteEffectGroup
 {
-    public int[] sprites;
+    /// <summary>
+    /// The indexes associated with sprites in this effect group.
+    /// </summary>
+    public int[] sprites = new int[0];
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sprites"></param>
     public SpriteEffectGroup(params int[] sprites)
     {
-        if (sprites.Length > 0)
+        if (sprites.Length != 0)
+        {
             this.sprites = sprites;
-        else
-            this.sprites = new int[0];
+        }
     }
 }
