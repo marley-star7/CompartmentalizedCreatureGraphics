@@ -1,21 +1,42 @@
 ﻿namespace CompartmentalizedCreatureGraphics.Cosmetics;
 
 public struct SpriteLayerGroup
-{
-    [JsonProperty("layerName")]
-    public int layer;
-    
+{   
+    // Ms7: the getters and setters are in ints for ease of use,
+    // But internally they are stored as much smaller values for optimal struct packing.
+
+    private ushort startSpriteIndex;
+
     /// <summary>
     /// The index of the start sprite for layer group
     /// </summary>
     [JsonProperty("startSpriteIndex")]
-    public int startSpriteIndex;
+    public int StartSpriteIndex
+    {
+        get { return (int)startSpriteIndex; }
+        set { startSpriteIndex = (byte)value; }
+    }
+
+    private ushort endSpriteIndex;
 
     /// <summary>
     /// The index of the last sprite for layer group,
     /// </summary>
     [JsonProperty("endSpriteIndex")]
-    public int endSpriteIndex;
+    public int EndSpriteIndex
+    {
+        get { return (int)endSpriteIndex; }
+        set { endSpriteIndex = (byte)value; }
+    }
+
+    private byte layer;
+
+    [JsonProperty("layerName")]
+    public int Layer
+    {
+        get { return (int)layer; }
+        set { layer = (byte)value; }
+    }
 
     /// <summary>
     /// Wether this layer group is marked for re-ording.
@@ -29,8 +50,8 @@ public struct SpriteLayerGroup
     /// <param name="spriteIndex"></param>
     public SpriteLayerGroup(int layer, int spriteIndex)
     {
-        this.layer = layer;
-        this.startSpriteIndex = spriteIndex;
+        this.Layer = layer;
+        this.StartSpriteIndex = spriteIndex;
         endSpriteIndex = startSpriteIndex;
     }
 
@@ -42,8 +63,8 @@ public struct SpriteLayerGroup
     /// <param name="lastSpriteIndex"></param>
     public SpriteLayerGroup(int layer, int startSpriteIndex, int lastSpriteIndex)
     {
-        this.layer = layer;
-        this.startSpriteIndex = startSpriteIndex;
-        this.endSpriteIndex = lastSpriteIndex;
+        this.Layer = layer;
+        this.StartSpriteIndex = startSpriteIndex;
+        this.EndSpriteIndex = lastSpriteIndex;
     }
 }

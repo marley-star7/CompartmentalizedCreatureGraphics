@@ -2,6 +2,31 @@
 
 internal static class PlayerHooks
 {
+    internal static void ApplyHooks()
+    {
+        On.Player.InitiateGraphicsModule += Player_InitiateGraphicsModule;
+
+        On.Player.Collide += PlayerHooks.Player_Collide;
+        On.Player.TerrainImpact += PlayerHooks.Player_TerrainImpact;
+    }
+
+    // Have to do it here because of how hooking woorks YAYYY (find a workaround fuck fuck fucck fuc kfuckcuamoic opiasn fioguSD ojhgkpaiondfg ,nioasdebfouhgaobnuiyderf,)
+    internal static void Player_InitiateGraphicsModule(On.Player.orig_InitiateGraphicsModule orig, Player self)
+    {
+        orig(self);
+
+        if (self.graphicsModule != null)
+        {
+            self.graphicsModule.AddDynamicCreatureCosmeticsToDrawableObjects();
+        }
+    }
+
+    internal static void RemoveHooks()
+    {
+        On.Player.Collide += PlayerHooks.Player_Collide;
+        On.Player.TerrainImpact += PlayerHooks.Player_TerrainImpact;
+    }
+
     internal static void Player_TerrainImpact(On.Player.orig_TerrainImpact orig, Player player, int chunk, IntVector2 direction, float speed, bool firstContact)
     {
         orig(player, chunk, direction, speed, firstContact);

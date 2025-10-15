@@ -2,13 +2,25 @@
 
 internal static class PhysicalObjectHooks
 {
+    internal static void ApplyHooks()
+    {
+        On.PhysicalObject.InitiateGraphicsModule += PhysicalObjectHooks.PhysicalObject_InitiateGraphicsModule;
+        On.PhysicalObject.RemoveGraphicsModule += PhysicalObjectHooks.PhysicalObject_RemoveGraphicsModule;
+    }
+
+    internal static void RemoveHooks()
+    {
+        On.PhysicalObject.InitiateGraphicsModule -= PhysicalObjectHooks.PhysicalObject_InitiateGraphicsModule;
+        On.PhysicalObject.RemoveGraphicsModule -= PhysicalObjectHooks.PhysicalObject_RemoveGraphicsModule;
+    }
+
     internal static void PhysicalObject_InitiateGraphicsModule(On.PhysicalObject.orig_InitiateGraphicsModule orig, PhysicalObject self)
     {
         orig(self);
 
         if (self.graphicsModule != null)
         {
-            self.graphicsModule.AddDynamicCreatureCosmeticsToRoom();
+            self.graphicsModule.AddDynamicCreatureCosmeticsToDrawableObjects();
         }
     }
 
@@ -18,7 +30,7 @@ internal static class PhysicalObjectHooks
 
         if (self.graphicsModule != null)
         {
-            self.graphicsModule.RemoveDynamicCreatureCosmeticsFromRoom();
+            self.graphicsModule.RemoveDynamicCreatureCosmeticsFromDrawableObjects();
         }
     }
 }

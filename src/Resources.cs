@@ -9,5 +9,7 @@ public static class Resources
         Futile.atlasManager.LoadAtlas("atlases/ccgSlugcatEar");
         Futile.atlasManager.LoadAtlas("atlases/ccgSlugcatEye");
         Futile.atlasManager.LoadAtlas("atlases/ccgSlugcatNose");
+
+        Futile.atlasManager.LoadAtlas("atlases/ccgSlugcatTiredEye");
     }
 }

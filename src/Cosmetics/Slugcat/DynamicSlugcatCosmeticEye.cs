@@ -8,7 +8,7 @@ public class DynamicSlugcatCosmeticEye : DynamicSlugcatFaceCosmetic
 
     public override void PostWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        if (sLeaser == null)
+        if (SLeaser == null)
             return;
 
         base.PostWearerDrawSprites(wearerSLeaser, rCam, timeStacker, camPos);
@@ -33,7 +33,7 @@ public class DynamicSlugcatCosmeticEye : DynamicSlugcatFaceCosmetic
 
         for (int i = 0; i < properties.spriteNames.Length; i++)
         {
-            sLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(properties.spriteNames[i] + extraText);
+            SLeaser.sprites[i].element = Futile.atlasManager.GetElementWithName(properties.spriteNames[i] + extraText);
         }
     }
 }

@@ -2,6 +2,11 @@
 
 public static class Enums
 {
+    public static void Init()
+    {
+
+    }
+
     public class DynamicCosmeticID : ExtEnum<DynamicCosmeticID>
     {
         public DynamicCosmeticID(string value, bool register = false) : base(value, register) { }
@@ -15,7 +20,11 @@ public static class Enums
     public enum SlugcatCosmeticLayer
     {
         None,
+
+        // Should be behind almost all.
+        Back,
         BaseTail,
+
         BaseLegs,
         BaseBody,
         BodyCover,

@@ -1,24 +1,13 @@
-﻿
-namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
+﻿namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 
 public class DynamicSlugcatCosmeticEarCritcos : Critcos
 {
     public override Type DynamicCreatureCosmeticType => typeof(DynamicSlugcatCosmeticEar);
-
     public override Type DynamicCreatureCosmeticPropertiesType => typeof(DynamicSlugcatCosmeticEar.Properties);
 
     public override DynamicCreatureCosmetic.Properties ParseProperties(string json)
     {
-        var settings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            ContractResolver = new CreatureCosmeticLayerContractResolver<Enums.SlugcatCosmeticLayer>()
-        };
-
-        DynamicSlugcatCosmeticEar.Properties properties = JsonConvert.DeserializeObject<DynamicSlugcatCosmeticEar.Properties>(json, settings);
-        properties.spriteAngleProperties = CosmeticManager.GetSpriteAnglePropertiesForId(properties.spriteAnglePropertiesId);
-
-        return properties;
+        return new DynamicSlugcatCosmeticEar.Properties().Parse(json);
     }
 
     public override DynamicCreatureCosmetic CreateDynamicCosmeticForCreature(GraphicsModule graphicsModule, string propertiesId)
@@ -28,7 +17,7 @@ public class DynamicSlugcatCosmeticEarCritcos : Critcos
         var properties = GetLoadedPropertiesFromPropertiesId(propertiesId) as DynamicSlugcatCosmeticEar.Properties;
         if (properties == null)
         {
-            Plugin.LogError($"Properties are null!!!!");
+            Plugin.LogCCGError($"Properties are null!!!!");
             return null;
         }
         else

@@ -10,7 +10,7 @@
     <AssemblyName>CompartmentalizedCreatureGraphics</AssemblyName>
 	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
 	  <!-- Optional: Suppress warnings for missing comments -->
-	  <!--<NoWarn>$(NoWarn);1591</NoWarn> -->
+	  <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
 	<PropertyGroup>
@@ -91,16 +91,12 @@
 		<Copy SourceFiles="@(LibFiles)" DestinationFolder="../ccg/libs/" SkipUnchangedFiles="true" />
 	</Target>
 
-  <!-- Custom Copy to slugcrafting\lib on Debug build -->
-  <Target Name="CopyToSlugcraftingLib" AfterTargets="PostBuildEvent">
-    <Message Importance="high" Text="Copying DLL to slugcrafting\lib..." />
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="C:\Users\marle\source\repos\slugcrafting\lib" />
-  </Target>
-
-<!-- Custom Copy to designmyslugcat\lib on Debug build -->
-<Target Name="CopyToDesignMySlugcatLib" AfterTargets="PostBuildEvent">
-	<Message Importance="high" Text="Copying DLL to designmyslugcat\lib..." />
-	<Copy SourceFiles="$(TargetPath)" DestinationFolder="C:\Users\marle\source\repos\designmyslugcat\lib" />
-</Target>
+	<Target Name="CopyToRequiredModsLib" AfterTargets="PostBuildEvent">
+		<Message Importance="high" Text="Copying DLL to slugcrafting, ccg, and designmyslugcat" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="C:\Users\marle\source\repos\slugcrafting\lib" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="C:\Users\marle\source\repos\project017\lib" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="C:\Users\marle\source\repos\compartmentalizedcreaturegraphics\lib" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="C:\Users\marle\source\repos\designmyslugcat\lib" />
+	</Target>
 
 </Project>

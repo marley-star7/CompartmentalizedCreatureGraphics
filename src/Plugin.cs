@@ -19,6 +19,7 @@ sealed class Plugin : BaseUnityPlugin
     /// This is the directory where the default cosmetics are stored. It is used to load the default cosmetics from json files.
     /// </summary>
     public const string CosmeticPropertiesDirectory = "ccg/cosmetics";
+    public const string CosmeticEffectPropertiesDirectory = "ccg/effects";
     /// <summary>
     /// This is the directory where the sprite angle properties are stored. It is used to load the sprite angle properties from json files.
     /// </summary>
@@ -53,16 +54,26 @@ sealed class Plugin : BaseUnityPlugin
     public Plugin()
     {
         Logger = base.Logger;
+
+        Enums.Init();
     }
 
     public void OnEnable()
     {
+        if (File.Exists("ccgLog.txt"))
+        {
+            File.Delete("ccgLog.txt");
+        }
+
         On.RainWorld.OnModsInit += Extras.WrapInit(LoadPlugin);
         On.RainWorld.PostModsInit += RainWorld_PostModsInit;
 
-        CosmeticManager.RegisterCritcos(new DynamicSlugcatCosmeticFaceCritcos());
-        CosmeticManager.RegisterCritcos(new DynamicSlugcatCosmeticEyeCritcos());
-        CosmeticManager.RegisterCritcos(new DynamicSlugcatCosmeticEarCritcos());
+        CCG.CosmeticManager.RegisterCritcos(new DynamicSlugcatCosmeticFaceCritcos());
+        CCG.CosmeticManager.RegisterCritcos(new DynamicSlugcatCosmeticEyeCritcos());
+        CCG.CosmeticManager.RegisterCritcos(new DynamicSlugcatCosmeticEarCritcos());
+
+        CCG.CosmeticManager.RegisterCritcos(new DynamicSlugcatTailScalesCosmeticCritcos());
+        CCG.CosmeticManager.RegisterCritcos(new DynamicSlugcatTailSpecksCosmeticCritcos());
 
         Logger.LogInfo("Compartmentalized Creature Graphics is loaded!");
     }
@@ -102,12 +113,54 @@ sealed class Plugin : BaseUnityPlugin
             Plugin.Logger.LogError(e.Message);
         }
 
-        CosmeticManager.LoadSpriteAngleProperties();
-        CosmeticManager.LoadCosmeticProperties();
+        CCG.CosmeticManager.LoadSpriteAngleProperties();
+        CCG.CosmeticManager.LoadProperties();
+        CCG.CosmeticEffectManager.LoadProperties();
+
         PresetManager.LoadSlugcatCosmeticsPresets();
+
         Plugin.LogInfo("//");
         Plugin.LogInfo("//-- CCG presets and properties finished loading...");
         Plugin.LogInfo("//");
+    }
+
+    private static void HandleCCGLog(string logString)
+    {
+        File.AppendAllText("ccgLog.txt", logString + Environment.NewLine);
+    }
+    
+    /// <summary>
+    /// Make all the ccg log info go into its own log file to help declutter it's information from other logs..
+    /// </summary>
+    /// <param name="ex"></param>
+    internal static void LogCCGInfo(object ex)
+    {
+        HandleCCGLog("[Info   ] " + ex.ToString());
+    }
+
+    /// <summary>
+    /// Only logs if dev tools are enabled,
+    /// Used for modders.
+    /// </summary>
+    /// <param name="ex"></param>
+    internal static void LogCCGDebug(object ex)
+    {
+        if (!ModManager.DevTools)
+        {
+            return;
+        }
+
+        HandleCCGLog("[Debug  ] " + ex.ToString());
+    }
+
+    internal static void LogCCGWarning(object ex)
+    {
+        HandleCCGLog("[Warning] " + ex.ToString());
+    }
+
+    internal static void LogCCGError(object ex)
+    {
+        HandleCCGLog("[Error  ] " + ex.ToString());
     }
 
     internal static void LogInfo(object ex) => Logger.LogInfo(ex);
@@ -118,9 +171,9 @@ sealed class Plugin : BaseUnityPlugin
     // So just incase we forget any #if's anywhere to encase debug logs to be for debug builds only to reduce hit on user performance.
     internal static void LogDebug(object ex)
     {
-#if DEBUG
+        #if DEBUG
         Logger.LogDebug(ex);
-#endif
+        #endif
     }
 
     internal static void LogWarning(object ex) => Logger.LogWarning(ex);

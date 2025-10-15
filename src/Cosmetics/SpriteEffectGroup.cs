@@ -14,7 +14,13 @@ public struct SpriteEffectGroup
     /// <summary>
     /// The indexes associated with sprites in this effect group.
     /// </summary>
-    public int[] sprites = new int[0];
+    private int[] sprites = new int[0];
+
+    public int[] Sprites
+    {
+        get { return sprites; }
+        set { sprites = value; }
+    }
 
     /// <summary>
     /// 
@@ -24,7 +30,7 @@ public struct SpriteEffectGroup
     {
         if (sprites.Length != 0)
         {
-            this.sprites = sprites;
+            this.Sprites = sprites;
         }
     }
 }

@@ -53,8 +53,8 @@ public static class GraphicsModuleCCGExtensions
 
         selfCCGData.cosmetics.Add(cosmetic);
         // Add this cosmetics sprite layers information to the wearer graphics module data.
-        for (int i = 0; i < cosmetic.spriteLayerGroups.Length; i++)
-            selfCCGData.layersCosmetics[cosmetic.spriteLayerGroups[i].layer].Add(cosmetic);
+        for (int i = 0; i < cosmetic.SpriteLayerGroups.Length; i++)
+            selfCCGData.layersCosmetics[cosmetic.SpriteLayerGroups[i].Layer].Add(cosmetic);
 
         if (cosmetic is IDynamicCreatureCosmetic dynamicCosmetic && dynamicCosmetic is UpdatableAndDeletable dynamicCosmeticUpdatable)
         {
@@ -68,8 +68,8 @@ public static class GraphicsModuleCCGExtensions
 
         selfCCGData.cosmetics.Remove(cosmetic);
         // Add this cosmetics sprite layers information to the wearer graphics module data.
-        for (int i = 0; i < cosmetic.spriteLayerGroups.Length; i++)
-            selfCCGData.layersCosmetics[cosmetic.spriteLayerGroups[i].layer].Remove(cosmetic);
+        for (int i = 0; i < cosmetic.SpriteLayerGroups.Length; i++)
+            selfCCGData.layersCosmetics[cosmetic.SpriteLayerGroups[i].Layer].Remove(cosmetic);
 
         if (cosmetic is IDynamicCreatureCosmetic dynamicCosmetic && dynamicCosmetic is UpdatableAndDeletable dynamicCosmeticUpdatable)
         {
@@ -77,35 +77,49 @@ public static class GraphicsModuleCCGExtensions
         }
     }
 
-    public static void AddDynamicCreatureCosmeticsToRoom(this GraphicsModule self)
+    internal static void AddDynamicCreatureCosmeticsToDrawableObjects(this GraphicsModule self)
     {
         if (self.owner.room == null)
+        {
             return;
+        }
+
+        Plugin.LogCCGDebug("Adding cosmetics to drawable objects");
 
         var wearerCCGData = self.GetGraphicsModuleCCGData();
 
         for (int i = 0; i < wearerCCGData.cosmetics.Count; i++)
         {
-            if (wearerCCGData.cosmetics[i] is UpdatableAndDeletable cosmeticUpdatable 
-                && cosmeticUpdatable.room != self.owner.room)
+            if (wearerCCGData.cosmetics[i] is IDrawable cosmeticDrawable)
             {
-                cosmeticUpdatable.RemoveFromRoom();
-                self.owner.room.AddObject(cosmeticUpdatable);
+                self.owner.room.drawableObjects.Add(cosmeticDrawable);
+
+                for (int k = 0; k < self.owner.room.game.cameras.Length; k++)
+                {
+                    if (self.owner.room.game.cameras[k].room == self.owner.room)
+                    {
+                        // Ms7: This is what actually makes it go "hey initiate the sprites and stuff!"
+                        self.owner.room.game.cameras[k].NewObjectInRoom(cosmeticDrawable);
+                    }
+                }
             }
         }
     }
 
-    public static void RemoveDynamicCreatureCosmeticsFromRoom(this GraphicsModule self)
+    internal static void RemoveDynamicCreatureCosmeticsFromDrawableObjects(this GraphicsModule self)
     {
         if (self.owner.room == null)
             return;
 
         var wearerCCGData = self.GetGraphicsModuleCCGData();
 
+
         for (int i = 0; i < wearerCCGData.cosmetics.Count; i++)
         {
-            if (wearerCCGData.cosmetics[i] is UpdatableAndDeletable cosmeticUpdatable)
-                cosmeticUpdatable.RemoveFromRoom();
+            if (wearerCCGData.cosmetics[i] is IDrawable cosmeticDrawable)
+            {
+                self.owner.room.drawableObjects.Remove(cosmeticDrawable);
+            }
         }
     }
 

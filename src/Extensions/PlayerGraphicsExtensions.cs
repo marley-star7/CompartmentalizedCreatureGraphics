@@ -123,9 +123,9 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
         /// </summary>
         Manual,
         /// <summary>
-        /// The face angle will lerp slowly according to faceAngleValue.
+        /// The face angle will lerp slowly according to headDepthRotation.
         /// </summary>
-        LerpFaceAngleValue,
+        LerpHeadDepthRotation,
         /// <summary>
         /// The face angle will rotate to match the direction the body would be facing,
         /// Looking sideways when the body is horiztonal, and straight when vertical.
@@ -135,7 +135,7 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
         FullAngleToBodyDirection,
     }
 
-    public FaceSpriteAnglingMode faceSpriteAnglingMode = FaceSpriteAnglingMode.LerpFaceAngleValue;
+    public FaceSpriteAnglingMode faceSpriteAnglingMode = FaceSpriteAnglingMode.LerpHeadDepthRotation;
 
     public int faceSpriteAngleNum = 0;
     public int faceSide
@@ -171,10 +171,10 @@ public class PlayerGraphicsCCGData : GraphicsModuleCCGData
     public Vector2 faceRotation;
     public Vector2 lastFaceRotation;
 
-    public float faceAngleValue;
-    public float lastFaceAngleValue;
+    public float headDepthRotation;
+    public float lastHeadDepthRotation;
 
-    public float targetFaceAngleValue;
+    public float targetHeadDepthRotation;
 }
 
 public static class PlayerGraphicsCCGExtensions
@@ -312,11 +312,13 @@ public static class PlayerGraphicsCCGExtensions
         new OriginalCreatureGraphicsCosmeticReference(playerGraphics,
             new SpriteLayerGroup[]
             {
-                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseBody, SpriteIndexes.Player.Body),
-                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseHips, SpriteIndexes.Player.Hips),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.Back, SpriteIndexes.Player.Tail),
+
                 new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseTail, SpriteIndexes.Player.Tail),
-                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseHead, SpriteIndexes.Player.Head),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseBody, SpriteIndexes.Player.Body),
                 new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseLegs, SpriteIndexes.Player.Legs),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseHips, SpriteIndexes.Player.Hips),
+                new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseHead, SpriteIndexes.Player.Head),
                 new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseFace, SpriteIndexes.Player.Face),
 
                 new SpriteLayerGroup((int)Enums.SlugcatCosmeticLayer.BaseLeftArm, SpriteIndexes.Player.LeftArm),
@@ -331,7 +333,7 @@ public static class PlayerGraphicsCCGExtensions
     public static void CreateAndAddDynamicSlugcatCosmetic(this PlayerGraphics self, string cosmeticTypeId, string propertiesId)
     {
         Plugin.LogDebug($"Equipping cosmeticTypeID {cosmeticTypeId} of propertiesID {propertiesId} to player");
-        CosmeticManager.GetCritcosFromCosmeticTypeId(cosmeticTypeId).CreateDynamicCosmeticForCreature(self, propertiesId);
+        self.AddCreatureCosmetic(CCG.CosmeticManager.GetCritcosFromCosmeticTypeId(cosmeticTypeId).CreateDynamicCosmeticForCreature(self, propertiesId));
     }
 
     public static void CreateAndAddSlugcatCosmeticsPreset(this PlayerGraphics self, SlugcatCosmeticsPreset preset)

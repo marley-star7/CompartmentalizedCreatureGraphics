@@ -1,0 +1,12 @@
+{
+  "spriteLayerGroups": [
+    {
+      "layerName": "BaseTail",
+      "startSpriteIndex": 0,
+      "endSpriteIndex": 15
+    }
+  ],
+  "bigCircles": false,
+  "rows": 5,
+  "lines": 3
+}

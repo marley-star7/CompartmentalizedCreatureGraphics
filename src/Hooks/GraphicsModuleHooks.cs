@@ -2,35 +2,68 @@
 
 internal static class GraphicsModuleHooks
 {
-    internal static void GraphicsModule_InitiateSprites(On.GraphicsModule.orig_InitiateSprites orig, GraphicsModule self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam)
+    internal static void ApplyHooks()
+    {
+        On.GraphicsModule.Update += GraphicsModule_Update;
+
+        On.GraphicsModule.InitiateSprites += GraphicsModuleHooks.GraphicsModule_InitiateSprites;
+        On.GraphicsModule.DrawSprites += GraphicsModuleHooks.GraphicsModule_DrawSprites;
+        On.GraphicsModule.ApplyPalette += GraphicsModuleHooks.GraphicsModule_ApplyPalette;
+        On.GraphicsModule.AddToContainer += GraphicsModuleHooks.GraphicsModule_AddToContainer;
+    }
+
+    internal static void RemoveHooks()
+    {
+        On.GraphicsModule.Update -= GraphicsModule_Update;
+
+        On.GraphicsModule.InitiateSprites -= GraphicsModuleHooks.GraphicsModule_InitiateSprites;
+        On.GraphicsModule.DrawSprites -= GraphicsModuleHooks.GraphicsModule_DrawSprites;
+        On.GraphicsModule.ApplyPalette -= GraphicsModuleHooks.GraphicsModule_ApplyPalette;
+        On.GraphicsModule.AddToContainer -= GraphicsModuleHooks.GraphicsModule_AddToContainer;
+    }
+
+    private static void GraphicsModule_Update(On.GraphicsModule.orig_Update orig, GraphicsModule self)
+    {
+        orig(self);
+
+        var data = self.GetGraphicsModuleCCGData();
+
+        var cosmetics = data.cosmetics;
+        for (int i = 0, count = cosmetics.Count; i < count; i++)
+        {
+            cosmetics[i].PostWearerUpdate();
+        }
+    }
+
+    internal static void GraphicsModule_InitiateSprites(On.GraphicsModule.orig_InitiateSprites orig, GraphicsModule self, RoomCamera.SpriteLeaser SLeaser, RoomCamera rCam)
     {
         var data = self.GetGraphicsModuleCCGData();
-        data.sLeaser = sLeaser;
+        data.sLeaser = SLeaser;
 
-        orig(self, sLeaser, rCam);
+        orig(self, SLeaser, rCam);
         self.ReorderDynamicCosmetics();
 
         var cosmetics = data.cosmetics;
         for (int i = 0, count = cosmetics.Count; i < count; i++)
         {
-            cosmetics[i].PostWearerInitiateSprites(sLeaser, rCam);
+            cosmetics[i].PostWearerInitiateSprites(SLeaser, rCam);
         }
     }
 
-    internal static void GraphicsModule_DrawSprites(On.GraphicsModule.orig_DrawSprites orig, GraphicsModule self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    internal static void GraphicsModule_DrawSprites(On.GraphicsModule.orig_DrawSprites orig, GraphicsModule self, RoomCamera.SpriteLeaser SLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         var data = self.GetGraphicsModuleCCGData();
-        data.sLeaser = sLeaser;
+        data.sLeaser = SLeaser;
 
-        orig(self, sLeaser, rCam, timeStacker, camPos);
+        orig(self, SLeaser, rCam, timeStacker, camPos);
 
-        if (sLeaser.deleteMeNextFrame)
+        if (SLeaser.deleteMeNextFrame)
         {
             CleanUpDynamicCosmetics(data);
         }
         else
         {
-            DrawDynamicCosmetics(data, sLeaser, rCam, timeStacker, camPos);
+            DrawDynamicCosmetics(data, SLeaser, rCam, timeStacker, camPos);
         }
     }
 
@@ -39,46 +72,46 @@ internal static class GraphicsModuleHooks
         var cosmetics = data.cosmetics;
         for (int i = 0, count = cosmetics.Count; i < count; i++)
         {
-            if (cosmetics[i] is DynamicCreatureCosmetic dynamicCosmetic && dynamicCosmetic.sLeaser != null)
+            if (cosmetics[i] is DynamicCreatureCosmetic dynamicCosmetic && dynamicCosmetic.SLeaser != null)
             {
-                dynamicCosmetic.sLeaser.CleanSpritesAndRemove();
+                dynamicCosmetic.SLeaser.CleanSpritesAndRemove();
             }
         }
     }
 
-    private static void DrawDynamicCosmetics(GraphicsModuleCCGData data, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
+    private static void DrawDynamicCosmetics(GraphicsModuleCCGData data, RoomCamera.SpriteLeaser SLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         var cosmetics = data.cosmetics;
         for (int i = 0, count = cosmetics.Count; i < count; i++)
         {
-            cosmetics[i].PostWearerDrawSprites(sLeaser, rCam, timeStacker, camPos);
+            cosmetics[i].PostWearerDrawSprites(SLeaser, rCam, timeStacker, camPos);
         }
     }
 
-    internal static void GraphicsModule_ApplyPalette(On.GraphicsModule.orig_ApplyPalette orig, GraphicsModule self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
+    internal static void GraphicsModule_ApplyPalette(On.GraphicsModule.orig_ApplyPalette orig, GraphicsModule self, RoomCamera.SpriteLeaser SLeaser, RoomCamera rCam, RoomPalette palette)
     {
         var data = self.GetGraphicsModuleCCGData();
-        data.sLeaser = sLeaser;
+        data.sLeaser = SLeaser;
 
-        orig(self, sLeaser, rCam, palette);
-        ApplyPaletteToCosmetics(data, sLeaser, rCam, palette);
+        orig(self, SLeaser, rCam, palette);
+        ApplyPaletteToCosmetics(data, SLeaser, rCam, palette);
     }
 
-    private static void ApplyPaletteToCosmetics(GraphicsModuleCCGData data, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
+    private static void ApplyPaletteToCosmetics(GraphicsModuleCCGData data, RoomCamera.SpriteLeaser SLeaser, RoomCamera rCam, RoomPalette palette)
     {
         var cosmetics = data.cosmetics;
         for (int i = 0, count = cosmetics.Count; i < count; i++)
         {
-            cosmetics[i].PostWearerApplyPalette(sLeaser, rCam, in palette);
+            cosmetics[i].PostWearerApplyPalette(SLeaser, rCam, in palette);
         }
     }
 
-    internal static void GraphicsModule_AddToContainer(On.GraphicsModule.orig_AddToContainer orig, GraphicsModule self, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
+    internal static void GraphicsModule_AddToContainer(On.GraphicsModule.orig_AddToContainer orig, GraphicsModule self, RoomCamera.SpriteLeaser SLeaser, RoomCamera rCam, FContainer newContainer)
     {
         var data = self.GetGraphicsModuleCCGData();
-        data.sLeaser = sLeaser;
+        data.sLeaser = SLeaser;
 
-        orig(self, sLeaser, rCam, newContainer);
-        self.AddDynamicCosmeticsToContainer(sLeaser, rCam, newContainer);
+        orig(self, SLeaser, rCam, newContainer);
+        self.AddDynamicCosmeticsToContainer(SLeaser, rCam, newContainer);
     }
 }

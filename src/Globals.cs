@@ -21,6 +21,7 @@ global using Newtonsoft.Json.Linq;
 
 global using MRCustom.Math;
 global using MRCustom.Json;
+global using MRCustom.Json.Converters.Newtonsoft;
 global using MRCustom.Extensions;
 global using MRCustom.Extensions.Creatures;
 
@@ -30,4 +31,5 @@ global using Vector2 = UnityEngine.Vector2;
 global using CompartmentalizedCreatureGraphics;
 global using CompartmentalizedCreatureGraphics.Extensions;
 global using CompartmentalizedCreatureGraphics.Cosmetics;
+global using CompartmentalizedCreatureGraphics.Effects;
 global using CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;

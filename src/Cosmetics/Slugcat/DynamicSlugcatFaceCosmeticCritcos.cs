@@ -1,5 +1,4 @@
-﻿
-namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
+﻿namespace CompartmentalizedCreatureGraphics.Cosmetics.Slugcat;
 
 public class DynamicSlugcatCosmeticFaceCritcos : Critcos
 {
@@ -8,16 +7,7 @@ public class DynamicSlugcatCosmeticFaceCritcos : Critcos
 
     public override DynamicCreatureCosmetic.Properties ParseProperties(string json)
     {
-        var settings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            ContractResolver = new CreatureCosmeticLayerContractResolver<Enums.SlugcatCosmeticLayer>()
-        };
-
-        DynamicSlugcatFaceCosmetic.Properties properties = JsonConvert.DeserializeObject<DynamicSlugcatFaceCosmetic.Properties>(json, settings);
-        properties.spriteAngleProperties = CosmeticManager.GetSpriteAnglePropertiesForId(properties.spriteAnglePropertiesId);
-
-        return properties;
+        return new DynamicSlugcatFaceCosmetic.Properties().Parse(json);
     }
 
     public override DynamicCreatureCosmetic CreateDynamicCosmeticForCreature(GraphicsModule graphicsModule, string propertiesId)

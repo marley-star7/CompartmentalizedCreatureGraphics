@@ -15,6 +15,19 @@ public class DynamicSlugcatCosmeticEar : DynamicSlugcatFaceCosmetic
 
         [JsonProperty("rad")]
         public float rad = 5f;
+
+        public override DynamicCreatureCosmetic.Properties Parse(string json)
+        {
+            var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+            };
+
+            Properties properties = JsonConvert.DeserializeObject<Properties>(json, settings);
+            properties.spriteAngleProperties = CCG.CosmeticManager.GetSpriteAnglePropertiesForId(properties.spriteAnglePropertiesId);
+
+            return properties;
+        }
     }
 
     public new Properties properties => (Properties)_properties;
@@ -31,7 +44,7 @@ public class DynamicSlugcatCosmeticEar : DynamicSlugcatFaceCosmetic
     
     public override void PostWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
-        if (sLeaser == null)
+        if (SLeaser == null)
             return;
 
         lastPos = pos;
@@ -88,9 +101,9 @@ public class DynamicSlugcatCosmeticEar : DynamicSlugcatFaceCosmetic
         pos = playerGraphicsData.BaseHeadSprite.GetPosition() + Custom.RotateAroundVector(anglePosOffset, Vector2.zero, faceRotationDegreesTimeStacked * earRotationSide);
         var finalPos = Vector2.Lerp(lastPos, pos, timeStacker);
 
-        for (int i = 0; i < sLeaser.sprites.Length; i++)
+        for (int i = 0; i < SLeaser.sprites.Length; i++)
         {
-            var currentSprite = sLeaser.sprites[i];
+            var currentSprite = SLeaser.sprites[i];
 
             currentSprite.x = finalPos.x;
             currentSprite.y = finalPos.y;

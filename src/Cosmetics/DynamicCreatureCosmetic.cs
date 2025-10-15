@@ -3,9 +3,9 @@
 /// <summary>
 /// DynamicCosmetics are cosmetics able to be equipped and unequipped on demand.
 /// </summary>
-public class DynamicCreatureCosmetic : UpdatableAndDeletable, IDynamicCreatureCosmetic, IDrawable
+public class DynamicCreatureCosmetic : IDynamicCreatureCosmetic, IDrawable
 {
-    public class Properties
+    public abstract class Properties : CCGCosmeticProperties
     {
         [JsonProperty("scaleX")]
         public float scaleX = 1f;
@@ -13,48 +13,70 @@ public class DynamicCreatureCosmetic : UpdatableAndDeletable, IDynamicCreatureCo
         [JsonProperty("scaleY")]
         public float scaleY = 1f;
 
-        [JsonProperty("spriteLayerGroups")]
-        public SpriteLayerGroup[] spriteLayerGroups = new SpriteLayerGroup[0]{};
+        // TODO: should probably seperate this to be changable in the presets instead of requiring creating whole new cosmetic properties just to change layer.
+        /// <summary>
+        /// The sprite layer groups this cosmetic uses.
+        /// </summary>
+        public SpriteLayerGroup[] spriteLayerGroups = new SpriteLayerGroup[0];
+
+        /// <summary>
+        /// The sprite effect groups this cosmetic uses.
+        /// </summary>
+        public SpriteEffectGroup[] spriteEffectGroups = new SpriteEffectGroup[0];
+
+        /// <summary>
+        /// Use protected virtual to allow inheriting classes to override the JsonProperty attribute if needed.
+        /// </summary>
+        protected abstract SpriteLayerGroup[] SpriteLayerGroupsSetter
+        {
+            set;
+        }
+
+        /// <summary>
+        /// Use protected virtual to allow inheriting classes to override the JsonProperty attribute if needed.
+        /// </summary>
+        protected virtual SpriteEffectGroup[] SpriteEffectGroupsSetter
+        {
+            set => spriteEffectGroups = value;
+        }
+
+        public abstract DynamicCreatureCosmetic.Properties Parse(string json);
     }
 
-    public Creature wearer => _wearerGraphics.owner as Creature;
+    public Creature Wearer => _wearerGraphics.owner as Creature;
 
     protected GraphicsModule _wearerGraphics;
-    public GraphicsModule wearerGraphics => _wearerGraphics;
+    public GraphicsModule WearerGraphics => _wearerGraphics;
 
     protected Properties _properties;
 
     protected RoomCamera.SpriteLeaser? _sLeaser;
-    public RoomCamera.SpriteLeaser? sLeaser
+    public RoomCamera.SpriteLeaser? SLeaser
     {
         get => _sLeaser;
     }
 
-    public SpriteLayerGroup[] spriteLayerGroups
-    {
-        get => _properties.spriteLayerGroups;
-    }
+    public SpriteLayerGroup[] SpriteLayerGroups => _properties.spriteLayerGroups;
+
     public SpriteEffectGroup[] spriteEffectGroups;
+
+    public SpriteEffectGroup[] SpriteEffectGroups => _properties.spriteEffectGroups;
 
     public DynamicCreatureCosmetic(GraphicsModule wearerGraphics, Properties properties)
     {
         this._wearerGraphics = wearerGraphics;
         this._properties = properties;
         this.spriteEffectGroups = new SpriteEffectGroup[0];
-
-        wearerGraphics.AddCreatureCosmetic(this);
     }
 
     ~DynamicCreatureCosmetic()
     {
-        var wearerCCGData = wearer.graphicsModule.GetGraphicsModuleCCGData();
+        var wearerCCGData = Wearer.graphicsModule.GetGraphicsModuleCCGData();
 
         wearerCCGData.cosmetics.Remove(this);
         // Properly remove this cosmetics sprite layers information to the wearer graphics module data.
-        for (int i = 0; i < spriteLayerGroups.Length; i++)
-            wearerCCGData.layersCosmetics[spriteLayerGroups[i].layer].Remove(this);
-
-        this.Destroy();
+        for (int i = 0; i < SpriteLayerGroups.Length; i++)
+            wearerCCGData.layersCosmetics[SpriteLayerGroups[i].Layer].Remove(this);
     }
 
     //
@@ -62,6 +84,11 @@ public class DynamicCreatureCosmetic : UpdatableAndDeletable, IDynamicCreatureCo
     //
 
     public virtual void PostWearerInitiateSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam)
+    {
+
+    }
+
+    public virtual void PostWearerUpdate()
     {
 
     }
@@ -103,11 +130,6 @@ public class DynamicCreatureCosmetic : UpdatableAndDeletable, IDynamicCreatureCo
     public void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         this._sLeaser = sLeaser;
-
-        if (slatedForDeletetion || room != rCam.room)
-        {
-            sLeaser.CleanSpritesAndRemove();
-        }
     }
 
     public virtual void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)

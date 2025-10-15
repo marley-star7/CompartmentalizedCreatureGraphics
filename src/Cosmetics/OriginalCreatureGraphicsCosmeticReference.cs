@@ -8,16 +8,19 @@ public class OriginalCreatureGraphicsCosmeticReference : ICreatureCosmetic
 {
     public GraphicsModule wearerGraphics;
 
-    public RoomCamera.SpriteLeaser sLeaser
+    public RoomCamera.SpriteLeaser SLeaser
     {
         get => wearerGraphics.GetGraphicsModuleCCGData().sLeaser;
     }
 
     protected SpriteLayerGroup[] _spriteLayerGroups;
-    public SpriteLayerGroup[] spriteLayerGroups {
+    public SpriteLayerGroup[] SpriteLayerGroups {
         get => _spriteLayerGroups; 
         set { _spriteLayerGroups = value;  }
     }
+
+    protected SpriteEffectGroup[] _spriteEffectGroups = new SpriteEffectGroup[0];
+    public SpriteEffectGroup[] SpriteEffectGroups => _spriteEffectGroups;
 
     protected int startSpriteIndex;
     // TODO: fill this out so that it has the first sprite index refrence, and size. and would work with normal player sprites.
@@ -28,6 +31,11 @@ public class OriginalCreatureGraphicsCosmeticReference : ICreatureCosmetic
         this._spriteLayerGroups = spriteLayerGroups;
 
         wearerGraphics.AddCreatureCosmetic(this);
+    }
+
+    public void PostWearerUpdate()
+    {
+
     }
 
     public void PostWearerInitiateSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam)

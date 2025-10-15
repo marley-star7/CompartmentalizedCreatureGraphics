@@ -28,7 +28,7 @@ internal static class PlayerGraphicsHooks
         var playerGraphicsCCGData = self.GetPlayerGraphicsCCGData();
 
         playerGraphicsCCGData.lastFaceRotation = playerGraphicsCCGData.faceRotation;
-        playerGraphicsCCGData.lastFaceAngleValue = playerGraphicsCCGData.faceAngleValue;
+        playerGraphicsCCGData.lastHeadDepthRotation = playerGraphicsCCGData.headDepthRotation;
 
         Vector2 lastDirLowerChunkToMainChunk = Custom.DirVec(self.player.bodyChunks[1].pos, self.player.mainBodyChunk.pos);
         Vector2 dirLowerChunkToMainChunk = Custom.DirVec(self.player.bodyChunks[1].pos, self.player.mainBodyChunk.pos);
@@ -44,8 +44,8 @@ internal static class PlayerGraphicsHooks
         if (player.room != null && player.EffectiveRoomGravity == 0f
             || player.bodyMode == Player.BodyModeIndex.Stand && player.input[0].x == 0)
         {
-            playerGraphicsCCGData.targetFaceAngleValue = 0f;
-            playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.LerpFaceAngleValue;
+            playerGraphicsCCGData.targetHeadDepthRotation = 0f;
+            playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.LerpHeadDepthRotation;
         }
         else if (player.Stunned
             || player.bodyMode == Player.BodyModeIndex.Default)
@@ -55,12 +55,12 @@ internal static class PlayerGraphicsHooks
         else if (player.bodyMode == Player.BodyModeIndex.Stand && player.input[0].x != 0)
         {
             //-- MS7: Taken from source to calculate when using side angles.
-            playerGraphicsCCGData.targetFaceAngleValue = player.input[0].x;
-            playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.LerpFaceAngleValue;
+            playerGraphicsCCGData.targetHeadDepthRotation = player.input[0].x;
+            playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.LerpHeadDepthRotation;
         }
         else if (player.bodyMode == Player.BodyModeIndex.Crawl)
         {
-            playerGraphicsCCGData.targetFaceAngleValue = Math.Sign(dirLowerChunkToMainChunk.x);
+            playerGraphicsCCGData.targetHeadDepthRotation = Math.Sign(dirLowerChunkToMainChunk.x);
             playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.FullAngleToBodyDirection;
         }
         else
@@ -68,7 +68,7 @@ internal static class PlayerGraphicsHooks
             playerGraphicsCCGData.faceSpriteAnglingMode = PlayerGraphicsCCGData.FaceSpriteAnglingMode.AngleWithBodyDirection;
         }
 
-        playerGraphicsCCGData.faceAngleValue = Mathf.Lerp(playerGraphicsCCGData.faceAngleValue, playerGraphicsCCGData.targetFaceAngleValue, 0.45f);
+        playerGraphicsCCGData.headDepthRotation = Mathf.Lerp(playerGraphicsCCGData.headDepthRotation, playerGraphicsCCGData.targetHeadDepthRotation, 0.45f);
     }
 
     //
@@ -114,10 +114,10 @@ internal static class PlayerGraphicsHooks
             selfCCGData.facePos = new Vector2(selfCCGData.BaseFaceSprite.x, selfCCGData.BaseFaceSprite.y);
         }
 
-        if (selfCCGData.faceSpriteAnglingMode == PlayerGraphicsCCGData.FaceSpriteAnglingMode.LerpFaceAngleValue)
+        if (selfCCGData.faceSpriteAnglingMode == PlayerGraphicsCCGData.FaceSpriteAnglingMode.LerpHeadDepthRotation)
         {
-            var faceAngleValueTimeStacked = Mathf.Lerp(selfCCGData.lastFaceAngleValue, selfCCGData.faceAngleValue, timeStacker);
-            var faceSpriteAngle = (int)(faceAngleValueTimeStacked * 2.5f); // Goes from -2 to 2, so multiply by 2 from the -1 to 1 it was before.
+            var headDepthRotationTimeStacked = Mathf.Lerp(selfCCGData.lastHeadDepthRotation, selfCCGData.headDepthRotation, timeStacker);
+            var faceSpriteAngle = (int)(headDepthRotationTimeStacked * 2.5f); // Goes from -2 to 2, so multiply by 2 from the -1 to 1 it was before.
             self.SetFaceSpriteAngle(faceSpriteAngle);
         }
         else if (selfCCGData.faceSpriteAnglingMode == PlayerGraphicsCCGData.FaceSpriteAnglingMode.FullAngleToBodyDirection)
