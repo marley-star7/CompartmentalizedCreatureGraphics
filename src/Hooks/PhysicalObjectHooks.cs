@@ -20,7 +20,7 @@ internal static class PhysicalObjectHooks
 
         if (self.graphicsModule != null)
         {
-            self.graphicsModule.AddDynamicCreatureCosmeticsToDrawableObjects();
+            //self.graphicsModule.AddDynamicCreatureCosmeticsToDrawableObjects();
         }
     }
 

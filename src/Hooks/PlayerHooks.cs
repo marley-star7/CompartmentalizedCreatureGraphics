@@ -5,6 +5,7 @@ internal static class PlayerHooks
     internal static void ApplyHooks()
     {
         On.Player.InitiateGraphicsModule += Player_InitiateGraphicsModule;
+        On.Player.RemoveGraphicsModule += Player_RemoveGraphicsModule;
 
         On.Player.Collide += PlayerHooks.Player_Collide;
         On.Player.TerrainImpact += PlayerHooks.Player_TerrainImpact;
@@ -18,6 +19,16 @@ internal static class PlayerHooks
         if (self.graphicsModule != null)
         {
             self.graphicsModule.AddDynamicCreatureCosmeticsToDrawableObjects();
+        }
+    }
+
+    private static void Player_RemoveGraphicsModule(On.Player.orig_RemoveGraphicsModule orig, Player self)
+    {
+        orig(self);
+
+        if (self.graphicsModule != null)
+        {
+            self.graphicsModule.RemoveDynamicCreatureCosmeticsFromDrawableObjects();
         }
     }
 
