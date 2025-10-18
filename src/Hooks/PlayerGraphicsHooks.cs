@@ -5,6 +5,22 @@ namespace CompartmentalizedCreatureGraphics;
 
 internal static class PlayerGraphicsHooks
 {
+    internal static void ApplyHooks()
+    {
+        On.PlayerGraphics.ctor += PlayerGraphicsHooks.PlayerGraphics_ctor;
+        On.PlayerGraphics.Update += PlayerGraphicsHooks.PlayerGraphics_Update;
+
+        On.PlayerGraphics.DrawSprites += PlayerGraphicsHooks.PlayerGraphics_DrawSprites;
+    }
+
+    internal static void RemoveHooks()
+    {
+        On.PlayerGraphics.ctor -= PlayerGraphicsHooks.PlayerGraphics_ctor;
+        On.PlayerGraphics.Update -= PlayerGraphicsHooks.PlayerGraphics_Update;
+
+        On.PlayerGraphics.DrawSprites -= PlayerGraphicsHooks.PlayerGraphics_DrawSprites;
+    }
+
     internal static void PlayerGraphics_ctor(On.PlayerGraphics.orig_ctor orig, PlayerGraphics self, PhysicalObject ow)
     {
         orig(self, ow);

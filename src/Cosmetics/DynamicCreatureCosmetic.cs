@@ -130,9 +130,14 @@ public class DynamicCreatureCosmetic : IDynamicCreatureCosmetic, IDrawable
     public void DrawSprites(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         this._sLeaser = sLeaser;
+
+        if (Wearer.slatedForDeletetion || Wearer == null)
+        {
+            _sLeaser.CleanSpritesAndRemove();
+        }
     }
 
-    public virtual void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
+    public void ApplyPalette(RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, RoomPalette palette)
     {
         this._sLeaser = sLeaser;
     }

@@ -82,7 +82,9 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
     public override void PostWearerDrawSprites(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, float timeStacker, Vector2 camPos)
     {
         if (SLeaser == null)
+        {
             return;
+        }
 
         var playerGraphics = (PlayerGraphics)player.graphicsModule;
         var playerGraphicsCCGData = playerGraphics.GetPlayerGraphicsCCGData();
@@ -107,14 +109,16 @@ public class DynamicSlugcatFaceCosmetic : DynamicSlugcatCosmetic
     }
 
     // TODO: temp thing for proof of concept, later use cosmetic effects.
-    public override void ApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, RoomPalette palette)
+    public override void PostWearerApplyPalette(RoomCamera.SpriteLeaser wearerSLeaser, RoomCamera rCam, in RoomPalette palette)
     {
         if (SLeaser == null)
-            return;
-
-        for (int i = 0; i < _sLeaser.sprites.Length; i++)
         {
-            _sLeaser.sprites[i].color = palette.blackColor;
+            return;
+        }
+
+        for (int i = 0; i < SLeaser.sprites.Length; i++)
+        {
+            SLeaser.sprites[i].color = palette.blackColor;
         }
     }
 }

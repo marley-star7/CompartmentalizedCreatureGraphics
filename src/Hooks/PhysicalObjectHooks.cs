@@ -4,8 +4,8 @@ internal static class PhysicalObjectHooks
 {
     internal static void ApplyHooks()
     {
-        On.PhysicalObject.InitiateGraphicsModule += PhysicalObjectHooks.PhysicalObject_InitiateGraphicsModule;
-        On.PhysicalObject.RemoveGraphicsModule += PhysicalObjectHooks.PhysicalObject_RemoveGraphicsModule;
+        //On.PhysicalObject.InitiateGraphicsModule += PhysicalObjectHooks.PhysicalObject_InitiateGraphicsModule;
+        //On.PhysicalObject.RemoveGraphicsModule += PhysicalObjectHooks.PhysicalObject_RemoveGraphicsModule;
     }
 
     internal static void RemoveHooks()

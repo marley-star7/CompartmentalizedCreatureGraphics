@@ -84,6 +84,8 @@ public static class GraphicsModuleCCGExtensions
             return;
         }
 
+        self.RemoveDynamicCreatureCosmeticsFromDrawableObjects();
+
         Plugin.LogCCGDebug("Adding cosmetics to drawable objects");
 
         var wearerCCGData = self.GetGraphicsModuleCCGData();
@@ -109,13 +111,21 @@ public static class GraphicsModuleCCGExtensions
     internal static void RemoveDynamicCreatureCosmeticsFromDrawableObjects(this GraphicsModule self)
     {
         if (self.owner.room == null)
+        {
             return;
+        }
+
+        Plugin.LogCCGDebug("Removing cosmetics from drawable objects");
 
         var wearerCCGData = self.GetGraphicsModuleCCGData();
 
-
         for (int i = 0; i < wearerCCGData.cosmetics.Count; i++)
         {
+            if (wearerCCGData.cosmetics[i].SLeaser != null)
+            {
+                wearerCCGData.cosmetics[i].SLeaser.CleanSpritesAndRemove();
+            }
+
             if (wearerCCGData.cosmetics[i] is IDrawable cosmeticDrawable)
             {
                 self.owner.room.drawableObjects.Remove(cosmeticDrawable);
@@ -130,6 +140,7 @@ public static class GraphicsModuleCCGExtensions
     public static void ReorderDynamicCosmetics(this GraphicsModule graphicsModule)
     {
         var graphicsModuleCCGData = graphicsModule.GetGraphicsModuleCCGData();
+
         Plugin.LogDebug($"//");
         Plugin.LogDebug($"//-- Reordering Dynamic Cosmetics.");
         Plugin.LogDebug($"//");
@@ -156,14 +167,6 @@ public static class GraphicsModuleCCGExtensions
         Plugin.LogDebug($"//");
         Plugin.LogDebug($"//-- Reordering Finished.");
         Plugin.LogDebug($"//");
-    }
-
-    internal static void AddDynamicCosmeticsToContainer(this GraphicsModule graphicsModule, RoomCamera.SpriteLeaser sLeaser, RoomCamera rCam, FContainer newContainer)
-    {
-        var graphicsModuleCCGData = graphicsModule.GetGraphicsModuleCCGData();
-        Plugin.LogDebug($"Adding {graphicsModuleCCGData.cosmetics.Count} dynamic cosmetics to container.");
-
-        graphicsModule.ReorderDynamicCosmetics();
     }
 
     public static string GetSymmetricalAngleFromAsymmetrical(in string angle)

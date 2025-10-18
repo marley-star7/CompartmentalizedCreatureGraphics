@@ -24,12 +24,12 @@ internal static class PlayerHooks
 
     private static void Player_RemoveGraphicsModule(On.Player.orig_RemoveGraphicsModule orig, Player self)
     {
-        orig(self);
-
         if (self.graphicsModule != null)
         {
             self.graphicsModule.RemoveDynamicCreatureCosmeticsFromDrawableObjects();
         }
+
+        orig(self);
     }
 
     internal static void RemoveHooks()
